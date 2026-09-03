@@ -1,0 +1,730 @@
+<title>서울 토허구역 인과추정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  color-scheme: light;
+  --ground:#f4f6f7; --surface:#fcfcfb; --surface-2:#eceef0;
+  --ink:#12161a; --ink-2:#454b52; --ink-3:#7d848c;
+  --rule:#c9ced4; --rule-soft:#e2e6e9;
+  --accent:#2a78d6; --accent-soft:#dbe8f8;
+  --warn:#e34948; --warn-soft:#f8dedd;
+  --grid:#dfe3e7; --axis:#b9c0c7; --muted-mark:#898781;
+  --shadow:0 1px 2px rgba(18,22,26,.06),0 8px 24px rgba(18,22,26,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+    --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+    --rule:#343a3f; --rule-soft:#282d31;
+    --accent:#3987e5; --accent-soft:#1d2f45;
+    --warn:#e66767; --warn-soft:#3d2526;
+    --grid:#2b3034; --axis:#3d4449; --muted-mark:#898781;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+  --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+  --rule:#343a3f; --rule-soft:#282d31;
+  --accent:#3987e5; --accent-soft:#1d2f45;
+  --warn:#e66767; --warn-soft:#3d2526;
+  --grid:#2b3034; --axis:#3d4449; --muted-mark:#898781;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans KR","Malgun Gothic",system-ui,sans-serif;
+  line-height:1.65; -webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Nanum Myeongjo","Batang",serif; text-wrap:balance; letter-spacing:-.01em}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+
+.topbar{position:sticky; top:0; z-index:40; background:var(--ground); border-bottom:3px double var(--rule)}
+.topbar-in{max-width:1180px; margin:0 auto; padding:14px 24px 0;
+  display:flex; flex-wrap:wrap; gap:16px; align-items:baseline; justify-content:space-between}
+.brand{display:flex; align-items:baseline; gap:12px; min-width:0}
+.brand .t{font-family:"Nanum Myeongjo",serif; font-size:19px; font-weight:800; letter-spacing:-.02em}
+.docno{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.1em;
+  color:var(--ink-3); text-transform:uppercase; white-space:nowrap}
+nav{display:flex; gap:2px; margin-top:6px}
+nav button{appearance:none; background:none; border:0; cursor:pointer; font-family:inherit;
+  font-size:13.5px; font-weight:500; color:var(--ink-3); padding:9px 15px;
+  border-bottom:2px solid transparent; transition:color .15s,border-color .15s}
+nav button:hover{color:var(--ink)}
+nav button[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--accent)}
+nav button:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px}
+
+main{max-width:1180px; margin:0 auto; padding:28px 24px 72px}
+.view[hidden]{display:none!important}
+
+/* 슬라이드 */
+.deckwrap{display:flex; flex-direction:column; gap:14px}
+.stage{position:relative; background:var(--surface); border:1px solid var(--rule);
+  box-shadow:var(--shadow); aspect-ratio:16/9; overflow:hidden; container-type:inline-size}
+.slide{position:absolute; inset:0; padding:4cqw 4.8cqw; display:none; flex-direction:column}
+.slide.on{display:flex}
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:1.05cqw; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--ink-3); margin-bottom:1.3cqw}
+.slide h2{font-size:2.9cqw; line-height:1.22; margin:0 0 1.5cqw; font-weight:800}
+.slide h2 em{font-style:normal; color:var(--accent)}
+.slide p{font-size:1.4cqw; line-height:1.58; color:var(--ink-2); margin:0 0 .9cqw; max-width:60ch}
+.slide .big{font-size:1.95cqw; color:var(--ink); font-weight:500; line-height:1.4}
+.slide strong{color:var(--ink); font-weight:600}
+.slidenum{position:absolute; right:2.4cqw; bottom:1.9cqw; font-family:"IBM Plex Mono",monospace;
+  font-size:1.05cqw; color:var(--ink-3); letter-spacing:.08em}
+.slide-foot{position:absolute; left:4.8cqw; bottom:1.9cqw; font-size:.98cqw; color:var(--ink-3);
+  font-family:"IBM Plex Mono",monospace; letter-spacing:.03em}
+
+.cover{justify-content:center}
+.cover .rulepair{border-top:1px solid var(--rule); border-bottom:3px double var(--rule); height:6px; margin:2.2cqw 0}
+.cover h1{font-size:4cqw; line-height:1.2; margin:0; font-weight:800}
+.cover .sub{font-size:1.65cqw; color:var(--ink-2); margin-top:1.3cqw; max-width:64ch; line-height:1.55}
+.cover .meta{display:flex; gap:2.4cqw; margin-top:2.8cqw; font-size:1.12cqw; color:var(--ink-3);
+  font-family:"IBM Plex Mono",monospace}
+
+.cols{display:grid; gap:2.2cqw; flex:1; min-height:0}
+.c2{grid-template-columns:1fr 1fr}
+.c2w{grid-template-columns:.82fr 1.18fr}
+.c2n{grid-template-columns:1.15fr .85fr}
+.colhead{font-family:"IBM Plex Mono",monospace; font-size:.98cqw; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-3); margin-bottom:.8cqw}
+
+.stab{width:100%; border-collapse:collapse; font-size:1.18cqw}
+.stab th{font-family:"IBM Plex Mono",monospace; font-size:.9cqw; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:400; text-align:left; padding:0 .7cqw .55cqw 0; border-bottom:1px solid var(--rule)}
+.stab th.c{text-align:center}
+.stab td{padding:.62cqw .7cqw; border-bottom:1px solid var(--rule-soft); vertical-align:middle}
+.stab td:first-child{padding-left:0}
+.stab td.c{text-align:center; font-family:"IBM Plex Mono",monospace; font-size:1.3cqw}
+.stab tr.hi td{background:var(--accent-soft); font-weight:500}
+.ok{color:var(--accent)} .no{color:var(--warn)} .mid{color:var(--ink-3)}
+
+.tile{border-top:2px solid var(--accent); padding-top:.85cqw}
+.tile .v{font-family:"IBM Plex Mono",monospace; font-size:2.5cqw; font-weight:500; line-height:1.05; letter-spacing:-.02em}
+.tile .l{font-size:1.02cqw; color:var(--ink-3); margin-top:.3cqw; line-height:1.35}
+.tilecol{display:flex; flex-direction:column; gap:1.3cqw; justify-content:center}
+
+figure{margin:0; display:flex; flex-direction:column; min-height:0; justify-content:center}
+figure svg{width:100%; height:auto; display:block}
+figcaption{font-size:.95cqw; color:var(--ink-3); margin-top:.5cqw; line-height:1.5}
+.chart-title{font-size:1.15cqw; font-weight:600; color:var(--ink); margin-bottom:.15cqw}
+.chart-sub{font-size:.95cqw; color:var(--ink-3); margin-bottom:.6cqw; line-height:1.35}
+
+
+.concept{display:grid; grid-template-columns:1fr auto 1fr; gap:1.5cqw; align-items:center}
+.arrowcol{font-family:"IBM Plex Mono",monospace; color:var(--ink-3); font-size:1.5cqw}
+
+/* 파이프라인 단계 + 용어 태그 */
+.pipe{display:grid; grid-template-columns:repeat(3,1fr); gap:1cqw 1.8cqw; margin-top:.3cqw}
+.st{border-top:1.5px solid var(--rule); padding-top:.7cqw}
+.st.hi{border-top-color:var(--accent); border-top-width:2.5px}
+.sh{font-size:1.2cqw; font-weight:600; color:var(--ink); margin-bottom:.55cqw; display:flex; gap:.6cqw; align-items:baseline}
+.st.hi .sh{color:var(--accent)}
+.sn{font-family:"IBM Plex Mono",monospace; font-size:.9cqw; color:var(--ink-3); font-weight:400}
+.st.hi .sn{color:var(--accent)}
+.tags{display:flex; flex-wrap:wrap; gap:.35cqw}
+.tags span{font-size:.95cqw; line-height:1.3; color:var(--ink-2); background:var(--surface-2);
+  border:1px solid var(--rule-soft); padding:.18cqw .55cqw; white-space:nowrap}
+.st.hi .tags span{background:var(--accent-soft); border-color:transparent; color:var(--ink)}
+
+/* 다음에 할 것 */
+.nx{border-left:2px solid var(--accent); padding-left:1.4cqw}
+.nh{font-family:"IBM Plex Mono",monospace; font-size:.92cqw; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-3); margin-top:.9cqw}
+.nx .nh:first-child{margin-top:0}
+.nb{font-size:1.3cqw; color:var(--ink-2); line-height:1.5; margin-top:.3cqw}
+.nb-note{font-size:.98cqw; color:var(--ink-3); margin-top:.25cqw}
+
+.deckbar{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+.deckbar .spacer{flex:1}
+.btn{appearance:none; font-family:inherit; font-size:13px; font-weight:500;
+  background:var(--surface); color:var(--ink); border:1px solid var(--rule);
+  padding:7px 14px; cursor:pointer; transition:background .15s,border-color .15s}
+.btn:hover{background:var(--surface-2); border-color:var(--ink-3)}
+.btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.btn[disabled]{opacity:.4; cursor:default}
+.dots{display:flex; gap:6px}
+.dot{width:24px; height:4px; background:var(--rule); border:0; padding:0; cursor:pointer}
+.dot[aria-current="true"]{background:var(--accent)}
+.dot:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+.hint{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-3); letter-spacing:.04em}
+
+/* 문서 */
+.doc{max-width:74ch}
+.doc h2{font-size:26px; margin:0 0 6px; font-weight:800}
+.doc h3{font-size:17px; margin:34px 0 10px; font-weight:700}
+.doc .lede{font-size:16px; color:var(--ink-2); margin:0 0 26px; padding-bottom:20px; border-bottom:3px double var(--rule)}
+.doc p{font-size:15px; color:var(--ink-2); margin:0 0 14px}
+.doc ul{font-size:15px; color:var(--ink-2); padding-left:20px; margin:0 0 14px}
+.doc li{margin-bottom:7px}
+.doc strong{color:var(--ink); font-weight:600}
+.tablewrap{overflow-x:auto; margin:0 0 20px}
+table.d{width:100%; border-collapse:collapse; font-size:14px; min-width:520px}
+table.d th{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:400; text-align:left; padding:0 12px 8px 0; border-bottom:1px solid var(--rule); white-space:nowrap}
+table.d td{padding:9px 12px 9px 0; border-bottom:1px solid var(--rule-soft); vertical-align:top; color:var(--ink-2)}
+table.d td.n{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap}
+table.d td strong{color:var(--ink)}
+table.d tr.hi td{background:var(--accent-soft)}
+.neg{color:var(--accent); font-weight:500}
+.pos{color:var(--warn); font-weight:500}
+.callout{border-left:2px solid var(--accent); background:var(--surface); padding:16px 18px; margin:0 0 22px}
+.callout p{margin:0; font-size:14.5px}
+.callout p+p{margin-top:8px}
+.linkrow{display:flex; flex-wrap:wrap; gap:10px; margin-top:26px}
+a.lnk{font-size:13px; color:var(--ink); text-decoration:none; border:1px solid var(--rule);
+  padding:7px 13px; background:var(--surface); transition:border-color .15s,background .15s}
+a.lnk:hover{border-color:var(--accent); background:var(--surface-2)}
+a.lnk:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+a.lnk .mono{font-size:11px; color:var(--ink-3); margin-left:6px}
+.schedule{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:0 0 24px}
+.sc{border:1px solid var(--rule-soft); padding:12px 14px; background:var(--surface)}
+.sc.deck{border-color:var(--accent)}
+.sc .dt{font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:500}
+.sc .ty{font-size:12px; color:var(--ink-3); margin-top:3px}
+.sc.deck .ty{color:var(--accent)}
+
+@media (max-width:760px){ .doc h2{font-size:22px} .ms{grid-template-columns:repeat(2,1fr)} nav{overflow-x:auto} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+
+/* 인쇄 / PDF 저장 — 슬라이드 한 장이 한 페이지 */
+@page{size:landscape; margin:8mm}
+@media print{
+  .topbar,.deckbar{display:none!important}
+  main{padding:0; max-width:none}
+  #v-report,#v-proposal,#v-plan{display:none!important}
+  #v-deck{display:block!important}
+  .deckwrap{gap:0}
+  .stage{aspect-ratio:auto; height:auto; border:0; box-shadow:none; position:static; background:#fff}
+  .slide{display:flex!important; position:relative; inset:auto; width:100%;
+    aspect-ratio:16/9; break-after:page; page-break-after:always; background:#fff}
+  .slide:last-child{break-after:auto; page-break-after:auto}
+}
+
+</style>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <span class="t">서울 토지거래허가구역 인과추정</span>
+      <span class="docno">2026-2학기 · 졸업작품</span>
+    </div>
+    <span class="docno" id="stamp">스냅샷 2026-09-03</span>
+  </div>
+  <div class="topbar-in" style="padding-top:0">
+    <nav role="tablist" aria-label="문서">
+      <button role="tab" aria-selected="true" data-v="deck">발표 · 09/04</button>
+      <button role="tab" aria-selected="false" data-v="report">1주차 보고서</button>
+      <button role="tab" aria-selected="false" data-v="proposal">주제 제안서</button>
+      <button role="tab" aria-selected="false" data-v="plan">일정</button>
+    </nav>
+  </div>
+</div>
+
+<main>
+
+<!-- ══════════════ 발표 ══════════════ -->
+<section class="view" id="v-deck">
+  <div class="deckwrap">
+    <div class="stage" id="stage" tabindex="0" aria-roledescription="슬라이드 발표">
+
+      <!-- 1 표지 -->
+      <article class="slide on cover">
+        <div class="eyebrow">1주차 · 주제 확정 및 예비 분석</div>
+        <h1>토지거래허가구역은<br>무엇을 바꾸었는가</h1>
+        <div class="rulepair"></div>
+        <p class="sub">서울 아파트 실거래 47만 건으로 규제의 인과효과를 추정한다.</p>
+        <div class="meta"><span>2026.09.04</span><span>이찬희</span><span>컴퓨터공학</span></div>
+        <div class="slidenum">01 / 07</div>
+      </article>
+
+      <!-- 2 왜 토허제인가 -->
+      <article class="slide">
+        <div class="eyebrow">왜 이 정책인가</div>
+        <h2>인과추정에는 조건이 <em>세 개</em> 필요하다</h2>
+        <table class="stab">
+          <tr>
+            <th style="width:34%">정책</th>
+            <th class="c">비교집단이<br>있는가</th>
+            <th class="c">처치집단과<br>비슷한가</th>
+            <th class="c">배정을 데이터에서<br>관측하는가</th>
+          </tr>
+          <tr><td>임대차 3법 · 종합부동산세</td><td class="c no">✗</td><td class="c mid">—</td><td class="c mid">—</td></tr>
+          <tr><td>조정대상지역 · 투기과열지구</td><td class="c ok">○</td><td class="c mid">△</td><td class="c ok">○</td></tr>
+          <tr><td>15억 초과 대출금지</td><td class="c ok">○</td><td class="c ok">○</td><td class="c no">✗</td></tr>
+          <tr class="hi"><td><strong>토지거래허가구역</strong></td><td class="c ok">○</td><td class="c ok">○</td><td class="c ok">○</td></tr>
+        </table>
+        <p style="margin-top:1.8cqw; max-width:none"><strong>두 번째 조건이 갈림길이다.</strong> 조정대상지역은 <strong>구</strong> 단위라 비교집단이 다른 구에 있다. 토허제는 <strong>동</strong> 단위여서 강남구 14개 동 중 3개만 지정됐다 — 비교집단이 같은 구 안에 남는다.</p>
+        <div class="slidenum">02 / 07</div>
+      </article>
+
+      <!-- 3 처치 타임라인 -->
+      <article class="slide">
+        <div class="eyebrow">규제 이력</div>
+        <h2>같은 아파트의 규제 상태가 <em>뒤집혔다</em></h2>
+        <figure style="flex:1; justify-content:flex-start">
+          <div class="chart-title">집단별 토지거래허가구역 규제 기간</div>
+          <div class="chart-sub">서울 · 2020년 1월 ~ 2026년 8월 · 아파트 기준</div>
+          <svg id="tl" viewBox="0 0 940 250" role="img" aria-label="집단별 토지거래허가구역 규제 기간 타임라인"></svg>
+        </figure>
+        <p style="max-width:none"><strong>2025년 2월, 4개 동 아파트 305곳 중 291곳이 풀렸다가 39일 만에 다시 묶였다.</strong> 2025년 10월 이후로는 서울 전역이 지정되어 비교집단이 사라진다.</p>
+        <div class="slide-foot">서울시 공고 2020-1832 · 2025-497 · 2025-953 · 10.15 대책</div>
+        <div class="slidenum">03 / 07</div>
+      </article>
+
+      <!-- 4 어디까지 내려가나 -->
+      <article class="slide">
+        <div class="eyebrow">선행연구와 무엇이 다른가</div>
+        <h2>관측치 하나를 <em>거래 한 건</em>으로 내린다</h2>
+        <div class="concept" style="flex:1; align-content:center">
+          <figure>
+            <svg viewBox="0 0 260 150" role="img" aria-label="동-월 격자 675칸"><g id="gridcells"></g>
+              <text x="0" y="146" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="9">27개 동 × 25개월 = 675칸</text></svg>
+            <figcaption>선행연구 3편 — 법정동·월마다 평균값 하나</figcaption>
+          </figure>
+          <div class="arrowcol">→</div>
+          <figure>
+            <svg viewBox="0 0 260 150" role="img" aria-label="개별 거래 산점"><g id="dotcloud"></g>
+              <text x="0" y="146" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="9">거래 472,782건 · 단지 3,502개</text></svg>
+            <figcaption>본 연구 — 거래 한 건이 관측치 하나</figcaption>
+          </figure>
+        </div>
+        <p style="margin-top:.8cqw; max-width:none"><strong>왜 필요한가.</strong> 규제로 거래가 60% 줄면 팔리는 물건 자체가 바뀐다. 실제로 이 구간에서 거래된 아파트의 평균 면적이 6㎡ 줄었다. 평균만 보면 "같은 집이 싸졌다"와 "다른 집이 팔렸다"를 구분할 수 없다.</p>
+        <div class="slidenum">04 / 07</div>
+      </article>
+
+      <!-- 5 파이프라인 -->
+      <article class="slide">
+        <div class="eyebrow">무엇을 다루는가</div>
+        <h2>수집부터 공개까지 <em>한 사이클</em>을 전부 다룬다</h2>
+        <div class="pipe">
+          <div class="st">
+            <div class="sh"><span class="sn">01</span>수집</div>
+            <div class="tags"><span>REST API</span><span>페이지네이션</span><span>지수 백오프</span><span>레이트 리밋</span><span>멱등 캐시</span><span>스냅샷 보존</span></div>
+          </div>
+          <div class="st">
+            <div class="sh"><span class="sn">02</span>정제 · 저장</div>
+            <div class="tags"><span>스키마 정규화</span><span>결측·이상치 처리</span><span>Parquet 컬럼형</span><span>검증 게이트</span><span>엔티티 해결</span></div>
+          </div>
+          <div class="st">
+            <div class="sh"><span class="sn">03</span>모델링</div>
+            <div class="tags"><span>패널 구성</span><span>처치 배정</span><span>반복매매지수</span><span>헤도닉 회귀</span></div>
+          </div>
+          <div class="st hi">
+            <div class="sh"><span class="sn">04</span>인과추정</div>
+            <div class="tags"><span>이중차분 DID</span><span>삼중차분 DDD</span><span>사건 시점 분석</span><span>양방향 고정효과</span><span>교대투영 FWL</span><span>공간 회귀불연속 RDD</span><span>합성대조군 SCM</span><span>비흡수 처치 추정량</span></div>
+          </div>
+          <div class="st">
+            <div class="sh"><span class="sn">05</span>추론 · 검증</div>
+            <div class="tags"><span>클러스터 강건 표준오차</span><span>wild bootstrap</span><span>평행추세 검정</span><span>민감도 분석</span><span>위약 검정</span><span>사양 곡선</span></div>
+          </div>
+          <div class="st">
+            <div class="sh"><span class="sn">06</span>재현 · 공개</div>
+            <div class="tags"><span>의존성 고정</span><span>단일 진입점</span><span>결과 직렬화</span><span>버전 태그</span><span>시각화</span></div>
+          </div>
+        </div>
+        <p style="margin-top:1.2cqw; max-width:none"><strong>04가 계산 병목이다.</strong> 단지 3,502개와 월 245개를 더미로 만들면 설계행렬이 47만 × 3,747, 실수 기준 <strong>14GB</strong>가 된다. 교대투영으로 고정효과를 직접 제거해 메모리를 상수로 유지했다.</p>
+        <div class="slidenum">05 / 07</div>
+      </article>
+
+      <!-- 6 결과 -->
+      <article class="slide">
+        <div class="eyebrow">무엇을 했나 · 핵심 결과</div>
+        <h2>거래는 <em>즉시 얼고</em> 세 분기 만에 녹는다</h2>
+        <div class="cols c2w">
+          <div class="tilecol">
+            <div class="tile"><div class="v" style="color:var(--accent)">−59%</div><div class="l">거래량 — 규제가 없었을 경우 대비<br>(k=0 은 지정 전 3주가 섞여 과소추정)</div></div>
+            <div class="tile"><div class="v">3분기</div><div class="l">거래량이 원상 회복까지</div></div>
+            <div class="tile" style="border-top-color:var(--rule)"><div class="v" style="font-size:1.9cqw">−7%</div><div class="l">가격 — 규제가 없었을 경우 대비<br>절대 가격은 +17.5% 상승. 크기는 유보</div></div>
+          </div>
+          <figure>
+            <div class="chart-title">월별 아파트 거래 건수 — 통제동 대비 차이</div>
+            <div class="chart-sub">서울 강남구·송파구 · 지정 4개 동(삼성·청담·대치·잠실) 대 같은 구 비지정 23개 동</div>
+            <svg id="es" viewBox="0 0 560 320" role="img" aria-label="2020년 6월 토지거래허가구역 지정 전후 분기별 거래량 효과와 95% 신뢰구간"></svg>
+            <figcaption><strong style="color:var(--ink-2)">채운 점</strong>은 통계적으로 유의 — 95% 신뢰구간이 0을 포함하지 않음.<br><strong style="color:var(--ink-2)">빈 점</strong>은 0과 구분되지 않음. 세로 막대가 신뢰구간.</figcaption>
+          </figure>
+        </div>
+        <div class="slide-foot">단지·계약월 양방향 고정효과 · 법정동 클러스터 표준오차</div>
+        <div class="slidenum">06 / 07</div>
+      </article>
+
+      <!-- 7 다음 -->
+      <article class="slide">
+        <div class="eyebrow">다음에 할 것</div>
+        <h2>가격지수를 <em>직접</em> 만든다</h2>
+        <div class="cols c2w" style="align-items:center">
+          <div class="nx">
+            <div class="nh">무엇을 위해</div>
+            <div class="nb">2006년부터 지금까지 서울 아파트 가격이 실제로 얼마나 올랐는지를,<br><strong>그달에 무엇이 팔렸는지와 무관하게</strong> 그리기 위해</div>
+            <div class="nh">무엇을 한다</div>
+            <div class="nb"><strong>반복매매지수를 직접 산출한다.</strong><br>같은 집이 두 번 팔린 기록 <strong>377,289쌍</strong>을 짝지어 가격 변화율만 뽑는다.</div>
+          </div>
+          <figure>
+            <svg viewBox="0 0 520 250" role="img" aria-label="같은 집의 두 거래를 차분하면 물건 고유 특성이 소거되는 원리">
+              <text x="0" y="22" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="12">거래 하나의 가격은</text>
+              <text x="0" y="56" fill="var(--ink)" font-family="IBM Plex Mono,monospace" font-size="16">log P</text>
+              <text x="46" y="61" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="11">i,t</text>
+              <text x="66" y="56" fill="var(--ink-2)" font-family="IBM Plex Mono,monospace" font-size="16">=</text>
+              <rect x="86" y="38" width="126" height="26" fill="var(--warn-soft)"/>
+              <text x="94" y="56" fill="var(--warn)" font-family="IBM Plex Mono,monospace" font-size="15">그 집 고유 α</text>
+              <text x="200" y="61" fill="var(--warn)" font-family="IBM Plex Mono,monospace" font-size="11">i</text>
+              <text x="220" y="56" fill="var(--ink-2)" font-family="IBM Plex Mono,monospace" font-size="16">+</text>
+              <rect x="240" y="38" width="132" height="26" fill="var(--accent-soft)"/>
+              <text x="248" y="56" fill="var(--accent)" font-family="IBM Plex Mono,monospace" font-size="15">시장 수준 δ</text>
+              <text x="358" y="61" fill="var(--accent)" font-family="IBM Plex Mono,monospace" font-size="11">t</text>
+              <text x="380" y="56" fill="var(--ink-2)" font-family="IBM Plex Mono,monospace" font-size="16">+ 잡음</text>
+
+              <text x="0" y="112" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="12">같은 집의 두 거래를 빼면</text>
+              <text x="0" y="150" fill="var(--ink)" font-family="IBM Plex Mono,monospace" font-size="15">log P</text>
+              <text x="42" y="155" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="10">i,2018</text>
+              <text x="80" y="150" fill="var(--ink-2)" font-family="IBM Plex Mono,monospace" font-size="15">−</text>
+              <text x="98" y="150" fill="var(--ink)" font-family="IBM Plex Mono,monospace" font-size="15">log P</text>
+              <text x="140" y="155" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="10">i,2015</text>
+              <text x="180" y="150" fill="var(--ink-2)" font-family="IBM Plex Mono,monospace" font-size="15">=</text>
+              <rect x="200" y="132" width="118" height="26" fill="var(--accent-soft)"/>
+              <text x="208" y="150" fill="var(--accent)" font-family="IBM Plex Mono,monospace" font-size="15">δ₂₀₁₈ − δ₂₀₁₅</text>
+              <text x="330" y="150" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="15">+ 잡음</text>
+
+              <line x1="86" y1="196" x2="212" y2="196" stroke="var(--warn)" stroke-width="2"/>
+              <text x="0" y="201" fill="var(--warn)" font-family="IBM Plex Sans KR,sans-serif" font-size="13" font-weight="500">α가 사라진다</text>
+              <text x="222" y="201" fill="var(--ink-2)" font-family="IBM Plex Sans KR,sans-serif" font-size="12.5">면적·층·향·학군이 무엇이든 상관없어진다</text>
+              <text x="0" y="232" fill="var(--ink-3)" font-family="IBM Plex Sans KR,sans-serif" font-size="12">쌍마다 다른 집이어도 된다 — 각 쌍 안에서만 같으면 된다</text>
+            </svg>
+          </figure>
+        </div>
+        <div class="slide-foot">Case &amp; Shiller (1987) 반복매매지수의 원리</div>
+        <div class="slidenum">07 / 07</div>
+      </article>
+
+    </div>
+
+    <div class="deckbar">
+      <button class="btn" id="prev">← 이전</button>
+      <button class="btn" id="next">다음 →</button>
+      <div class="dots" id="dots" role="tablist" aria-label="슬라이드"></div>
+      <span class="spacer"></span>
+      <span class="hint">← → 키로 이동 · 7장 · 4분 내외</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ 보고서 ══════════════ -->
+<section class="view" id="v-report" hidden>
+  <div class="doc">
+    <h2>1주차 결과 보고서</h2>
+    <p class="lede">2026-09-03 · 데이터 파이프라인을 구축하고 2020년 6월 지정의 예비 분석까지 마쳤다. 계획에 없던 선행연구 재현이 가장 큰 성과가 되었다.</p>
+
+    <h3>확보한 것</h3>
+    <div class="tablewrap"><table class="d">
+      <tr><td>엔드포인트</td><td class="n mono">RTMSDataSvcAptTradeDev</td></tr>
+      <tr><td>분석 표본</td><td class="n"><strong>472,782건</strong></td></tr>
+      <tr><td>단지 / 법정동 / 자치구</td><td class="n">3,502 / 108 / 8</td></tr>
+      <tr><td>기간</td><td class="n">2006-01 ~ 2026-05</td></tr>
+      <tr><td>반복매매 쌍</td><td class="n">377,289</td></tr>
+    </table></div>
+    <p>「아파트 매매 <strong>상세</strong> 자료」에는 단지 식별자 <span class="mono">aptSeq</span>가 들어 있다. 실거래 자료의 단지명이 "선경1차(1동-7동)", "쌍용대치아파트1동,2동,3동,5동,6동"처럼 불규칙해서, 식별자가 없었다면 문자열 정리에만 몇 주가 필요했을 것이다.</p>
+
+    <h3>2020년 6월 지정 — 사건 시점 분석</h3>
+    <div class="tablewrap"><table class="d">
+      <tr><th>분기</th><th>거래량</th><th>가격</th></tr>
+      <tr><td>k = 0</td><td class="n neg">−58.7%</td><td class="n">+0.5%</td></tr>
+      <tr><td>k = 1</td><td class="n neg">−61.5%</td><td class="n">−1.1%</td></tr>
+      <tr><td>k = 2</td><td class="n neg">−36.2%</td><td class="n neg">−6.7%</td></tr>
+      <tr><td>k = 3</td><td class="n">−22.8%</td><td class="n neg">−5.7%</td></tr>
+      <tr><td>k = 4~7</td><td class="n">비유의 (회복)</td><td class="n neg">−6.3 ~ −8.2%</td></tr>
+    </table></div>
+
+    <div class="callout">
+      <p><strong>두 가지 비대칭.</strong> 거래량 반응은 가격보다 약 열 배 크지만 3분기 만에 사라진다. 가격 반응은 2분기 늦게 시작해 7분기까지 남는다.</p>
+      <p>허가제가 걸리면 거래는 즉시 마비되지만 매도자가 곧바로 호가를 낮추지는 않는다. 반년쯤 지나 매도 압력이 있는 물건부터 양보가 나타난다. 그 사이 시장은 절차에 적응해 거래가 정상화되지만 벌어진 가격 격차는 남는다.</p>
+    </div>
+
+    <h3>발견한 문제 — 사전 추세</h3>
+    <p>가격의 사전 추세가 평행하지 않다. k = −5, −4, −3 계수가 모두 유의하게 양수여서, 사후 하락이 정책 효과인지 기존 추세의 연장인지 이 설계로는 분리할 수 없다. <strong>주 결과변수를 가격에서 거래량으로 변경했다.</strong> 거래량은 사전 추세가 평행하다.</p>
+
+    <h3>선행연구 재현</h3>
+    <div class="tablewrap"><table class="d">
+      <tr><th>연구</th><th>초록의 인상</th><th>본문이 보고한 것</th></tr>
+      <tr><td>전상현 외 (2025)</td><td>가격 상승</td><td>초록이 서술한 것은 Zone·Time <strong>주효과</strong>. 이중차분 계수는 p=0.053 비유의. 본문 결론은 "가격에는 영향을 주지 않았다"</td></tr>
+      <tr><td>이한웅·이춘원 (2025)</td><td>가격 상승</td><td>보고된 t-검정은 집단 <strong>내부</strong>의 사전-사후 비교. 본문에 "비잠실 지역에서 더 큰 폭의 상승"이 명시됨</td></tr>
+      <tr><td>양지영·정준호 (2025)</td><td>억제</td><td>일치. 도너풀 오염은 억제 효과를 <strong>과소평가</strong>하는 방향</td></tr>
+    </table></div>
+
+    <div class="tablewrap"><table class="d">
+      <tr><th>전상현 외 사양</th><th>Zone</th><th>Time</th><th>Zone#Time</th><th>R²</th></tr>
+      <tr><td>논문 보고값</td><td class="n">+0.326</td><td class="n">+0.272</td><td class="n pos">+0.293</td><td class="n">0.076</td></tr>
+      <tr><td>빈 셀 0 코딩</td><td class="n">+0.346</td><td class="n">+0.233</td><td class="n pos">+0.355</td><td class="n">0.080</td></tr>
+      <tr class="hi"><td><strong>빈 셀 정상 제외</strong></td><td class="n">+0.304</td><td class="n">+0.196</td><td class="n neg">−0.045</td><td class="n">0.250</td></tr>
+    </table></div>
+    <p>동일 격자를 구성하면 정확히 675칸이 되고 거래가 없는 빈 셀 31개가 생긴다. 삼전·석촌·압구정·율현동 — <strong>전부 통제동</strong>이다. 실제 로그가격이 7.1 부근인데 0을 대입하면 극단적 이상치가 되고, 그것이 한쪽 집단에만 몰린다.</p>
+
+    <h3>새로운 발견 — 같은 동 안의 파급효과</h3>
+    <p>2025년 2월 해제는 4개 동 아파트 305곳 중 291곳을 풀고 재건축 14곳은 지정을 유지했다. 해제 창 39일 동안 해제군 거래는 104 → 577건(5.5배)으로 폭증했고, 재지정 후 34건으로 기준선 아래까지 붕괴했다.</p>
+    <p>규제가 유지된 단지 대부분은 거의 움직이지 않았으나 <strong>잠실주공5단지만 11 → 32건으로 3배 증가</strong>했다. 해제 소식이 잠실동 전체의 기대를 끌어올려 규제 유지 단지까지 영향을 미친 것으로 보인다. 방법론적으로는 SUTVA 위배이고, 동시에 새 연구 질문이 된다.</p>
+
+    <div class="linkrow">
+      <a class="lnk" href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/reports/week-01.md" target="_blank" rel="noopener">보고서 전문<span class="mono">GitHub</span></a>
+      <a class="lnk" href="https://github.com/cosmicpotato2047/capstone-ltz-causal/tree/main/scripts" target="_blank" rel="noopener">분석 코드<span class="mono">scripts/</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ 제안서 ══════════════ -->
+<section class="view" id="v-proposal" hidden>
+  <div class="doc">
+    <h2>주제 제안서</h2>
+    <p class="lede">서울 토지거래허가구역의 인과효과 추정 — 실거래 미시자료를 이용한 준실험적 접근</p>
+
+    <h3>연구 질문</h3>
+    <div class="tablewrap"><table class="d">
+      <tr><td class="mono" style="white-space:nowrap; color:var(--accent)">RQ1</td><td>토허제의 효과는 거래량과 가격에 어떻게 <strong>다르게</strong> 나타나는가 — 규모 / 시점 / 지속</td></tr>
+      <tr><td class="mono" style="color:var(--accent)">RQ2</td><td>규제의 효과는 대상에만 미치는가, 인근으로 파급되는가</td></tr>
+      <tr><td class="mono" style="color:var(--accent)">RQ3</td><td>사전 추세를 고려해도 가격 효과는 존재하는가</td></tr>
+      <tr><td class="mono" style="color:var(--accent)">RQ4</td><td>선행연구의 상반된 결론은 실질적 차이인가, 설계 선택의 산물인가</td></tr>
+    </table></div>
+
+    <h3>차별점</h3>
+    <div class="tablewrap"><table class="d">
+      <tr><th>축</th><th>선행연구</th><th>본 연구</th></tr>
+      <tr><td>분석 단위</td><td>동-월 집계</td><td><strong>개별 거래 + 단지 고정효과</strong></td></tr>
+      <tr><td>처치 구조</td><td>2020.6 단일 사건</td><td><strong>2020 / 2021 / 2025 다중 시점, 처치 역전 포함</strong></td></tr>
+      <tr><td>주 결과변수</td><td>가격</td><td><strong>거래량</strong></td></tr>
+      <tr><td>사전추세</td><td>검정 부재 또는 언급 수준</td><td><strong>사건 시점 분석 + 민감도 구간</strong></td></tr>
+      <tr><td>파급효과</td><td>인접 지역</td><td><strong>동일 동 내 규제유지 단지</strong></td></tr>
+      <tr><td>재현성</td><td>코드 비공개</td><td><strong>수집부터 결과까지 전 과정 공개</strong></td></tr>
+    </table></div>
+
+    <div class="callout">
+      <p><strong>과장하지 않기.</strong> 처치 역전 자체는 새롭지 않다. 방법론적으로 확립되어 있고(de Chaisemartin &amp; D'Haultfœuille 2020) 중국 주택구입제한 문헌에도 취소·재긴축 사례가 있다.</p>
+      <p>본 사례의 특징은 <strong>역전 간격이 39일로 극히 짧다</strong>는 점, 그리고 <strong>해제가 부분적이어서 같은 동 안에 규제 상태가 다른 단지가 공존</strong>한다는 점이다.</p>
+    </div>
+
+    <h3>식별 전략</h3>
+    <ul>
+      <li><strong>주 분석 — 2020.6 지정.</strong> 처치동은 강남구 14개 중 3개, 송파구 13개 중 1개. 같은 자치구 안에 통제동이 남는다. 사전 14년, 사후 4.6년.</li>
+      <li><strong>하이라이트 — 2025.2 해제 → 3 재지정.</strong> 유지 단지는 재건축 가능성으로 선별되었으므로 삼중차분으로 재건축 프리미엄을 분리한다. 세 번째 축의 비교군은 4개 동 <strong>바깥</strong>에서 잡는다.</li>
+      <li><strong>분석 구간 절단.</strong> 2025년 10월 20일 이후 토허구역이 서울 25개 자치구 전체로 확대되어 통제군이 소멸하고, 나흘 앞서 규제지역도 전역 확대되어 두 정책이 교란된다.</li>
+    </ul>
+
+    <h3>서술 원칙</h3>
+    <div class="callout">
+      <p>모든 결과에서 <strong>비교 대상을 문장 안에 명시</strong>한다.</p>
+      <p style="color:var(--ink-3)">✗ "토허제로 가격이 8% 하락했다"<br>✓ "규제가 없었을 경우 대비 8% 낮은 수준에 머물렀다. 절대 가격은 같은 기간 17.5% 상승했다"</p>
+    </div>
+
+    <div class="linkrow">
+      <a class="lnk" href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/proposal.md" target="_blank" rel="noopener">제안서 전문<span class="mono">GitHub</span></a>
+      <a class="lnk" href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/prior_work.md" target="_blank" rel="noopener">선행연구 정리<span class="mono">prior_work.md</span></a>
+      <a class="lnk" href="https://github.com/cosmicpotato2047/capstone-ltz-causal/tree/main/docs/decisions" target="_blank" rel="noopener">설계 결정 기록<span class="mono">6건</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ 일정 ══════════════ -->
+<section class="view" id="v-plan" hidden>
+  <div class="doc">
+    <h2>일정</h2>
+    <p class="lede">2026-09-03 착수 ~ 11-20 마감. 매주 목요일 보고, 네 차례는 발표.</p>
+    <div class="schedule">
+      <div class="sc deck"><div class="dt">09 / 04</div><div class="ty">발표 3–5분</div></div>
+      <div class="sc"><div class="dt">09 / 10</div><div class="ty">진행 리포트</div></div>
+      <div class="sc"><div class="dt">09 / 17</div><div class="ty">진행 리포트</div></div>
+      <div class="sc"><div class="dt">09 / 24</div><div class="ty">진행 리포트 · M1</div></div>
+      <div class="sc deck"><div class="dt">10 / 02</div><div class="ty">발표 3–5분</div></div>
+      <div class="sc"><div class="dt">10 / 08</div><div class="ty">진행 리포트</div></div>
+      <div class="sc"><div class="dt">10 / 15</div><div class="ty">진행 리포트 · M2</div></div>
+      <div class="sc"><div class="dt">10 / 22</div><div class="ty">진행 리포트</div></div>
+      <div class="sc deck"><div class="dt">10 / 30</div><div class="ty">발표 3–5분</div></div>
+      <div class="sc"><div class="dt">11 / 05</div><div class="ty">진행 리포트 · M3</div></div>
+      <div class="sc"><div class="dt">11 / 12</div><div class="ty">진행 리포트</div></div>
+      <div class="sc deck"><div class="dt">11 / 20</div><div class="ty">최종 발표 · M4</div></div>
+    </div>
+
+    <h3>백로그 — 위에서부터 처리</h3>
+    <div class="tablewrap"><table class="d">
+      <tr><th>#</th><th>항목</th><th>상태</th></tr>
+      <tr><td class="mono">1–5</td><td>수집·정제 파이프라인, 정책 이력 코드화, 사건 시점 분석, 강건성 격자, 선행연구 재현</td><td class="n" style="color:var(--accent)">완료</td></tr>
+      <tr><td class="mono">6</td><td>자체 가격지수 구축 (반복매매 377,289쌍)</td><td class="n">대기</td></tr>
+      <tr><td class="mono">7</td><td>거래량 분석 정밀화 (단지-월 패널, wild cluster bootstrap)</td><td class="n">대기</td></tr>
+      <tr><td class="mono">8</td><td>사양 곡선 — 설계 선택별 결과 변화</td><td class="n">대기</td></tr>
+      <tr><td class="mono">9</td><td>2025 해제·재지정 삼중차분</td><td class="n">대기</td></tr>
+      <tr><td class="mono">10</td><td>비흡수 처치 추정량 적용</td><td class="n">대기</td></tr>
+      <tr><td class="mono">11</td><td>사전추세 민감도 분석</td><td class="n">대기</td></tr>
+    </table></div>
+
+    <h3>외부 대기</h3>
+    <p>서울시 공고 원문의 <strong>토지조서·지형도면</strong>이 확보되면 두 가지가 정밀해진다. 2020년 지정 구역이 법정동 전체인지 여부, 그리고 2025년 지정 유지 단지의 정확한 명단(자료마다 14 / 13 / 15개로 갈린다)이다. 확보 전까지는 추정치를 하한으로 해석하고, 단지 명단은 좁은 정의와 넓은 정의를 병행한다.</p>
+
+    <div class="linkrow">
+      <a class="lnk" href="https://github.com/cosmicpotato2047/capstone-ltz-causal" target="_blank" rel="noopener">저장소<span class="mono">cosmicpotato2047</span></a>
+      <a class="lnk" href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/backlog.md" target="_blank" rel="noopener">백로그 전문<span class="mono">backlog.md</span></a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+const tabs = [...document.querySelectorAll('nav button')];
+const views = { deck:'v-deck', report:'v-report', proposal:'v-proposal', plan:'v-plan' };
+tabs.forEach(b => b.addEventListener('click', () => {
+  tabs.forEach(x => x.setAttribute('aria-selected', String(x === b)));
+  Object.entries(views).forEach(([k,id]) => { document.getElementById(id).hidden = (k !== b.dataset.v); });
+  if (b.dataset.v === 'deck') stage.focus({preventScroll:true});
+  window.scrollTo({top:0});
+}));
+
+const stage = document.getElementById('stage');
+const slides = [...stage.querySelectorAll('.slide')];
+const dots = document.getElementById('dots');
+let cur = 0;
+slides.forEach((_, i) => {
+  const d = document.createElement('button');
+  d.className = 'dot'; d.type = 'button';
+  d.setAttribute('aria-label', `슬라이드 ${i+1}`);
+  d.addEventListener('click', () => go(i));
+  dots.appendChild(d);
+});
+function go(i){
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, k) => s.classList.toggle('on', k === cur));
+  [...dots.children].forEach((d, k) => d.setAttribute('aria-current', String(k === cur)));
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === slides.length - 1;
+}
+document.getElementById('prev').addEventListener('click', () => go(cur - 1));
+document.getElementById('next').addEventListener('click', () => go(cur + 1));
+addEventListener('keydown', e => {
+  if (document.getElementById('v-deck').hidden) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') { go(cur + 1); e.preventDefault(); }
+  if (e.key === 'ArrowLeft'  || e.key === 'PageUp')   { go(cur - 1); e.preventDefault(); }
+});
+go(0);
+
+/* ── 슬라이드 3: 처치 이력 타임라인 ─────────────────── */
+(function(){
+  const T0 = new Date('2020-01-01'), T1 = new Date('2026-08-31');
+  const W = 940, H = 250, m = {t:24, r:20, b:52, l:238};
+  const X = d => m.l + (new Date(d) - T0) / (T1 - T0) * (W - m.l - m.r);
+  const rows = [
+    ['삼성·청담·대치·잠실', '해제된 291곳', [['2020-06-23','2025-02-13'],['2025-03-24','2026-08-31']]],
+    ['위 4개 동', '지정 유지 14개 단지', [['2020-06-23','2026-08-31']]],
+    ['압구정·여의도·목동·성수', '재건축·재개발 구역', [['2021-04-27','2026-08-31']]],
+    ['강남3구·용산 나머지 동', '2025.3 확대 지정', [['2025-03-24','2026-08-31']]],
+    ['그 외 서울 21개 자치구', '10·15 대책', [['2025-10-20','2026-08-31']]]
+  ];
+  const bh = 22, gap = 12;
+  const bottom = m.t + 5 * (bh + gap) - gap;
+  let s = '';
+
+  for (let y = 2020; y <= 2026; y++){
+    const x = X(`${y}-01-01`);
+    s += `<line x1="${x.toFixed(1)}" y1="${m.t-6}" x2="${bottom+4}" y2="${bottom+4}" stroke="none"/>`;
+    s += `<line x1="${x.toFixed(1)}" y1="${m.t-6}" x2="${x.toFixed(1)}" y2="${bottom+4}" stroke="var(--grid)" stroke-width="1"/>`;
+    s += `<text x="${x.toFixed(1)}" y="${bottom+20}" text-anchor="middle" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="10.5">${y}</text>`;
+  }
+
+  rows.forEach((r, i) => {
+    const y = m.t + i * (bh + gap);
+    s += `<rect x="${m.l}" y="${y}" width="${(W-m.r-m.l).toFixed(1)}" height="${bh}" fill="var(--surface-2)"/>`;
+    r[2].forEach(seg => {
+      const x0 = X(seg[0]), x1 = X(seg[1]);
+      s += `<rect x="${x0.toFixed(1)}" y="${y}" width="${(x1-x0).toFixed(1)}" height="${bh}" fill="var(--accent)" opacity="${i===4?.55:.88}"/>`;
+    });
+    s += `<text x="${m.l-14}" y="${y+10}" text-anchor="end" fill="var(--ink)" font-family="IBM Plex Sans KR,sans-serif" font-size="12" font-weight="500">${r[0]}</text>`;
+    s += `<text x="${m.l-14}" y="${y+21}" text-anchor="end" fill="var(--ink-3)" font-family="IBM Plex Sans KR,sans-serif" font-size="10">${r[1]}</text>`;
+  });
+
+  const gx0 = X('2025-02-13'), gx1 = X('2025-03-24');
+  s += `<rect x="${gx0.toFixed(1)}" y="${m.t-8}" width="${Math.max(2.5,(gx1-gx0)).toFixed(1)}" height="${(bottom-m.t+16).toFixed(1)}" fill="none" stroke="var(--warn)" stroke-width="1.6"/>`;
+  s += `<text x="${((gx0+gx1)/2).toFixed(1)}" y="${m.t-14}" text-anchor="middle" fill="var(--warn)" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="500">해제 39일</text>`;
+
+  const cx = X('2025-10-19');
+  s += `<line x1="${cx.toFixed(1)}" y1="${m.t-8}" x2="${cx.toFixed(1)}" y2="${bottom+4}" stroke="var(--ink)" stroke-width="1.4" stroke-dasharray="5 3"/>`;
+  s += `<text x="${(cx-7).toFixed(1)}" y="${(bottom+20).toFixed(1)}" text-anchor="end" fill="var(--ink-2)" font-family="IBM Plex Mono,monospace" font-size="10.5">← 인과추정 가능 구간</text>`;
+
+  s += `<rect x="${m.l}" y="${H-16}" width="13" height="9" fill="var(--accent)" opacity=".88"/>`;
+  s += `<text x="${m.l+19}" y="${H-8}" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="10">규제 적용</text>`;
+  s += `<rect x="${m.l+92}" y="${H-16}" width="13" height="9" fill="var(--surface-2)" stroke="var(--rule)" stroke-width=".8"/>`;
+  s += `<text x="${m.l+111}" y="${H-8}" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="10">미규제</text>`;
+  document.getElementById('tl').innerHTML = s;
+})();
+
+/* ── 슬라이드 4: 집계 vs 미시 ───────────────────────── */
+(function(){
+  const g = document.getElementById('gridcells');
+  const cols = 25, rows = 9, w = 9.2, h = 12.5, gap = 1;
+  let s = '';
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
+    const x = c * (w + gap), y = r * (h + gap);
+    s += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w}" height="${h}" fill="var(--surface-2)" stroke="var(--rule)" stroke-width=".6"/>`;
+    s += `<circle cx="${(x + w/2).toFixed(1)}" cy="${(y + h/2).toFixed(1)}" r="1.5" fill="var(--muted-mark)"/>`;
+  }
+  g.innerHTML = s;
+  const d = document.getElementById('dotcloud');
+  let t = `<rect x="0" y="0" width="256" height="128" fill="var(--surface-2)" stroke="var(--accent)" stroke-width="1"/>`;
+  let seed = 7;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+  for (let i = 0; i < 420; i++)
+    t += `<circle cx="${(4 + rnd()*248).toFixed(1)}" cy="${(4 + rnd()*120).toFixed(1)}" r="1.15" fill="var(--accent)" opacity=".62"/>`;
+  d.innerHTML = t;
+})();
+
+/* ── 슬라이드 5: 사건 시점 분석 ─────────────────────── */
+(function(){
+  const data = [[-8,.085,.117],[-7,-.174,.241],[-6,.235,.162],[-5,.270,.133],
+    [-4,.166,.140],[-3,.023,.134],[-2,-.325,.145],[-1,0,0],
+    [0,-.885,.275],[1,-.955,.271],[2,-.449,.182],[3,-.259,.163],
+    [4,-.165,.210],[5,.083,.282],[6,.253,.299],[7,.133,.285],[8,.154,.242]];
+  const W = 560, H = 320, m = {t:14, r:16, b:56, l:52};
+  const yMin = -1.55, yMax = .95;
+  const X = k => m.l + (k + 8) / 16 * (W - m.l - m.r);
+  const Y = v => m.t + (yMax - v) / (yMax - yMin) * (H - m.t - m.b);
+  let s = '';
+  [.5, 0, -.5, -1, -1.5].forEach(v => {
+    s += `<line x1="${m.l}" y1="${Y(v).toFixed(1)}" x2="${W-m.r}" y2="${Y(v).toFixed(1)}" stroke="var(--grid)" stroke-width="1"/>`;
+    s += `<text x="${m.l-8}" y="${(Y(v)+4).toFixed(1)}" text-anchor="end" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="10">${v===0?'0':(v*100).toFixed(0)+'%'}</text>`;
+  });
+  s += `<line x1="${m.l}" y1="${Y(0).toFixed(1)}" x2="${W-m.r}" y2="${Y(0).toFixed(1)}" stroke="var(--axis)" stroke-width="1.4"/>`;
+  const evx = (X(-1) + X(0)) / 2;
+  s += `<line x1="${evx.toFixed(1)}" y1="${m.t}" x2="${evx.toFixed(1)}" y2="${H-m.b}" stroke="var(--warn)" stroke-width="1.2" stroke-dasharray="4 3"/>`;
+  s += `<text x="${(evx+5).toFixed(1)}" y="${m.t+11}" fill="var(--warn)" font-family="IBM Plex Mono,monospace" font-size="9.5">2020.6.23 지정</text>`;
+  const up = data.map(d => `${X(d[0]).toFixed(1)},${Y(d[1]+1.96*d[2]).toFixed(1)}`);
+  const lo = data.map(d => `${X(d[0]).toFixed(1)},${Y(d[1]-1.96*d[2]).toFixed(1)}`).reverse();
+  s += `<polygon points="${up.concat(lo).join(' ')}" fill="var(--accent)" opacity=".13"/>`;
+  s += `<polyline points="${data.map(d => `${X(d[0]).toFixed(1)},${Y(d[1]).toFixed(1)}`).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>`;
+  data.forEach(d => {
+    const sig = d[0] !== -1 && (d[1]-1.96*d[2] > 0 || d[1]+1.96*d[2] < 0);
+    s += `<circle cx="${X(d[0]).toFixed(1)}" cy="${Y(d[1]).toFixed(1)}" r="${sig?4.4:3.4}" fill="${sig?'var(--accent)':'var(--surface)'}" stroke="var(--accent)" stroke-width="2"/>`;
+  });
+  // x축: 실제 년월. k 는 사건 월(2020.06) 기준 3개월 구간
+  const ym = {'-8':'2018.06','-4':'2019.06','0':'2020.06','4':'2021.06','8':'2022.06'};
+  [-8,-4,0,4,8].forEach(k => {
+    const x = X(k).toFixed(1);
+    s += `<line x1="${x}" y1="${H-m.b}" x2="${x}" y2="${H-m.b+5}" stroke="var(--axis)" stroke-width="1"/>`;
+    s += `<text x="${x}" y="${H-m.b+18}" text-anchor="middle" fill="${k===0?'var(--warn)':'var(--ink-2)'}" font-family="IBM Plex Mono,monospace" font-size="10.5" font-weight="${k===0?500:400}">${ym[k]}</text>`;
+    s += `<text x="${x}" y="${H-m.b+30}" text-anchor="middle" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="8.5">k=${k>0?'+'+k:k}</text>`;
+  });
+  s += `<text x="${((m.l+W-m.r)/2).toFixed(1)}" y="${H-6}" text-anchor="middle" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="9.5">계약 시점 · 눈금 하나는 3개월 (k=0 은 2020년 6~8월)</text>`;
+  s += `<text transform="translate(13,${((m.t+H-m.b)/2).toFixed(1)}) rotate(-90)" text-anchor="middle" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="9.5">거래 건수 차이 (%)</text>`;
+  s += `<text x="${(X(1)+8).toFixed(1)}" y="${(Y(-.955)+5).toFixed(1)}" fill="var(--accent)" font-family="IBM Plex Mono,monospace" font-size="11.5" font-weight="500">−62%</text>`;
+  // 범례: 채운 점 = 유의 / 빈 점 = 비유의
+  const lx = m.l + 6, ly = m.t + 12;
+  s += `<circle cx="${lx}" cy="${ly}" r="4.4" fill="var(--accent)" stroke="var(--accent)" stroke-width="2"/>`;
+  s += `<text x="${lx+11}" y="${ly+4}" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="9.5">유의</text>`;
+  s += `<circle cx="${lx+50}" cy="${ly}" r="3.4" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>`;
+  s += `<text x="${lx+61}" y="${ly+4}" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="9.5">비유의</text>`;
+  s += `<text x="${X(5).toFixed(1)}" y="${(Y(.083)-12).toFixed(1)}" text-anchor="middle" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="10">회복</text>`;
+  document.getElementById('es').innerHTML = s;
+})();
+
+(function(){
+  const d = Math.round((new Date('2026-11-20') - new Date()) / 864e5);
+  if (d >= 0) document.getElementById('stamp').textContent = `스냅샷 2026-09-03 · D-${d}`;
+})();
+</script>
