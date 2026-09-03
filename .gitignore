@@ -1,0 +1,15 @@
+# 인증
+.env
+
+# 원자료 스냅샷 (303MB, 1984개 JSON) — scripts/collect.py 로 재생성
+data/raw/
+data/processed/
+
+# 저작권 자료 (개인 열람용, 배포 금지)
+docs/papers/
+
+# 파이썬
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
