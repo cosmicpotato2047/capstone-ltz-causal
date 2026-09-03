@@ -21,3 +21,6 @@ __pycache__/
 .obsidian/
 .vscode/
 .idea/
+
+# 개인용 (발표 스크립트 등) — 공개 저장소에 올리지 않음
+docs/private/
