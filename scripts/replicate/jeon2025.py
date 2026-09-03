@@ -12,17 +12,18 @@ import itertools, sys
 from pathlib import Path
 import numpy as np, pandas as pd, statsmodels.api as sm
 
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from lib import io, policy  # noqa: E402
 
-ROOT = Path(__file__).resolve().parent.parent
-E = pd.Timestamp("2020-06-23")
-TREATED = {"삼성동", "청담동", "대치동", "잠실동"}
+io.setup_stdout()
+
+E = policy.EVENTS["E2020"]["effect"]
+TREATED = policy.TREATED_2020
 PAPER = {"T": 0.3263, "P": 0.2724, "TP": 0.2928, "n": 0.0116, "R2": 0.0757}
 
 
 def panel() -> pd.DataFrame:
-    df = pd.read_parquet(ROOT / "data/processed/trades.parquet")
+    df = io.load_trades()
     d = df[df.sgg_nm.isin(["강남구", "송파구"])]
     d = d[(d.deal_date >= "2019-06-23") & (d.deal_date < "2021-06-24")]
     p = (d.groupby(["umd_full_cd", "umdNm", "ym"])

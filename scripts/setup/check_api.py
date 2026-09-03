@@ -6,35 +6,24 @@
 성공하면 그 달의 총 거래 건수(totalCount)를 출력한다.
 """
 import os
-import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import requests
 
-# Windows 콘솔 인코딩(cp949/cp1252)에서 한글 출력이 깨지지 않도록
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from lib import io  # noqa: E402
+io.setup_stdout()
+
 
 ENDPOINT = "https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade"
 LAWD_CD = "11680"   # 서울 강남구
 DEAL_YMD = "202407"
 
 
-def load_key() -> str:
-    env = Path(__file__).resolve().parent.parent / ".env"
-    if env.exists():
-        for line in env.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if line.startswith("DATA_GO_KR_KEY="):
-                os.environ.setdefault("DATA_GO_KR_KEY", line.split("=", 1)[1].strip())
-    key = os.environ.get("DATA_GO_KR_KEY", "").strip()
-    if not key:
-        sys.exit(".env 에 DATA_GO_KR_KEY 가 비어 있습니다. .env.example 을 .env 로 복사한 뒤 채우세요.")
-    if "%" in key:
-        print("[경고] 키에 '%' 가 있습니다. Encoding 키를 넣으신 것 같습니다.")
-        print("       Decoding 키로 바꾸세요. 그대로 두면 이중 인코딩으로 인증 실패합니다.\n")
-    return key
+load_key = io.load_key   # lib/io.py 로 통합
 
 
 def main() -> None:

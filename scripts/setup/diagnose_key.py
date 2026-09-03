@@ -1,27 +1,22 @@
 """인증키 403 원인 진단. 키 값 자체는 절대 출력하지 않는다."""
-import sys
 import urllib.parse
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import requests
 
-# Windows 콘솔 인코딩(cp949/cp1252)에서 한글 출력이 깨지지 않도록
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from lib import io  # noqa: E402
+io.setup_stdout()
+
 
 ENDPOINT = "https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade"
 BASE = {"LAWD_CD": "11680", "DEAL_YMD": "202407", "pageNo": 1, "numOfRows": 1}
 
 
-def raw_key() -> str:
-    env = Path(__file__).resolve().parent.parent / ".env"
-    if not env.exists():
-        sys.exit(".env 파일이 없습니다.")
-    for line in env.read_text(encoding="utf-8").splitlines():
-        if line.strip().startswith("DATA_GO_KR_KEY="):
-            return line.split("=", 1)[1]
-    sys.exit(".env 에 DATA_GO_KR_KEY 줄이 없습니다.")
+raw_key = io.load_key   # lib/io.py 로 통합
 
 
 def inspect(k: str) -> str:

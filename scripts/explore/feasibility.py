@@ -9,11 +9,11 @@ from pathlib import Path
 
 import pandas as pd
 
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from lib import io, policy  # noqa: E402
 
-ROOT = Path(__file__).resolve().parent.parent
-TRADES = ROOT / "data" / "processed" / "trades.parquet"
+io.setup_stdout()
+
 
 # 토허구역 주요 이벤트 (data/policy/ltz_events_DRAFT.csv 와 동기화 필요, 고시 원문 검증 전)
 EVENTS = [
@@ -42,9 +42,7 @@ def window_counts(df: pd.DataFrame, date: str, treated: dict, months: int) -> pd
 
 
 def main() -> None:
-    if not TRADES.exists():
-        sys.exit("trades.parquet 이 없습니다. build_dataset.py 를 먼저 실행하세요.")
-    df = pd.read_parquet(TRADES)
+    df = io.load_trades()
 
     print("=" * 66)
     print("A. 수집 현황")

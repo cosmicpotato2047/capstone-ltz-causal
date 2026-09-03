@@ -1,13 +1,15 @@
 """신청 승인된 엔드포인트가 어느 쪽인지 확인한다. 키 값은 출력하지 않는다."""
-import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import requests
 
-# Windows 콘솔 인코딩(cp949/cp1252)에서 한글 출력이 깨지지 않도록
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from lib import io  # noqa: E402
+io.setup_stdout()
+
 
 CANDIDATES = [
     ("아파트 매매 실거래가 자료",
@@ -18,16 +20,7 @@ CANDIDATES = [
 BASE = {"LAWD_CD": "11680", "DEAL_YMD": "202407", "pageNo": 1, "numOfRows": 1}
 
 
-def load_key() -> str:
-    env = Path(__file__).resolve().parent.parent / ".env"
-    if not env.exists():
-        sys.exit(".env 파일이 없습니다.")
-    for line in env.read_text(encoding="utf-8").splitlines():
-        if line.strip().startswith("DATA_GO_KR_KEY="):
-            k = line.split("=", 1)[1].strip().strip("'\"")
-            if k:
-                return k
-    sys.exit(".env 의 DATA_GO_KR_KEY 가 비어 있습니다.")
+load_key = io.load_key   # lib/io.py 로 통합
 
 
 def main() -> None:
