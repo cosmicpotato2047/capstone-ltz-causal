@@ -1,0 +1,17 @@
+{
+  "w3_did_pp": 12.22,
+  "w6_did_pp": -3.4,
+  "w12_did_pp": -3.9,
+  "w24_did_pp": -3.35,
+  "w36_did_pp": -13.74,
+  "w3_simple": 0.0787,
+  "w3_unitfe": -0.0006,
+  "w6_simple": -0.046,
+  "w6_unitfe": -0.0303,
+  "w12_simple": -0.0346,
+  "w12_unitfe": -0.0853,
+  "w24_simple": -0.0235,
+  "w24_unitfe": -0.0844,
+  "w36_simple": -0.0914,
+  "w36_unitfe": -0.0656
+}
