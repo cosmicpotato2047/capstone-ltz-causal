@@ -346,7 +346,7 @@ a.lnk .mono{font-size:11px; color:var(--ink-3); margin-left:6px}
             <div class="chart-title">월별 아파트 거래 건수 — 통제동 대비 차이</div>
             <div class="chart-sub">서울 강남구·송파구 · 지정 4개 동(삼성·청담·대치·잠실) 대 같은 구 비지정 23개 동</div>
             <svg id="es" viewBox="0 0 560 320" role="img" aria-label="2020년 6월 토지거래허가구역 지정 전후 분기별 거래량 효과와 95% 신뢰구간"></svg>
-            <figcaption><strong style="color:var(--ink-2)">채운 점</strong>은 통계적으로 유의 — 95% 신뢰구간이 0을 포함하지 않음.<br><strong style="color:var(--ink-2)">빈 점</strong>은 0과 구분되지 않음. 세로 막대가 신뢰구간.</figcaption>
+            <figcaption>각 점의 <strong style="color:var(--ink-2)">세로 막대가 95% 신뢰구간</strong> — 추정치가 놓일 수 있는 범위.<br>막대가 0선을 <strong style="color:var(--ink-2)">안 걸치면 채운 점</strong>(유의), <strong style="color:var(--ink-2)">걸치면 빈 점</strong>(효과 없음을 배제 못 함).</figcaption>
           </figure>
         </div>
         <div class="slide-foot">단지·계약월 양방향 고정효과 · 법정동 클러스터 표준오차</div>
@@ -696,11 +696,24 @@ go(0);
   s += `<text x="${(evx+5).toFixed(1)}" y="${m.t+11}" fill="var(--warn)" font-family="IBM Plex Mono,monospace" font-size="9.5">2020.6.23 지정</text>`;
   const up = data.map(d => `${X(d[0]).toFixed(1)},${Y(d[1]+1.96*d[2]).toFixed(1)}`);
   const lo = data.map(d => `${X(d[0]).toFixed(1)},${Y(d[1]-1.96*d[2]).toFixed(1)}`).reverse();
-  s += `<polygon points="${up.concat(lo).join(' ')}" fill="var(--accent)" opacity=".13"/>`;
-  s += `<polyline points="${data.map(d => `${X(d[0]).toFixed(1)},${Y(d[1]).toFixed(1)}`).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>`;
+  s += `<polygon points="${up.concat(lo).join(' ')}" fill="var(--accent)" opacity=".10"/>`;
+  s += `<polyline points="${data.map(d => `${X(d[0]).toFixed(1)},${Y(d[1]).toFixed(1)}`).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round" opacity=".55"/>`;
+
+  // 각 분기의 95% 신뢰구간을 세로 막대로 명시
+  data.forEach(d => {
+    if (d[0] === -1) return;
+    const x = X(d[0]).toFixed(1);
+    const y1 = Y(d[1] - 1.96*d[2]).toFixed(1), y2 = Y(d[1] + 1.96*d[2]).toFixed(1);
+    const sig = d[1] - 1.96*d[2] > 0 || d[1] + 1.96*d[2] < 0;
+    const col = sig ? 'var(--accent)' : 'var(--axis)';
+    s += `<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" stroke="${col}" stroke-width="1.6"/>`;
+    s += `<line x1="${(+x-3.5).toFixed(1)}" y1="${y1}" x2="${(+x+3.5).toFixed(1)}" y2="${y1}" stroke="${col}" stroke-width="1.6"/>`;
+    s += `<line x1="${(+x-3.5).toFixed(1)}" y1="${y2}" x2="${(+x+3.5).toFixed(1)}" y2="${y2}" stroke="${col}" stroke-width="1.6"/>`;
+  });
+
   data.forEach(d => {
     const sig = d[0] !== -1 && (d[1]-1.96*d[2] > 0 || d[1]+1.96*d[2] < 0);
-    s += `<circle cx="${X(d[0]).toFixed(1)}" cy="${Y(d[1]).toFixed(1)}" r="${sig?4.4:3.4}" fill="${sig?'var(--accent)':'var(--surface)'}" stroke="var(--accent)" stroke-width="2"/>`;
+    s += `<circle cx="${X(d[0]).toFixed(1)}" cy="${Y(d[1]).toFixed(1)}" r="${sig?4.4:3.6}" fill="${sig?'var(--accent)':'var(--surface)'}" stroke="${sig?'var(--accent)':'var(--axis)'}" stroke-width="2"/>`;
   });
   // x축: 실제 년월. k 는 사건 월(2020.06) 기준 3개월 구간
   const ym = {'-8':'2018.06','-4':'2019.06','0':'2020.06','4':'2021.06','8':'2022.06'};
@@ -714,11 +727,18 @@ go(0);
   s += `<text transform="translate(13,${((m.t+H-m.b)/2).toFixed(1)}) rotate(-90)" text-anchor="middle" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="9.5">거래 건수 차이 (%)</text>`;
   s += `<text x="${(X(1)+8).toFixed(1)}" y="${(Y(-.955)+5).toFixed(1)}" fill="var(--accent)" font-family="IBM Plex Mono,monospace" font-size="11.5" font-weight="500">−62%</text>`;
   // 범례: 채운 점 = 유의 / 빈 점 = 비유의
-  const lx = m.l + 6, ly = m.t + 12;
+  const lx = m.l + 8, ly = m.t + 14;
+  s += `<line x1="${lx}" y1="${ly-9}" x2="${lx}" y2="${ly+9}" stroke="var(--accent)" stroke-width="1.6"/>`;
+  s += `<line x1="${lx-3.5}" y1="${ly-9}" x2="${lx+3.5}" y2="${ly-9}" stroke="var(--accent)" stroke-width="1.6"/>`;
+  s += `<line x1="${lx-3.5}" y1="${ly+9}" x2="${lx+3.5}" y2="${ly+9}" stroke="var(--accent)" stroke-width="1.6"/>`;
   s += `<circle cx="${lx}" cy="${ly}" r="4.4" fill="var(--accent)" stroke="var(--accent)" stroke-width="2"/>`;
-  s += `<text x="${lx+11}" y="${ly+4}" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="9.5">유의</text>`;
-  s += `<circle cx="${lx+50}" cy="${ly}" r="3.4" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>`;
-  s += `<text x="${lx+61}" y="${ly+4}" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="9.5">비유의</text>`;
+  s += `<text x="${lx+12}" y="${ly+4}" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="9.5">유의</text>`;
+  const lx2 = lx + 56;
+  s += `<line x1="${lx2}" y1="${ly-9}" x2="${lx2}" y2="${ly+9}" stroke="var(--axis)" stroke-width="1.6"/>`;
+  s += `<line x1="${lx2-3.5}" y1="${ly-9}" x2="${lx2+3.5}" y2="${ly-9}" stroke="var(--axis)" stroke-width="1.6"/>`;
+  s += `<line x1="${lx2-3.5}" y1="${ly+9}" x2="${lx2+3.5}" y2="${ly+9}" stroke="var(--axis)" stroke-width="1.6"/>`;
+  s += `<circle cx="${lx2}" cy="${ly}" r="3.6" fill="var(--surface)" stroke="var(--axis)" stroke-width="2"/>`;
+  s += `<text x="${lx2+12}" y="${ly+4}" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="9.5">비유의</text>`;
   s += `<text x="${X(5).toFixed(1)}" y="${(Y(.083)-12).toFixed(1)}" text-anchor="middle" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace" font-size="10">회복</text>`;
   document.getElementById('es').innerHTML = s;
 })();

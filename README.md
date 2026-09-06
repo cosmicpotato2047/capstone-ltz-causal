@@ -80,3 +80,14 @@ docs/
 ## 라이선스
 
 코드 MIT / 문서 CC BY 4.0. 자세한 내용은 [LICENSE](LICENSE) 참조.
+
+## 어디를 보면 되나
+
+| 알고 싶은 것 | 볼 곳 |
+|---|---|
+| **지금 뭘 하고 있고 다음은 뭔가** | [docs/backlog.md](docs/backlog.md) — 맨 위 "현재 상태" |
+| 이번 주에 뭘 했나 | [docs/reports/](docs/reports/) — 주차별 보고서 |
+| 왜 그렇게 설계했나 | [docs/decisions/](docs/decisions/) — 번호별 결정 기록 |
+| 용어가 무슨 뜻인가 | [docs/glossary.md](docs/glossary.md) |
+| 그날그날 무슨 일이 있었나 | [docs/journal/](docs/journal/) |
+| 숫자의 원본 | `output/results/*.json` — 문서와 어긋나면 이쪽이 맞다 |
