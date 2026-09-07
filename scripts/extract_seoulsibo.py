@@ -32,9 +32,15 @@ INDEX = NOTICES / "seoulsibo_pages.csv"
 
 
 def issue_date(name: str) -> str:
-    """seoulsibo_20250213092648_24250.pdf -> 20250213"""
+    """seoulsibo_20250213092648_24250.pdf -> 20250213
+    2020-제3590호-pdf.pdf -> 2020호3590 (형식이 다른 과년도 파일)"""
     m = re.search(r"_(\d{8})\d{6}_", name)
-    return m.group(1) if m else "unknown"
+    if m:
+        return m.group(1)
+    m = re.search(r"(20\d\d)-제(\d+)호", name)
+    if m:
+        return f"{m.group(1)}호{m.group(2)}"
+    return "unknown"
 
 
 def main() -> None:
