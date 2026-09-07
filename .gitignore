@@ -24,3 +24,6 @@ __pycache__/
 
 # 개인용 (발표 스크립트 등) — 공개 저장소에 올리지 않음
 docs/private/
+
+# 서울시보 원본 (수백~수천 쪽. 발췌본만 커밋)
+data/policy/notices/seoulsibo_raw/
