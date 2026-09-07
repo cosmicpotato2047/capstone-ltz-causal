@@ -14,18 +14,18 @@ import re
 import sys
 from pathlib import Path
 
-import fitz
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib import io  # noqa: E402
+from lib.pdftext import text_of  # noqa: E402
 
 io.setup_stdout()
 
 SEOUL = io.POLICY / "notices" / "seoul"
 NOTICE_RE = re.compile(r"◈?\s*서울특별시\s*공고\s*제?\s*(20\d\d)\s*-\s*(\d+)\s*호")
 DATE_RE = re.compile(r"(20\d\d)\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일")
-KEY = "토지거래허가"
+KEY = re.compile(r"토지거래(계약)?허가")
 
 CATS = {
     "국제교류복합지구": ["국제교류복합지구"],
@@ -65,7 +65,7 @@ def main() -> None:
             found = [("미상", text)]
 
         for no, body in found:
-            if KEY not in body:
+            if not KEY.search(body):
                 continue
             d = DATE_RE.search(body)
             pub = (f"{d.group(1)}-{int(d.group(2)):02d}-{int(d.group(3)):02d}"
