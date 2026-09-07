@@ -46,14 +46,31 @@ def main() -> None:
     print("\n" + BAR); print("2. 텍스트 추출 상태"); print(BAR)
     td = N / "notice_text"
     txts = sorted(td.glob("*.txt"))
-    empty = [t for t in txts if len(t.read_text(encoding="utf-8").strip()) < 200]
-    broken = [t for t in txts
-              if "토지거래" not in t.read_text(encoding="utf-8") and t not in empty]
+
+    def legible(t: str) -> float:
+        """공백을 뺀 글자 중 한글·숫자·기본기호가 차지하는 비율.
+        복원이 안 된 글리프는 미얀마·티베트 같은 엉뚱한 블록에 떨어지므로
+        이 비율이 곧 판독률이 된다."""
+        v = [c for c in t if not c.isspace()]
+        if not v:
+            return 0.0
+        ok = sum(('가' <= c <= '힣') or c.isascii() or c in "㎡㎢·「」『』○◈※△▲□■" for c in v)
+        return 100 * ok / len(v)
+
+    rows = [(t, t.read_text(encoding="utf-8")) for t in txts]
+    empty = [t for t, s in rows if len(s.strip()) < 200]
+    q = sorted(((legible(s), t.stem, len(s)) for t, s in rows if t not in empty))
     print(f"본문 텍스트 {len(txts)}건  ({td.relative_to(io.ROOT)})")
-    print(f"  정상        {len(txts) - len(empty) - len(broken):>3}건")
-    print(f"  텍스트 없음  {len(empty):>3}건" + ("  ← 스캔 이미지 PDF" if empty else ""))
-    for t in empty + broken:
+    print(f"  판독률 99% 이상  {sum(1 for r, _, _ in q if r >= 99):>3}건")
+    print(f"  판독률 95~99%    {sum(1 for r, _, _ in q if 95 <= r < 99):>3}건")
+    print(f"  판독률 95% 미만  {sum(1 for r, _, _ in q if r < 95):>3}건")
+    print(f"  텍스트 없음      {len(empty):>3}건" + ("  ← 스캔 이미지 PDF" if empty else ""))
+    for t in empty:
         print(f"       {t.stem}")
+    print(f"\n  판독률이 낮은 순 (제목 글꼴은 글리프 번호가 뒤섞여 복원 불가):")
+    print(f"  {'판독률':>7}  {'글자수':>7}  파일")
+    for r, name, n in q[:8]:
+        print(f"  {r:>6.1f}%  {n:>7,}  {name}")
 
     print("\n" + BAR); print("3. 공고에서 뽑아낸 것"); print(BAR)
     tl = pd.read_csv(N / "policy_timeline.csv")
