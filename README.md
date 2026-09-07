@@ -15,7 +15,7 @@ cp .env.example .env          # 공공데이터포털 Decoding 키 입력
 python run_all.py --collect   # 수집부터 전부 (수십 분)
 python run_all.py             # 수집 생략, 정제부터
 python run_all.py --only 04   # 특정 단계만
-python run_all.py --extra     # 선행연구 재현 포함
+python run_all.py --extra     # 선행연구 재현 + 문서 수치 검증 포함
 ```
 
 데이터 출처는 국토교통부 「아파트 매매 실거래 **상세** 자료」(공공데이터포털).

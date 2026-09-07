@@ -22,6 +22,8 @@ STEPS = [
 ]
 EXTRA = [
     ("R1", "scripts/replicate/jeon2025.py", "선행연구 재현 (전상현 외 2025)"),
+    ("R2", "scripts/replicate/lee2025.py", "선행연구 재현 (이한웅·이춘원 2025)"),
+    ("C1", "scripts/check_numbers.py", "문서 수치 검증 (결정기록 0007)"),
 ]
 
 

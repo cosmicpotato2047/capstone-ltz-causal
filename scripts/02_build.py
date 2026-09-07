@@ -128,6 +128,12 @@ def main() -> None:
     print(f"자치구 {df.sgg_nm.nunique()}개 / 법정동 {df.umd_full_cd.nunique()}개 "
           f"/ 단지 {df.aptSeq.nunique():,}개")
 
+    # 반복매매 쌍 — (단지·전용면적·층) 조합의 재거래 횟수
+    combo = df.groupby(["aptSeq", "area_m2", "floor_no"]).size()
+    pairs = int((combo - 1).clip(lower=0).sum())
+    print(f"반복매매 쌍 {pairs:,} (조합 {len(combo):,}개 중 "
+          f"2회 이상 {int((combo >= 2).sum()):,}개)")
+
     io.save_result("02_build", {
         "수집시점": "2026-09-03",
         "표본": int(len(df)),
@@ -136,6 +142,8 @@ def main() -> None:
         "자치구": int(df.sgg_nm.nunique()),
         "시작": str(df.deal_date.min().date()),
         "종료": str(df.deal_date.max().date()),
+        "반복매매쌍": pairs,
+        "반복매매조합": int(len(combo)),
         "제외": flags,
     })
 
