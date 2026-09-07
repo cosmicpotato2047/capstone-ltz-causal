@@ -55,10 +55,15 @@ def main() -> None:
         eff = pd.Timestamp(g.효력일.min())
         sub = main_win[(main_win.gu == gu_of[gu]) & (main_win.umdNm == dong) &
                        (main_win.deal_date >= eff)]
+        has_j = isinstance(jibun, str) and jibun.strip() != ""
         rows.append({
-            "자치구": gu, "법정동": dong, "지번": jibun, "효력일": eff.date().isoformat(),
+            "자치구": gu, "법정동": dong, "지번": jibun if has_j else "",
+            "효력일": eff.date().isoformat(),
+            "구역유형": "지번" if has_j else "구역",
             "계열": g.계열.iloc[0], "면적_km2": g.면적_km2.dropna().max(),
-            "하한_지번일치": int((sub.jibun == str(jibun)).sum()),
+            # 지번을 안 적고 '○○ 아파트지구'처럼 구역으로 지정한 공고는
+            # 거래를 지번으로 가를 수 없다. 하한을 0으로 적으면 거짓이 된다.
+            "하한_지번일치": int((sub.jibun == str(jibun)).sum()) if has_j else None,
             "상한_법정동": int(len(sub)),
         })
     r = pd.DataFrame(rows).sort_values(["자치구", "효력일"])
@@ -70,9 +75,9 @@ def main() -> None:
                   ~main_win.umdNm.isin(policy.TREATED_2020)]
 
     def block(title: str, sel: pd.DataFrame, denom: int, denom_label: str) -> dict:
-        print("\n" + "=" * 92)
+        print("\n" + "=" * 96)
         print(title)
-        print("=" * 92)
+        print("=" * 96)
         if sel.empty:
             print("  걸리는 구역 없음")
             return {"구역수": 0, "하한": 0, "상한": 0, "분모": denom}
@@ -80,18 +85,22 @@ def main() -> None:
               f"{'하한':>7}{'상한':>9}   계열")
         for _, x in sel.iterrows():
             a = f"{x.면적_km2:.4f}" if pd.notna(x.면적_km2) else "  -   "
+            lo = "  -" if pd.isna(x.하한_지번일치) else f"{int(x.하한_지번일치)}"
             print(f"  {x.법정동:<10}{str(x.지번):<10}{x.효력일:<12}{a:>8}"
-                  f"{x.하한_지번일치:>7}{x.상한_법정동:>9}   {str(x.계열)[:26]}")
-        lo = int(sel.하한_지번일치.sum())
+                  f"{lo:>7}{x.상한_법정동:>9}   {str(x.계열)[:26]}")
+        lo = int(sel.하한_지번일치.fillna(0).sum())
         # 상한은 법정동 단위다. 한 동에 구역이 둘이면 그 동을 두 번 세면 안 된다.
-        hi = int(sel.sort_values("효력일").drop_duplicates(
-            subset=["자치구", "법정동"]).상한_법정동.sum())
+        uniq = sel.sort_values("효력일").drop_duplicates(subset=["자치구", "법정동"])
+        hi = int(uniq.상한_법정동.sum())
+        nz = int((sel.구역유형 == "구역").sum())
         print(f"\n  {denom_label} {denom:,}건 대비")
-        print(f"    하한(지번 일치)   {lo:>7,}건  {100*lo/denom:6.3f}%")
+        print(f"    하한(지번 일치)   {lo:>7,}건  {100*lo/denom:6.3f}%"
+              + (f"   ※ 지번 없는 구역 {nz}개는 하한을 낼 수 없어 빠졌다" if nz else ""))
         print(f"    상한(법정동 전체) {hi:>7,}건  {100*hi/denom:6.3f}%   "
-              f"[{sel.drop_duplicates(subset=['자치구','법정동']).shape[0]}개 법정동]")
-        return {"구역수": len(sel), "하한": lo, "상한": hi, "분모": denom,
-                "하한_비율": round(100*lo/denom, 4), "상한_비율": round(100*hi/denom, 4)}
+              f"[{len(uniq)}개 법정동]")
+        return {"구역수": len(sel), "지번없는구역": nz, "하한": lo, "상한": hi,
+                "분모": denom, "하한_비율": round(100*lo/denom, 4),
+                "상한_비율": round(100*hi/denom, 4)}
 
     res = {
         "구간": [WIN_LO.date().isoformat(), WIN_HI.date().isoformat()],

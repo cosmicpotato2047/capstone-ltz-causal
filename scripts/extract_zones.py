@@ -50,12 +50,22 @@ M2 = re.compile(r"^\s*([\d]{1,3}(?:,\d{3})+)\s*(?:㎡)?\s*$")
 KM2 = re.compile(r"^\s*(\d+\.\d{1,4})\s*(?:㎢)?\s*$")
 # 국제교류복합지구식: 대치동(3.53㎢)
 INLINE = re.compile(rf"({DONG})\s*\(\s*([\d.,]+)\s*㎢\s*\)")
+# '압구정동' 또는 '성수동1가, 성수동2가' 처럼 지번 없이 동만 적은 줄
+DONGS_ONLY = re.compile(rf"^\s*{DONG}(?:\s*,\s*{DONG})*\s*$")
 
 # '재지정기간 : 당초 공고 …기간 만료 후, 2021년 6월 23일부터' 형태도 잡는다
 PERIOD = re.compile(r"(?:재)?지정\s*기간\s*:?\s*(?:[\s\S]{0,80}?)"
                     r"(20\d\d)\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일"
                     r"\s*부터\s*(20\d\d)\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일")
 
+
+
+def area_of(ln: str) -> float | None:
+    """면적 줄을 ㎢ 로 읽는다. 공고는 ㎡(33,000)와 ㎢(3.53)를 섞어 쓴다."""
+    a, k = M2.match(ln), KM2.match(ln)
+    if a:
+        return float(a.group(1).replace(",", "")) / 1e6
+    return float(k.group(1)) if k else None
 
 
 def period_of(t: str) -> tuple[str, str]:
@@ -76,20 +86,18 @@ def main() -> None:
         lines = [re.sub(r"[ \t]+", " ", x).strip() for x in raw.splitlines()]
 
         cur_gu, pending = "", None
-        for ln in lines:
+        for n, ln in enumerate(lines):
             g = GU_ONLY.match(ln)
             if g:
                 cur_gu, pending = g.group(1), None
                 continue
             if pending is not None:                 # 직전 위치 줄의 면적을 받는다
-                a2, ak = M2.match(ln), KM2.match(ln)
-                if a2:
-                    pending["면적_km2"] = float(a2.group(1).replace(",", "")) / 1e6
-                elif ak:
-                    pending["면적_km2"] = float(ak.group(1))
+                a = area_of(ln)
+                if a is not None:
+                    pending["면적_km2"] = a
                 rows.append(pending)
                 pending = None
-                if a2 or ak:
+                if a is not None:
                     continue
             m = LOC.match(ln)
             if m:
@@ -98,12 +106,24 @@ def main() -> None:
                     cur_gu = gu
                 if cur_gu:
                     pending = {**base, "자치구": cur_gu, "법정동": dong,
-                               "지번": jibun, "면적_km2": None}
+                               "지번": jibun, "면적_km2": None, "면적공유": False}
                 continue
+            # 지번 없이 동만 적는 공고도 있다 — '압구정동 / 1,149,476 / 압구정 아파트지구'.
+            # 바로 다음 줄이 면적일 때만 인정해 오탐을 막는다.
+            d = DONGS_ONLY.match(ln)
+            if d and cur_gu:
+                nxt = next((x for x in lines[n+1:n+3] if x), "")
+                a = area_of(nxt)
+                if a is not None:
+                    dongs = [x.strip() for x in d.group(0).split(",") if x.strip()]
+                    for dong in dongs:
+                        rows.append({**base, "자치구": cur_gu, "법정동": dong, "지번": "",
+                                     "면적_km2": a, "면적공유": len(dongs) > 1})
+                    continue
             for dong, km2 in INLINE.findall(ln):    # 대치동(3.53㎢)
                 if cur_gu:
                     rows.append({**base, "자치구": cur_gu, "법정동": dong, "지번": "",
-                                 "면적_km2": float(km2.replace(",", ""))})
+                                 "면적_km2": float(km2.replace(",", "")), "면적공유": False})
         if pending:
             rows.append(pending)
 
