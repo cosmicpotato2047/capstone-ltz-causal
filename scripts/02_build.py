@@ -70,7 +70,9 @@ def build(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
 
     df["price_per_m2"] = df["amount_manwon"] / df["area_m2"]
     df["log_price_per_m2"] = np.log(df["price_per_m2"])
-    df["sgg_nm"] = df["sggCd"].map(policy.SGG_NAME).fillna(df["sggCd"])
+    # SGG_NAME 은 분석 8개 자치구만 담는다. 이름은 서울 25개 표에서 찾아야
+    # 기증자 풀 17개 구가 코드로 남지 않는다.
+    df["sgg_nm"] = df["sggCd"].map(policy.SEOUL_SGG).fillna(df["sggCd"])
     df["umd_full_cd"] = df["sggCd"].astype(str) + df["umdCd"].astype(str)
     df["age_at_deal"] = df["dealYear"].astype(int) - df["build_year"]
 

@@ -46,9 +46,12 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--pre", type=int, default=36, help="사전 창(개월)")
     ap.add_argument("--post", type=int, default=12, help="필요한 최소 사후 개월")
+    ap.add_argument("--minobs", type=int, default=500,
+                    help="처치·통제 중 적은 쪽의 최소 거래 수")
     a = ap.parse_args()
 
     pan = pd.read_csv(io.POLICY / "ltz_panel.csv")
+    z = pd.read_csv(io.POLICY / "notices" / "zones.csv", dtype={"지번": str})
     pan["m"] = pd.PeriodIndex(pan.연월, freq="M")
     df, src = load_trades()
     df["m"] = df.deal_date.dt.to_period("M")
@@ -73,7 +76,10 @@ def main() -> None:
     allset = {k: set(g.m) for k, g in pan.groupby(key)}   # 지정+불명
 
     rows = []
-    for (gu, start), g in S.groupby(["자치구", "시작"]):
+    # 같은 달에 성격이 다른 지정이 겹칠 수 있다. 2021-04-04 공공재개발과
+    # 2021-04-27 주요재건축단지가 그렇다. 계열까지 나눠야 한 후보가
+    # 두 정책의 혼합이 되지 않는다.
+    for (gu, start, ser), g in S.groupby(["자치구", "시작", "계열"]):
         dongs = sorted(g.법정동)
         # 사전 청결 — 처치 전 pre 개월 동안 어느 동도 지정/불명이 아니어야
         pre_ms = {start - i for i in range(1, a.pre + 1)}
@@ -103,38 +109,50 @@ def main() -> None:
             n_t = n_c = 0
             e_t = e_c = float("nan")
 
+        # 지정 방식 — 처치가 법정동을 얼마나 덮는가.
+        # 공고가 지번 없이 동 이름만 적으면 동 전체 또는 지구 단위다 (덮음).
+        # 지번을 적으면 그 일대만이라 동의 1~3%다. 처치를 법정동 단위로
+        # 주는 우리 설계에서는 후자가 측정오차가 되어 추정치를 0으로 끈다.
+        zz = z[(z.자치구 == gu) & z.법정동.isin(dongs)]
+        no_j = zz.지번.isna() | (zz.지번.astype(str).str.strip() == "")
+        방식 = "동전체" if no_j.all() else ("일부" if not no_j.any() else "혼합")
+
         rows.append({
             "자치구": gu, "시작": str(start), "처치동수": len(dongs),
-            "처치동": ",".join(dongs)[:38], "계열": g.계열.iloc[0][:18],
+            "처치동": ",".join(dongs)[:38], "계열": ser[:20],
+            "지정방식": 방식,
             "사전오염동": dirty, "사후개월": post,
             "통제동수": len(ctrl), "처치거래": n_t, "통제거래": n_c,
+            "유효표본": min(n_t, n_c),
             "15억_처치": e_t, "15억_통제": e_c,
             "15억차": abs(e_t - e_c) if n_t and n_c else float("nan"),
             "자료있음": gu in have_gu,
         })
 
     R = pd.DataFrame(rows)
-    ok = R[(R.사전오염동 == 0) & (R.사후개월 >= a.post) & (R.통제동수 > 0) &
-           (R.처치거래 > 0)].copy()
-    ok = ok.sort_values(["처치거래"], ascending=False)
+    # 통제군이 형해화된 후보를 거른다. 통제 거래가 몇십 건이면 비교가 아니다.
+    ok = R[(R.사전오염동 == 0) & (R.사후개월 >= a.post) & (R.통제동수 >= 2) &
+           (R.유효표본 >= a.minobs)].copy()
+    ok = ok.sort_values(["사후개월", "유효표본"], ascending=False)
 
     print(f"거래 자료: {src} (자치구 {len(have_gu)}개)")
     print(f"후보 {len(R)}개 중 조건 통과 {len(ok)}개  "
           f"[사전 {a.pre}개월 무오염 · 사후 {a.post}개월 이상 · 통제동 존재]\n")
     print(f"{'시작':<9}{'자치구':<7}{'처치동':<28}{'사후':>4}{'통제동':>5}"
-          f"{'처치거래':>8}{'통제거래':>8}{'15억차':>7}  계열")
-    print("-" * 110)
+          f"{'처치거래':>8}{'통제거래':>8}{'15억차':>7}{'방식':>6}  계열")
+    print("-" * 118)
     for _, r in ok.iterrows():
         print(f"{r.시작:<9}{r.자치구:<7}{r.처치동[:26]:<28}{r.사후개월:>4}"
               f"{r.통제동수:>5}{r.처치거래:>8,}{r.통제거래:>8,}{r['15억차']:>7.0f}"
-              f"  {r.계열}")
+              f"{r.지정방식:>6}  {r.계열}")
 
     fail = R[~R.index.isin(ok.index) & R.자료있음]
     print(f"\n탈락 {len(fail)}개 — 사유")
     for reason, n in [("사전 창에 다른 지정", int((fail.사전오염동 > 0).sum())),
                       (f"사후 {a.post}개월 미만", int((fail.사후개월 < a.post).sum())),
-                      ("같은 구에 통제동 없음", int((fail.통제동수 == 0).sum())),
-                      ("처치동 거래 0", int((fail.처치거래 == 0).sum()))]:
+                      ("통제동 2개 미만", int((fail.통제동수 < 2).sum())),
+                      (f"유효표본 {a.minobs}건 미만", int((fail.유효표본 < a.minobs).sum())),
+                      ]:
         print(f"  {reason:<24}{n:>3}개")
     print(f"\n자료 없는 자치구의 후보 {int((~R.자료있음).sum())}개는 판정 보류")
 
