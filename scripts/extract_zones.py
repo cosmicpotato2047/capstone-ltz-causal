@@ -60,6 +60,23 @@ PERIOD = re.compile(r"(?:재)?지정\s*기간\s*:?\s*(?:[\s\S]{0,80}?)"
 
 
 
+# 자치구 상태를 풀어야 하는 줄.
+#  - 서울 밖(경기도 하남시 교산동 …): 서울 자치구명이 아니라서 GU_ONLY 에 안 걸리고,
+#    그대로 두면 직전 자치구가 남의 동네를 삼킨다.
+#  - 지형도면 붙임: '청담동(2.3㎢)' 같은 캡션이 본문 표와 떨어진 곳에 다시 나온다.
+RESET = re.compile(r"^\s*(?:[가-힣]{2,5}(?:특별시|광역시|특별자치시|특별자치도|도)"
+                   r"|[가-힣]{2,5}(?:시|군)|붙\s*임\s*\d*|별\s*첨\s*\d*"
+                   r"|[^\n]{0,20}지형도면[^\n]{0,20})\s*$")
+# 공고가 행정동 이름을 쓰는 경우가 있다. '금호4가동'(행정동) -> '금호동4가'(법정동).
+HJ_GA = re.compile(r"^([가-힣]{1,4})(\d)가동$")
+
+
+def to_beopjeong(dong: str) -> str:
+    """행정동 표기를 법정동 표기로 되돌린다. 해당 없으면 그대로."""
+    m = HJ_GA.match(dong)
+    return f"{m.group(1)}동{m.group(2)}가" if m else dong
+
+
 def area_of(ln: str) -> float | None:
     """면적 줄을 ㎢ 로 읽는다. 공고는 ㎡(33,000)와 ㎢(3.53)를 섞어 쓴다."""
     a, k = M2.match(ln), KM2.match(ln)
@@ -91,6 +108,9 @@ def main() -> None:
             if g:
                 cur_gu, pending = g.group(1), None
                 continue
+            if RESET.match(ln):        # 서울 밖으로 넘어갔거나 붙임이 시작됐다
+                cur_gu, pending = "", None
+                continue
             if pending is not None:                 # 직전 위치 줄의 면적을 받는다
                 a = area_of(ln)
                 if a is not None:
@@ -105,7 +125,7 @@ def main() -> None:
                 if gu:
                     cur_gu = gu
                 if cur_gu:
-                    pending = {**base, "자치구": cur_gu, "법정동": dong,
+                    pending = {**base, "자치구": cur_gu, "법정동": to_beopjeong(dong),
                                "지번": jibun, "면적_km2": None, "면적공유": False}
                 continue
             # 지번 없이 동만 적는 공고도 있다 — '압구정동 / 1,149,476 / 압구정 아파트지구'.
@@ -117,13 +137,15 @@ def main() -> None:
                 if a is not None:
                     dongs = [x.strip() for x in d.group(0).split(",") if x.strip()]
                     for dong in dongs:
-                        rows.append({**base, "자치구": cur_gu, "법정동": dong, "지번": "",
-                                     "면적_km2": a, "면적공유": len(dongs) > 1})
+                        rows.append({**base, "자치구": cur_gu, "법정동": to_beopjeong(dong),
+                                     "지번": "", "면적_km2": a,
+                                     "면적공유": len(dongs) > 1})
                     continue
             for dong, km2 in INLINE.findall(ln):    # 대치동(3.53㎢)
                 if cur_gu:
-                    rows.append({**base, "자치구": cur_gu, "법정동": dong, "지번": "",
-                                 "면적_km2": float(km2.replace(",", "")), "면적공유": False})
+                    rows.append({**base, "자치구": cur_gu, "법정동": to_beopjeong(dong),
+                                 "지번": "", "면적공유": False,
+                                 "면적_km2": float(km2.replace(",", ""))})
         if pending:
             rows.append(pending)
 
