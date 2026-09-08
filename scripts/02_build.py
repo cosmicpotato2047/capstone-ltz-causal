@@ -1,11 +1,18 @@
 """[02] 원자료(JSON)를 분석용 parquet 한 장으로 정제.
 
-    python scripts/02_build.py   ->  data/processed/trades.parquet
+    python scripts/02_build.py                -> data/processed/trades.parquet
+    python scripts/02_build.py --scope seoul  -> data/processed/trades_seoul.parquet
 
 정제 규칙은 결정기록 0004 참조.
+
+**자치구 범위를 왜 나누는가.** data/raw 에는 인과추정용 8개 자치구와 합성
+대조군 기증자 풀 17개 자치구가 함께 들어 있다. 그냥 다 읽으면 분석 표본이
+47만건에서 140만건으로 조용히 바뀌고, 문서에 적힌 모든 숫자가 어긋난다
+(결정기록 0007). 그래서 기본값은 8개 구이고, 기증자 풀은 별도 파일로 낸다.
 """
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -18,20 +25,26 @@ from lib import io, policy  # noqa: E402
 
 io.setup_stdout()
 
-# 데이터 검증 기준. 파이프라인이 조용히 깨지는 것을 막는다.
-EXPECT_MIN_ROWS = 300_000
-EXPECT_MIN_APTS = 2_000
+# 범위별 (자치구 목록, 출력 파일, 최소 기대 행수, 최소 기대 단지수)
+SCOPES = {
+    "analysis": (policy.ALL_SGG, "TRADES", 300_000, 2_000),
+    "seoul": (list(policy.SEOUL_SGG), "TRADES_SEOUL", 900_000, 6_000),
+}
 EXPECT_START = pd.Timestamp("2006-12-31")
 
 
-def load_raw() -> pd.DataFrame:
+def load_raw(districts: list[str]) -> pd.DataFrame:
     frames = []
-    for f in sorted(io.RAW.rglob("*.json")):
-        rows = json.loads(f.read_text(encoding="utf-8"))
-        if rows:
-            frames.append(pd.DataFrame(rows))
+    for code in districts:
+        d = io.RAW / code
+        if not d.exists():
+            continue
+        for f in sorted(d.glob("*.json")):
+            rows = json.loads(f.read_text(encoding="utf-8"))
+            if rows:
+                frames.append(pd.DataFrame(rows))
     if not frames:
-        sys.exit("data/raw 가 비어 있습니다. scripts/01_collect.py 를 먼저 실행하세요.")
+        sys.exit(f"data/raw 에 {districts} 자료가 없습니다. 01_collect.py 를 먼저 실행하세요.")
     return pd.concat(frames, ignore_index=True)
 
 
@@ -95,13 +108,13 @@ def build(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     return out, flags
 
 
-def validate(df: pd.DataFrame) -> None:
+def validate(df: pd.DataFrame, min_rows: int, min_apts: int) -> None:
     """데이터가 조용히 깨지는 것을 막는 최소 검증."""
     problems = []
-    if len(df) < EXPECT_MIN_ROWS:
-        problems.append(f"표본 {len(df):,}건 < 기대 {EXPECT_MIN_ROWS:,}건")
-    if df.aptSeq.nunique() < EXPECT_MIN_APTS:
-        problems.append(f"단지 {df.aptSeq.nunique():,}개 < 기대 {EXPECT_MIN_APTS:,}개")
+    if len(df) < min_rows:
+        problems.append(f"표본 {len(df):,}건 < 기대 {min_rows:,}건")
+    if df.aptSeq.nunique() < min_apts:
+        problems.append(f"단지 {df.aptSeq.nunique():,}개 < 기대 {min_apts:,}개")
     if df.deal_date.min() > EXPECT_START:
         problems.append(f"시작일 {df.deal_date.min().date()} 가 예상보다 늦음")
     for c in ("deal_date", "amount_manwon", "area_m2", "aptSeq", "umd_full_cd"):
@@ -118,12 +131,20 @@ def validate(df: pd.DataFrame) -> None:
 
 
 def main() -> None:
-    io.PROCESSED.mkdir(parents=True, exist_ok=True)
-    df, flags = build(load_raw())
-    validate(df)
-    df.to_parquet(io.TRADES, index=False)
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--scope", choices=list(SCOPES), default="analysis",
+                    help="analysis=인과추정 8개 자치구(기본) / seoul=서울 25개 자치구")
+    a = ap.parse_args()
+    districts, out_attr, min_rows, min_apts = SCOPES[a.scope]
+    out = getattr(io, out_attr)
 
-    print(f"\n저장: {io.TRADES}")
+    io.PROCESSED.mkdir(parents=True, exist_ok=True)
+    df, flags = build(load_raw(districts))
+    validate(df, min_rows, min_apts)
+    df.to_parquet(out, index=False)
+
+    print(f"\n범위: {a.scope} (자치구 {len(districts)}개 요청)")
+    print(f"저장: {out}")
     print(f"기간: {df.deal_date.min().date()} ~ {df.deal_date.max().date()}")
     print(f"자치구 {df.sgg_nm.nunique()}개 / 법정동 {df.umd_full_cd.nunique()}개 "
           f"/ 단지 {df.aptSeq.nunique():,}개")
@@ -134,8 +155,11 @@ def main() -> None:
     print(f"반복매매 쌍 {pairs:,} (조합 {len(combo):,}개 중 "
           f"2회 이상 {int((combo >= 2).sum()):,}개)")
 
-    io.save_result("02_build", {
+    # 범위마다 결과 파일을 따로 둔다. 같은 이름에 덮어쓰면 8개구 숫자가
+    # 25개구 숫자로 조용히 바뀌어 문서와 어긋난다 (결정기록 0007).
+    io.save_result("02_build" if a.scope == "analysis" else f"02_build_{a.scope}", {
         "수집시점": "2026-09-03",
+        "범위": a.scope,
         "표본": int(len(df)),
         "단지": int(df.aptSeq.nunique()),
         "법정동": int(df.umd_full_cd.nunique()),

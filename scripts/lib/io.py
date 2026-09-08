@@ -12,7 +12,8 @@ POLICY = ROOT / "data" / "policy"
 FIGURES = ROOT / "output" / "figures"
 RESULTS = ROOT / "output" / "results"
 
-TRADES = PROCESSED / "trades.parquet"
+TRADES = PROCESSED / "trades.parquet"            # 인과추정 8개 자치구
+TRADES_SEOUL = PROCESSED / "trades_seoul.parquet"  # 서울 25개 자치구(기증자 풀 포함)
 
 
 def setup_stdout() -> None:
