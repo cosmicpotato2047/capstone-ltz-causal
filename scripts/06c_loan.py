@@ -102,6 +102,10 @@ def main() -> None:
         ax.bar(bins[:-1], h, width=0.24, color="#2c6e9c", align="edge")
         for thr in THRESHOLDS:
             ax.axvline(thr, color="#c0392b", lw=1.2, ls="--")
+            lo_, hi_ = bunch_ratio(s.eok, thr)
+            ax.annotate(f"{thr:.0f}억\n아래/위 {lo_/max(hi_,1):.2f}배",
+                        xy=(thr + 0.3, h.max() * 0.80), fontsize=8.5,
+                        color="#c0392b", va="top")
         ax.set_title(f"{lab}\n({a[:7]} ~ {b[:7]})", fontsize=10)
         ax.set_xlabel("거래가 (억원)")
         ax.set_xlim(6, 25)
