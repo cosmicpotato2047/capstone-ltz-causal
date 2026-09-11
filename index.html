@@ -1,0 +1,118 @@
+<title>서울 토지거래허가구역의 인과효과 추정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --ground:#f4f6f7; --surface:#fcfcfb; --surface-2:#eceef0;
+  --ink:#12161a; --ink-2:#454b52; --ink-3:#7d848c;
+  --rule:#c9ced4; --rule-soft:#e2e6e9;
+  --accent:#2a78d6; --accent-soft:#dbe8f8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+    --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+    --rule:#343a3f; --rule-soft:#282d31;
+    --accent:#3987e5; --accent-soft:#1d2f45;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+  --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+  --rule:#343a3f; --rule-soft:#282d31;
+  --accent:#3987e5; --accent-soft:#1d2f45;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans KR","Malgun Gothic",system-ui,sans-serif;
+  font-size:16px; line-height:1.75}
+.wrap{max-width:760px; margin:0 auto; padding:64px 28px 110px}
+h1{font-family:"Nanum Myeongjo","Batang",serif; font-size:31px;
+  font-weight:800; letter-spacing:-.02em; line-height:1.3; margin:0 0 10px}
+.sub{color:var(--ink-2); margin:0 0 6px}
+.meta{font-family:"IBM Plex Mono",monospace; font-size:12px;
+  color:var(--ink-3); margin:0 0 44px}
+.meta a{color:var(--ink-3)}
+h2{font-family:"Nanum Myeongjo","Batang",serif; font-size:19px;
+  font-weight:700; margin:46px 0 6px; padding-top:20px;
+  border-top:1px solid var(--rule)}
+.note{color:var(--ink-3); font-size:14px; margin:0 0 18px}
+a{color:var(--accent); text-underline-offset:3px}
+.card{display:block; background:var(--surface); border:1px solid var(--rule-soft);
+  padding:15px 18px; margin:0 0 9px; text-decoration:none; color:inherit;
+  transition:border-color .15s, transform .15s}
+.card:hover{border-color:var(--accent); transform:translateX(2px)}
+.card .t{font-weight:600; font-size:15.5px; color:var(--accent)}
+.card .d{color:var(--ink-2); font-size:13.5px; line-height:1.6; margin-top:2px}
+.card .x{font-family:"IBM Plex Mono",monospace; font-size:11px;
+  color:var(--ink-3); letter-spacing:.04em}
+ul{padding-left:20px; margin:0} li{margin:0 0 6px; font-size:14.5px}
+footer{margin-top:56px; padding-top:20px; border-top:1px solid var(--rule-soft);
+  color:var(--ink-3); font-size:13px}
+</style>
+
+<div class="wrap">
+
+<h1>서울 토지거래허가구역의 인과효과 추정</h1>
+<p class="sub">2020년 국제교류복합지구 인근 지정이 아파트 거래량과 가격에 미친 영향</p>
+<p class="meta">이찬희 · 졸업작품 2026 ·
+  <a href="https://github.com/cosmicpotato2047/capstone-ltz-causal">저장소</a></p>
+
+<h2>주차 보고서</h2>
+<p class="note">그 주에 무엇을 알게 되었고 설계가 어떻게 바뀌었는지 적는다.</p>
+
+<a class="card" href="docs/reports/week-02.html">
+  <div class="t">2주차 결과 보고서 <span class="x">2026-09-11</span></div>
+  <div class="d">정책 원문 판독 완료, 대출 규제 분류와 삼중차분,
+    합성대조군, 자체 반복매매 가격지수.</div>
+</a>
+<a class="card" href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/reports/week-01.md">
+  <div class="t">1주차 결과 보고서 <span class="x">2026-09-03</span></div>
+  <div class="d">데이터 파이프라인 구축, 정책 이력 검증, 예비 분석,
+    선행연구 재현.</div>
+</a>
+<a class="card" href="docs/slides/2026-09-04.html">
+  <div class="t">1주차 발표 자료 <span class="x">2026-09-04</span></div>
+  <div class="d">슬라이드. 좌우 방향키로 이동한다.</div>
+</a>
+
+<h2>시각화</h2>
+<p class="note">모두 단일 파일로 동작한다. 내려받아 열어도 된다.</p>
+
+<a class="card" href="output/ltz_map.html">
+  <div class="t">법정동별 지정 이력 지도</div>
+  <div class="d">시점 슬라이더를 움직이면 그날의 서울 전역 허가구역
+    상태가 칠해진다. 2006년부터 2026년까지.</div>
+</a>
+<a class="card" href="output/apt_directory.html">
+  <div class="t">서울 아파트 단지 목록</div>
+  <div class="d">9,240개 단지. 자치구에서 법정동으로, 다시 단지로
+    펼쳐 거래 이력을 본다.</div>
+</a>
+<a class="card" href="output/figures/seoul_price_map.png">
+  <div class="t">25개 자치구 전용 84㎡ 중위가 지도</div>
+  <div class="d">최근 6개월 14,383건 기준. 2560×1440.</div>
+</a>
+<a class="card" href="output/figures/ltz_heatmap_seoul.png">
+  <div class="t">법정동별 지정 이력 히트맵</div>
+  <div class="d">세로축 법정동, 가로축 시간. 지정 기간을 한눈에 본다.</div>
+</a>
+
+<h2>결정기록</h2>
+<p class="note">설계를 정할 때마다 왜 그렇게 정했는지 한 편씩 남긴다.
+  근거와 함께 버린 대안도 적는다.</p>
+<ul>
+  <li><a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/tree/main/docs/decisions">결정기록 전체 (18편)</a></li>
+  <li><a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/tree/main/docs/journal">작업 일지</a></li>
+</ul>
+
+<footer>
+  자료 출처는 국토교통부 실거래가 공개시스템, 전자관보, 서울시보다.
+  공고와 시보는 공공누리 자료다.
+</footer>
+
+</div>
