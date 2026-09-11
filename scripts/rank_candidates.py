@@ -42,6 +42,11 @@ def load_trades():
     return df, p.name
 
 
+def _cell(v) -> str:
+    """마크다운 표 칸. 계열의 '|' 가 칸 구분자와 충돌하므로 바꿔 준다."""
+    return str(v).replace("|", " · ")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--pre", type=int, default=36, help="사전 창(개월)")
@@ -113,7 +118,11 @@ def main() -> None:
         # 공고가 지번 없이 동 이름만 적으면 동 전체 또는 지구 단위다 (덮음).
         # 지번을 적으면 그 일대만이라 동의 1~3%다. 처치를 법정동 단위로
         # 주는 우리 설계에서는 후자가 측정오차가 되어 추정치를 0으로 끈다.
-        zz = z[(z.자치구 == gu) & z.법정동.isin(dongs)]
+        # 그 후보가 시작된 달의 공고만 본다. 같은 동이 몇 해 뒤 다른 공고에
+        # 지번 단위로 다시 나오면, 그것까지 세어 2020년 후보가 '혼합'으로
+        # 잘못 분류됐다.
+        zz = z[(z.자치구 == gu) & z.법정동.isin(dongs) &
+               (pd.PeriodIndex(pd.to_datetime(z.효력일), freq="M") == start)]
         no_j = zz.지번.isna() | (zz.지번.astype(str).str.strip() == "")
         방식 = "동전체" if no_j.all() else ("일부" if not no_j.any() else "혼합")
 
@@ -133,7 +142,11 @@ def main() -> None:
     # 통제군이 형해화된 후보를 거른다. 통제 거래가 몇십 건이면 비교가 아니다.
     ok = R[(R.사전오염동 == 0) & (R.사후개월 >= a.post) & (R.통제동수 >= 2) &
            (R.유효표본 >= a.minobs)].copy()
-    ok = ok.sort_values(["사후개월", "유효표본"], ascending=False)
+    # 지정방식을 첫 열쇠로 둔다. 구역이 동 전체냐 일부냐가 처치 배정의
+    # 정확도를 가르고, 그것이 다른 무엇보다 앞선다 (결정기록 0012).
+    ok["_방식"] = ok.지정방식.map({"동전체": 0, "혼합": 1, "일부": 2}).fillna(3)
+    ok = ok.sort_values(["_방식", "사후개월", "유효표본"],
+                        ascending=[True, False, False]).drop(columns=["_방식"])
 
     print(f"거래 자료: {src} (자치구 {len(have_gu)}개)")
     print(f"후보 {len(R)}개 중 조건 통과 {len(ok)}개  "
@@ -170,7 +183,7 @@ def main() -> None:
          "| 순 | 시작 | 자치구 | 처치동 | 계열 | 지정방식 | 사후 | 통제동 | 처치거래 | 통제거래 | 유효표본 | 15억차 |",
          "|---:|---|---|---|---|---|---:|---:|---:|---:|---:|---:|"]
     for i, (_, r) in enumerate(ok.iterrows(), 1):
-        L.append(f"| {i} | {r.시작} | {r.자치구} | {r.처치동} | {r.계열} | "
+        L.append(f"| {i} | {r.시작} | {r.자치구} | {_cell(r.처치동)} | {_cell(r.계열)} | "
                  f"**{r.지정방식}** | {r.사후개월} | {r.통제동수} | {r.처치거래:,} | "
                  f"{r.통제거래:,} | {r.유효표본:,} | {r['15억차']:.0f}%p |")
     fail = R[~R.index.isin(ok.index)]
