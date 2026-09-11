@@ -163,9 +163,14 @@ def main() -> None:
             pan.append({"자치구": r.자치구, "법정동": r.법정동,
                         "연월": str(m), "상태": r.상태, "계열": "|".join(ser),
                         "지정방식": r.지정방식, "지정일수비율": round(frac, 3)})
-    P = (pd.DataFrame(pan)
-         .sort_values(["자치구", "법정동", "연월", "상태"])
-         .drop_duplicates(subset=["자치구", "법정동", "연월"], keep="first"))
+    # 한 달에 불명 구간이 끝나고 지정이 시작될 수 있다. 그 달은 지정으로 본다.
+    # 상태 이름으로 정렬하면 '불명'이 '지정'보다 앞서 반대로 뽑힌다.
+    P = pd.DataFrame(pan)
+    P["_r"] = (P.상태 != "지정").astype(int)
+    P = (P.sort_values(["자치구", "법정동", "연월", "_r", "지정일수비율"],
+                       ascending=[True, True, True, True, False])
+         .drop_duplicates(subset=["자치구", "법정동", "연월"], keep="first")
+         .drop(columns=["_r"]))
     P.to_csv(io.POLICY / "ltz_panel.csv", index=False, encoding="utf-8-sig")
 
     print(f"구간  {len(S):,}행  ({int((S.상태=='지정').sum())} 지정 / "

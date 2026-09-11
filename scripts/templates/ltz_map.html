@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>서울 토지거래허가구역 지정 이력</title>
+<style>
+ :root{--bg:#fff;--fg:#1a1a1a;--mut:#666}
+ *{box-sizing:border-box}
+ body{margin:0;font:14px/1.55 "Malgun Gothic",system-ui,sans-serif;
+      background:var(--bg);color:var(--fg)}
+ header{padding:18px 22px 6px}
+ h1{font-size:18px;margin:0 0 3px}
+ .sub{color:var(--mut);font-size:12px}
+ .ctl{padding:8px 22px 2px;max-width:1180px}
+ .row{display:flex;align-items:baseline;gap:12px}
+ .ym{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+ input[type=range]{width:100%;margin:8px 0 2px}
+ .wrap{display:flex;gap:18px;padding:6px 22px 26px;align-items:flex-start;
+       flex-wrap:wrap}
+ .mapbox{flex:1 1 560px;min-width:0}
+ svg{width:100%;height:auto;display:block}
+ .dong{stroke:#fff;stroke-width:.4;cursor:pointer}
+ .dong:hover{stroke:#000;stroke-width:1.2}
+ .gu{fill:none;stroke:#555;stroke-width:1.1;pointer-events:none}
+ .trt{fill:none;stroke:#000;stroke-width:1.8;pointer-events:none}
+ aside{width:252px;flex:0 0 252px;font-size:12px}
+ .legend div{display:flex;align-items:center;gap:8px;margin:4px 0}
+ .sw{width:14px;height:14px;border:1px solid #999;flex:none}
+ .tip{position:fixed;pointer-events:none;background:#111;color:#fff;
+      padding:8px 10px;border-radius:4px;font-size:12px;max-width:290px;
+      display:none;z-index:9;line-height:1.45}
+ button{font:inherit;padding:5px 13px;margin-right:8px;cursor:pointer}
+ .ev{font-size:11.5px;color:var(--mut);margin-top:12px;line-height:2}
+ .ev b.j{cursor:pointer;color:#c0392b;border-bottom:1px dashed #c0392b}
+ .note{margin-top:16px;line-height:1.6}
+ .warn{color:#b9770e;font-weight:700}
+</style>
+
+<header>
+ <h1>서울 토지거래허가구역 지정 이력</h1>
+ <div class="sub">공고 원문에서 뽑은 법정동별 지정 구간.
+  검은 테두리가 2020년 6월 처치 4개 동.</div>
+</header>
+
+<div class="ctl">
+ <div class="row"><span class="ym" id="ym"></span>
+  <span class="sub" id="note"></span></div>
+ <input type="range" id="sl" min="0" value="0" aria-label="시점">
+ <div><button id="play">재생</button><span class="sub" id="cnt"></span></div>
+</div>
+
+<div class="wrap">
+ <div class="mapbox"><svg id="map" role="img"
+   aria-label="서울 법정동별 토지거래허가구역 지도"></svg></div>
+ <aside>
+  <div class="legend" id="lg"></div>
+  <div class="ev" id="ev"></div>
+  <div class="ev note">
+   <b>읽는 법</b><br>
+   회색(불명)은 지정 구간 사이의 구멍이다. 재지정 공고를 아직 못 읽었을
+   수도 있어 지정으로 메우지 않는다.<br><br>
+   <span class="warn">흰색이 곧 미지정은 아니다.</span>
+   공고 78건 중 구역 목록을 읽어낸 67건 기준이다.
+  </div>
+ </aside>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script>
+const D = __DATA__;
+const svg = document.getElementById("map");
+const tip = document.getElementById("tip");
+const sl  = document.getElementById("sl");
+svg.setAttribute("viewBox", "0 0 " + D.W + " " + D.H);
+
+const spellsOf = {};
+D.spells.forEach(function(s){
+  (spellsOf[s.cd] = spellsOf[s.cd] || []).push(s);
+});
+
+// 한 달에 불명 구간이 끝나고 지정이 시작될 수 있다. 그 달은 지정으로 본다.
+function at(cd, i){
+  const arr = spellsOf[cd];
+  if(!arr) return null;
+  let hit = null;
+  for(const s of arr){
+    if(i < s.a || i > s.b) continue;
+    if(s.s === 1) return s;
+    if(!hit) hit = s;
+  }
+  return hit;
+}
+function colorOf(sp){
+  if(!sp) return D.none;
+  if(sp.s === 0) return D.unknown;
+  for(const pair of D.series) if(sp.c.indexOf(pair[0]) >= 0) return pair[1];
+  return D.other;
+}
+
+const NS = "http://www.w3.org/2000/svg";
+function path(d, cls){
+  const p = document.createElementNS(NS, "path");
+  p.setAttribute("d", d);
+  p.setAttribute("class", cls);
+  return p;
+}
+
+const paths = {};
+D.dong.forEach(function(d){
+  const p = path(d.d, "dong");
+  p.addEventListener("mousemove", function(e){ showTip(e, d); });
+  p.addEventListener("mouseleave", function(){ tip.style.display = "none"; });
+  svg.appendChild(p);
+  paths[d.cd] = p;
+});
+D.gu.forEach(function(g){ svg.appendChild(path(g.d, "gu")); });
+D.dong.filter(function(d){
+  return D.treated.indexOf(d.nm) >= 0 &&
+         (d.gu === "강남구" || d.gu === "송파구");
+}).forEach(function(d){ svg.appendChild(path(d.d, "trt")); });
+
+sl.max = D.months.length - 1;
+let cur = 0;
+
+function draw(i){
+  cur = i;
+  document.getElementById("ym").textContent = D.months[i];
+  let on = 0, unk = 0;
+  D.dong.forEach(function(d){
+    const sp = at(d.cd, i);
+    paths[d.cd].setAttribute("fill", colorOf(sp));
+    if(sp && sp.s === 1) on++;
+    else if(sp) unk++;
+  });
+  document.getElementById("cnt").textContent =
+    "지정 " + on + "개 동 · 불명 " + unk + "개 / 전체 " + D.dong.length + "개";
+  document.getElementById("note").textContent =
+    i > D.endIdx ? "— 식별 구간 밖 (통제군 소멸)" : "";
+}
+sl.addEventListener("input", function(){ draw(+sl.value); });
+
+function showTip(e, d){
+  const sp = at(d.cd, cur);
+  let h = "<b>" + d.gu + " " + d.nm + "</b><br>";
+  if(!sp) h += "미지정";
+  else if(sp.s === 0) h += "불명 — 공고를 아직 못 읽은 구간";
+  else {
+    h += "지정 · " + sp.w + "<br>" + (sp.c || "계열 미상");
+    if(sp.n) h += '<br><span style="opacity:.7">' + sp.n + "</span>";
+  }
+  tip.innerHTML = h;
+  tip.style.display = "block";
+  tip.style.left = Math.min(e.clientX + 14, innerWidth - 300) + "px";
+  tip.style.top  = Math.min(e.clientY + 14, innerHeight - 110) + "px";
+}
+
+const lg = document.getElementById("lg");
+D.series.concat([["그 밖의 계열", D.other], ["불명", D.unknown],
+                 ["미지정", D.none]]).forEach(function(pair){
+  lg.insertAdjacentHTML("beforeend",
+    '<div><span class="sw" style="background:' + pair[1] + '"></span>' +
+    pair[0] + "</div>");
+});
+
+const ev = document.getElementById("ev");
+ev.innerHTML = D.events.map(function(e){
+  return '<b class="j" data-ym="' + e.ym + '">' + e.label + "</b>";
+}).join("<br>");
+ev.addEventListener("click", function(e){
+  const ym = e.target.dataset ? e.target.dataset.ym : null;
+  if(!ym) return;
+  const i = D.months.indexOf(ym);
+  if(i >= 0){ sl.value = i; draw(i); }
+});
+
+let timer = null;
+document.getElementById("play").addEventListener("click", function(){
+  if(timer){ clearInterval(timer); timer = null; this.textContent = "재생"; return; }
+  this.textContent = "멈춤";
+  const self = this;
+  timer = setInterval(function(){
+    let i = cur + 1;
+    if(i > +sl.max){ clearInterval(timer); timer = null; self.textContent = "재생"; return; }
+    sl.value = i; draw(i);
+  }, 170);
+});
+
+const start = D.months.indexOf("2020-06");
+sl.value = start > 0 ? start : 0;
+draw(+sl.value);
+</script>
+</html>
