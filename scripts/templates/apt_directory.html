@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>서울 아파트 단지 목록</title>
+<style>
+ :root{--bg:#fff;--fg:#1a1a1a;--mut:#70757a;--line:#e6e6e6;--acc:#c0392b;
+       --hl:#fff6d6;--zone:#fdecea}
+ *{box-sizing:border-box}
+ body{margin:0;font:14px/1.55 "Malgun Gothic",system-ui,sans-serif;
+      background:var(--bg);color:var(--fg)}
+ .page{max-width:1080px;margin:0 auto;padding:22px 20px 60px}
+ h1{font-size:19px;margin:0 0 3px}
+ .sub{color:var(--mut);font-size:12.5px}
+ .bar{position:sticky;top:0;background:var(--bg);padding:12px 0 10px;
+      border-bottom:1px solid var(--line);z-index:5;margin-bottom:2px}
+ input[type=search]{width:100%;font:inherit;padding:9px 12px;
+      border:1px solid #ccc;border-radius:6px}
+ details{border-bottom:1px solid var(--line)}
+ summary{cursor:pointer;padding:9px 4px;list-style:none;display:flex;
+         align-items:baseline;gap:10px}
+ summary::-webkit-details-marker{display:none}
+ summary::before{content:"▸";color:var(--mut);font-size:11px;width:11px;flex:none}
+ details[open]>summary::before{content:"▾"}
+ .gu>summary{font-size:16px;font-weight:700}
+ .dong>summary{font-size:14px;padding-left:20px}
+ .dong{border-bottom:1px dotted var(--line)}
+ .meta{margin-left:auto;color:var(--mut);font-size:12px;
+       font-variant-numeric:tabular-nums;text-align:right;flex:none}
+ .tag{font-size:11px;padding:1px 7px;border-radius:9px;background:var(--zone);
+      color:var(--acc);border:1px solid #f5c6c0;white-space:nowrap}
+ .tag.part{background:#eef2f7;color:#41556b;border-color:#d6dee8}
+ .tag.late{background:#f4f4f4;color:#888;border-color:#e2e2e2}
+ table{width:100%;border-collapse:collapse;margin:2px 0 12px}
+ th{font-size:11.5px;color:var(--mut);font-weight:600;text-align:right;
+    padding:5px 8px;border-bottom:1px solid var(--line)}
+ th:first-child{text-align:left;padding-left:36px}
+ td{padding:6px 8px;text-align:right;border-bottom:1px solid #f2f2f2;
+    font-variant-numeric:tabular-nums}
+ td:first-child{text-align:left;padding-left:36px}
+ tr.apt{cursor:pointer}
+ tr.apt:hover{background:#fafafa}
+ tr.apt.on{background:var(--hl)}
+ .nm{font-weight:600}
+ .det td{background:#fbfbfb;padding:10px 8px 12px 36px;text-align:left;
+         font-size:12.5px;color:#333}
+ .det dl{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+         gap:4px 18px;margin:0}
+ .det div{display:flex;gap:8px}
+ .det dt{color:var(--mut);flex:none;min-width:62px}
+ .det dd{margin:0;font-weight:600}
+ .hits{margin:8px 0 0}
+ .hits .h{padding:7px 4px;border-bottom:1px solid #f2f2f2;display:flex;gap:10px}
+ .hits .h span{color:var(--mut);font-size:12px}
+ .none{color:var(--mut);padding:14px 4px}
+ .foot{margin-top:26px;color:var(--mut);font-size:12px;line-height:1.7}
+ mark{background:#ffe58a}
+</style>
+
+<div class="page">
+ <h1>서울 아파트 단지 목록</h1>
+ <div class="sub" id="hd"></div>
+
+ <div class="bar">
+  <input type="search" id="q" placeholder="단지명 또는 법정동으로 찾기 (예: 은마, 대치동)"
+         autocomplete="off">
+ </div>
+
+ <div id="res"></div>
+ <div id="tree"></div>
+
+ <div class="foot">
+  <b>이 목록의 정체</b><br>
+  국토교통부 아파트 매매 실거래 상세자료에서 만들었다. 그러므로
+  <b>2006년 이후 매매가 한 번이라도 있었던 단지</b>의 목록이지 아파트 대장이 아니다.
+  거래가 없었던 단지는 나오지 않는다.<br><br>
+  실거래 자료에는 <b>세대수 칸이 없다.</b> 규모는 거래 건수와 최고층으로 짐작해야 한다.
+  거래 건수가 많은 순으로 세운 것도 그 때문이다.<br><br>
+  자치구 줄의 <b>84㎡</b> 는 최근 6개월 중위 실거래가이고, 단지 안의
+  <b>84㎡ 중위</b> 는 20년 전체다. 단지 하나의 최근 6개월 거래는 대개
+  한두 건이라 중위값이 되지 않기 때문이다.<br><br>
+  <b>토허</b> 표시는 그 법정동이 <b>언제 처음</b> 토지거래허가구역이 됐는지다.
+  2025년 10월 20일에 서울 25개 구 전역이 지정됐으므로 '지정된 적 있다'만으로는
+  340개 동이 모두 걸린다. 그래서 시점을 보여준다.<br>
+  <span class="tag">동 전체 · 2025-10 이전</span> 이 우리가 인과분석에 쓰는 계열이고,
+  <span class="tag late">동 전체 · 2025-10</span> 은 전역 지정에 휩쓸린 것이며,
+  <span class="tag part">일부</span> 는 동의 일부만 구역인 지정(주로 정비사업)이다.
+ </div>
+</div>
+
+<script>
+const D = __DATA__;
+// 단지는 배열로 온다. 자리 뜻을 이름으로 되돌린다.
+const F = {};
+D.fields.forEach(function(k, i){ F[k] = i; });
+function A(a, k){ return a[F[k]]; }
+const tree = document.getElementById("tree");
+const res  = document.getElementById("res");
+const q    = document.getElementById("q");
+
+document.getElementById("hd").textContent =
+  `자치구 ${D.gus.length} · 법정동 ${D.total.dong} · 단지 ${D.total.apt.toLocaleString()}개` +
+  ` · 거래 ${D.total.deal.toLocaleString()}건 (${D.total.from} ~ ${D.total.to})`;
+
+function esc(s){
+  return String(s).replace(/[&<>"]/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];
+  });
+}
+function eok(v){ return v == null ? "—" : v.toFixed(1) + "억"; }
+
+// 2025-10-20 서울 전역 지정으로 모든 동이 '동 전체 지정' 이력을 갖는다.
+// 그래서 '있다/없다'가 아니라 '언제 처음'을 보여준다.
+function ltzTag(z){
+  if(!z) return "";
+  if(!z.whole)
+    return `<span class="tag part" title="${esc(z.ser || "")}">` +
+           `토허 일부 ${z.part_from.slice(0,7)}~</span>`;
+  const cls = z.early ? "tag" : "tag late";
+  return `<span class="${cls}" title="${esc(z.ser || "")}">` +
+         `토허 동 전체 ${z.from.slice(0,7)}~</span>`;
+}
+
+function aptRows(apts){
+  let h = "<table><thead><tr><th>단지</th><th>건축</th><th>거래</th>" +
+          "<th>최근 거래</th><th>최근가</th></tr></thead><tbody>";
+  apts.forEach(function(a, i){
+    h += `<tr class="apt" data-i="${i}">` +
+         `<td><span class="nm">${esc(A(a,"nm"))}</span></td>` +
+         `<td>${A(a,"yr") || "—"}</td>` +
+         `<td>${A(a,"n").toLocaleString()}</td>` +
+         `<td>${A(a,"l")}</td>` +
+         `<td>${eok(A(a,"la"))}</td></tr>`;
+  });
+  return h + "</tbody></table>";
+}
+
+function detailHtml(a){
+  const rows = [
+    ["지번", A(a,"jb") || "—"],
+    ["건축", A(a,"yr") ? A(a,"yr") + "년" : "—"],
+    ["최고층", A(a,"fl") ? A(a,"fl") + "층" : "—"],
+    ["면적 종류", A(a,"na") + "가지"],
+    ["주력 면적", A(a,"ma") ? A(a,"ma") + "㎡" : "—"],
+    ["거래", A(a,"n").toLocaleString() + "건"],
+    ["첫 거래", A(a,"f")],
+    ["최근 거래", A(a,"l") + (A(a,"lz") ? ` · ${A(a,"lz")}㎡` : "")],
+    ["최근가", eok(A(a,"la"))],
+    ["최고가", eok(A(a,"hi"))],
+    ["84㎡ 중위", eok(A(a,"m84")) + " (전체기간)"],
+  ];
+  return '<tr class="det"><td colspan="5"><dl>' +
+    rows.map(function(r){
+      return `<div><dt>${r[0]}</dt><dd>${esc(r[1])}</dd></div>`;
+    }).join("") + "</dl></td></tr>";
+}
+
+function wireTable(box, apts){
+  box.addEventListener("click", function(e){
+    const tr = e.target.closest("tr.apt");
+    if(!tr) return;
+    const nx = tr.nextElementSibling;
+    if(nx && nx.classList.contains("det")){
+      nx.remove(); tr.classList.remove("on"); return;
+    }
+    box.querySelectorAll("tr.det").forEach(function(x){ x.remove(); });
+    box.querySelectorAll("tr.apt.on").forEach(function(x){ x.classList.remove("on"); });
+    tr.classList.add("on");
+    tr.insertAdjacentHTML("afterend", detailHtml(apts[+tr.dataset.i]));
+  });
+}
+
+D.gus.forEach(function(g){
+  const d = document.createElement("details");
+  d.className = "gu";
+  d.innerHTML = `<summary>${esc(g.nm)}<span class="meta">` +
+    `단지 ${g.na.toLocaleString()} · 거래 ${g.nd.toLocaleString()} · ` +
+    `84㎡ ${eok(g.m84)} <span title="최근 6개월 중위">(최근)</span></span></summary><div class="body"></div>`;
+  const body = d.querySelector(".body");
+  let built = false;
+  d.addEventListener("toggle", function(){
+    if(!d.open || built) return;
+    built = true;
+    g.dongs.forEach(function(dg){
+      const dd = document.createElement("details");
+      dd.className = "dong";
+      dd.innerHTML = `<summary>${esc(dg.nm)} ${ltzTag(dg.ltz)}` +
+        `<span class="meta">단지 ${dg.na} · 거래 ${dg.nd.toLocaleString()}</span>` +
+        `</summary><div class="body"></div>`;
+      const b2 = dd.querySelector(".body");
+      let b2done = false;
+      dd.addEventListener("toggle", function(){
+        if(!dd.open || b2done) return;
+        b2done = true;
+        b2.innerHTML = aptRows(dg.apts);
+        wireTable(b2, dg.apts);
+      });
+      body.appendChild(dd);
+    });
+  });
+  tree.appendChild(d);
+});
+
+// 검색 — 전체를 훑는다
+const FLAT = [];
+D.gus.forEach(function(g){
+  g.dongs.forEach(function(dg){
+    dg.apts.forEach(function(a){
+      FLAT.push({gu: g.nm, dong: dg.nm, a: a});
+    });
+  });
+});
+
+let t = null;
+q.addEventListener("input", function(){
+  clearTimeout(t);
+  t = setTimeout(search, 130);
+});
+
+function search(){
+  const s = q.value.trim();
+  if(!s){ res.innerHTML = ""; tree.style.display = ""; return; }
+  tree.style.display = "none";
+  const hits = FLAT.filter(function(x){
+    return A(x.a,"nm").indexOf(s) >= 0 || x.dong.indexOf(s) >= 0;
+  }).sort(function(p, r){ return A(r.a,"n") - A(p.a,"n"); });
+
+  if(!hits.length){
+    res.innerHTML = '<div class="none">찾는 단지가 없습니다.</div>';
+    return;
+  }
+  const shown = hits.slice(0, 300);
+  const apts = shown.map(function(x){ return x.a; });
+  let h = `<div class="sub" style="margin:10px 0 2px">` +
+          `${hits.length.toLocaleString()}개 중 ${shown.length}개 표시</div>`;
+  h += "<table><thead><tr><th>단지</th><th>건축</th><th>거래</th>" +
+       "<th>최근 거래</th><th>최근가</th></tr></thead><tbody>";
+  shown.forEach(function(x, i){
+    const nm = esc(A(x.a,"nm")).replace(s, "<mark>" + esc(s) + "</mark>");
+    h += `<tr class="apt" data-i="${i}"><td><span class="nm">${nm}</span> ` +
+         `<span class="sub">${esc(x.gu)} ${esc(x.dong)}</span></td>` +
+         `<td>${A(x.a,"yr") || "—"}</td>` +
+         `<td>${A(x.a,"n").toLocaleString()}</td>` +
+         `<td>${A(x.a,"l")}</td><td>${eok(A(x.a,"la"))}</td></tr>`;
+  });
+  res.innerHTML = h + "</tbody></table>";
+  wireTable(res, apts);
+}
+</script>
+</html>

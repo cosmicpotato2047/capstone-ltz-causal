@@ -20,7 +20,7 @@
 | 직전 마일스톤 | M1 (09/24) — 2020.6 지정 거래량 효과 확정 |
 | 막힌 것 | 없음 |
 
-지도로 보려면 `output/ltz_map.html` 을 연다
+지도로 보려면 `output/ltz_map.html`, 단지 목록은 `output/apt_directory.html` 을 연다
 (`python scripts/plot_ltz_map.py` 로 다시 만든다).
 
 수치의 출처는 `output/results/*.json` 이다. 문서의 숫자가 그 파일과
