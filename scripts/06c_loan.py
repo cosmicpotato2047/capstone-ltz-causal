@@ -167,6 +167,85 @@ def main() -> None:
             print(f"    k={k:>2}  {res[lab][k]:>7.1f}%   (p={r.loc[k,'p']:.3f})")
     out["노출도별"] = res
 
+
+    # --- 3. 삼중차분 — 두 효과의 차이가 유의한가 -------------------------
+    print("\n" + "=" * 76)
+    print("3. 삼중차분 — 고가와 저가의 효과 차이가 유의한가")
+    print("=" * 76)
+    print("  2절은 표본을 갈라 각각 추정한 것이라 '차이'의 유의성을 말할 수 없다.")
+    print("  한 식에 교차항을 넣어 그 차이를 직접 추정한다.\n")
+
+    # 원자료 평균을 먼저 보여 준다. 사건연구는 기준분기 하나에 기대는데
+    # 그 분기가 이상치면(결정기록 0014) 표본을 가를수록 크게 흔들린다.
+    # 삼중차분은 사전 구간 전체를 기준으로 삼으므로 원자료와 맞아야 한다.
+    print("  원자료 — 법정동×사건월 칸의 평균 거래건수")
+    print(f"  {'가격군':<6}{'집단':<6}{'사전':>7}{'사후':>7}{'변화':>9}")
+    print("  " + "-" * 36)
+    raw = {}
+    for hi in (False, True):
+        s = gg[(gg.high == hi) & gg.em.between(KMIN * 3, KMAX * 3 + 2)]
+        q = s.groupby(["umd_full_cd", "em"]).size().rename("n").reset_index()
+        q["treated"] = q.umd_full_cd.map(s.groupby("umd_full_cd").treated.first())
+        q["post"] = q.em >= 0
+        m = q.groupby(["treated", "post"]).n.mean()
+        lab = "고가" if hi else "저가"
+        raw[lab] = {}
+        for tr in (True, False):
+            a, b = m.get((tr, False), np.nan), m.get((tr, True), np.nan)
+            raw[lab]["처치" if tr else "통제"] = {
+                "사전": round(float(a), 1), "사후": round(float(b), 1),
+                "변화_pct": round(float(100 * (b / a - 1)), 1)}
+            print(f"  {lab if tr else '':<6}{'처치' if tr else '통제':<6}"
+                  f"{a:>7.1f}{b:>7.1f}{100*(b/a-1):>8.0f}%")
+    out["원자료평균"] = raw
+    print("\n  저가는 처치·통제가 비슷하게 줄고, 고가는 처치만 크게 줄었다.\n")
+
+    meta = (gg.groupby(["umd_full_cd", "high"])
+            .agg(treated=("treated", "first")).reset_index())
+    cnt = gg.groupby(["umd_full_cd", "high", "em"]).size().rename("n").reset_index()
+    full = pd.MultiIndex.from_product(
+        [range(KMIN * 3, KMAX * 3 + 3)], names=["em"]).to_frame(index=False)
+    full = meta.merge(full, how="cross")
+    p3 = (full.merge(cnt, on=["umd_full_cd", "high", "em"], how="left")
+          .fillna({"n": 0}))
+    p3["kq"] = np.floor(p3.em / 3).astype(int)
+    p3["post"] = (p3.kq >= 0).astype(float)
+    p3["y"] = np.log1p(p3.n)
+    # 셀 식별자. 고정효과는 (법정동×가격군)과 (사건월×가격군)으로 둔다.
+    # 그래야 가격군마다 다른 시간 추세가 흡수되고, 남는 것이 삼중차분이다.
+    p3["cell"] = p3.umd_full_cd.astype(str) + "_" + p3.high.astype(str)
+    p3["time"] = p3.em.astype(str) + "_" + p3.high.astype(str)
+    p3["did"] = p3.treated.astype(float) * p3.post
+    p3["ddd"] = p3["did"] * p3.high.astype(float)
+
+    dm = econ.demean(p3[["y", "did", "ddd"]], p3[["cell", "time"]])
+    import statsmodels.api as sm
+    fit = sm.OLS(dm["y"], dm[["did", "ddd"]]).fit(
+        cov_type="cluster", cov_kwds={"groups": p3.umd_full_cd})
+    b_did, b_ddd = fit.params["did"], fit.params["ddd"]
+    print(f"  셀 {len(p3):,}칸 (법정동×가격군 {p3.cell.nunique()} × 사건월 {p3.em.nunique()})")
+    print(f"  {'항':<28}{'계수':>9}{'표준오차':>10}{'p':>8}   효과")
+    print("  " + "-" * 70)
+    print(f"  {'처치×사후 (저가 기준)':<28}{b_did:>9.3f}{fit.bse['did']:>10.3f}"
+          f"{fit.pvalues['did']:>8.3f}   {100*np.expm1(b_did):>6.1f}%")
+    print(f"  {'처치×사후×고가 (차이)':<28}{b_ddd:>9.3f}{fit.bse['ddd']:>10.3f}"
+          f"{fit.pvalues['ddd']:>8.3f}   {100*np.expm1(b_ddd)-0:>6.1f}%p 더")
+    print(f"  {'고가 단지의 효과 (합)':<28}{b_did+b_ddd:>9.3f}{'':>10}{'':>8}"
+          f"   {100*np.expm1(b_did+b_ddd):>6.1f}%")
+    sig = fit.pvalues["ddd"] < 0.05
+    print(f"\n  → 차이는 {'유의하다' if sig else '유의하지 않다'}"
+          f" (p={fit.pvalues['ddd']:.3f}).")
+    if not sig:
+        print("    고가에서 더 커 보이지만 그 차이를 통계적으로 단정할 수 없다.")
+    out["삼중차분"] = {
+        "처치×사후": round(float(b_did), 4),
+        "처치×사후×고가": round(float(b_ddd), 4),
+        "p_ddd": round(float(fit.pvalues["ddd"]), 4),
+        "저가_효과_pct": round(float(100 * np.expm1(b_did)), 2),
+        "고가_효과_pct": round(float(100 * np.expm1(b_did + b_ddd)), 2),
+        "셀수": int(len(p3)),
+    }
+
     io.save_result("06c_loan", out)
     print(f"\n저장 {fp.relative_to(io.ROOT)} · output/results/06c_loan.json")
 
