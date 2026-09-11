@@ -55,6 +55,7 @@ def main() -> None:
                     help="처치·통제 중 적은 쪽의 최소 거래 수")
     a = ap.parse_args()
 
+    END = policy.IDENTIFICATION_END.to_period("M")
     pan = pd.read_csv(io.POLICY / "ltz_panel.csv")
     z = pd.read_csv(io.POLICY / "notices" / "zones.csv", dtype={"지번": str})
     pan["m"] = pd.PeriodIndex(pan.연월, freq="M")
@@ -79,6 +80,13 @@ def main() -> None:
     # 동별 지정 개월 집합 (사전 청결·사후 길이 판정용)
     onset = {k: set(g.m) for k, g in on.groupby(key)}
     allset = {k: set(g.m) for k, g in pan.groupby(key)}   # 지정+불명
+    # 통제동에서 빼는 기준은 '동전체 지정'뿐이다. 정비사업처럼 동의 1~3%만
+    # 덮는 지정까지 배제 사유로 삼으면 통제군이 통째로 사라진다. 성동구는
+    # 18개 동 중 15개가 어느 시점엔가 정비사업 구역이라 통제 후보가 1개가
+    # 됐다. 그런 부분 지정은 배제가 아니라 오염으로 다룬다
+    # (결정기록 0009 · 0012, check_contamination.py).
+    whole = {k: set(g[g.지정방식 == "동전체"].m)
+             for k, g in on.groupby(key)}
 
     rows = []
     # 같은 달에 성격이 다른 지정이 겹칠 수 있다. 2021-04-04 공공재개발과
@@ -90,17 +98,19 @@ def main() -> None:
         pre_ms = {start - i for i in range(1, a.pre + 1)}
         dirty = sum(bool(allset.get((gu, d), set()) & pre_ms) for d in dongs)
         # 사후 길이 — 모든 동이 연속 지정된 개월 수 (최솟값)
+        # 사후 길이는 식별 구간 끝에서 자른다. 2025-10-20 서울 전역 지정
+        # 이후로는 통제군이 없어 어차피 추정할 수 없다 (결정기록 0002).
         def run(d):
             s, n = onset.get((gu, d), set()), 0
-            while start + n in s:
+            while start + n in s and start + n <= END:
                 n += 1
             return n
         post = min(run(d) for d in dongs)
         # 같은 자치구의 통제 후보 — 그 시점에 지정/불명이 아닌 동
-        win = {start + i for i in range(-a.pre, post)}
+        win = {start + i for i in range(-a.pre, post) if start + i <= END}
         gu_dongs = set(df[df.sgg_nm == gu].umdNm.unique()) if gu in have_gu else set()
         ctrl = [d for d in gu_dongs - set(dongs)
-                if not (allset.get((gu, d), set()) & win)]
+                if not (whole.get((gu, d), set()) & win)]
 
         if gu in have_gu:
             t = df[(df.sgg_nm == gu) & df.umdNm.isin(dongs)]

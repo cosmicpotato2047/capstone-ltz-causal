@@ -162,7 +162,7 @@ def main() -> None:
             ser = sorted(x for x in ser_of.get((r.자치구, r.법정동, m), ()) if x)
             pan.append({"자치구": r.자치구, "법정동": r.법정동,
                         "연월": str(m), "상태": r.상태, "계열": "|".join(ser),
-                        "지정일수비율": round(frac, 3)})
+                        "지정방식": r.지정방식, "지정일수비율": round(frac, 3)})
     P = (pd.DataFrame(pan)
          .sort_values(["자치구", "법정동", "연월", "상태"])
          .drop_duplicates(subset=["자치구", "법정동", "연월"], keep="first"))
