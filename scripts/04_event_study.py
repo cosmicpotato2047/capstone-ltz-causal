@@ -40,6 +40,7 @@ def main() -> None:
     df["treated"] = policy.assign_2020(df)
     df["log_area"] = np.log(df.area_m2)
     df["ym_s"] = df.ym.astype(str)
+    df["em"] = policy.event_month(df.deal_date, EVENT)
 
     print(f"[{policy.EVENTS[EVENT]['label']}]")
     print(f"표본 {len(df):,}건 / 처치 {int(df.treated.sum()):,} "
@@ -52,16 +53,31 @@ def main() -> None:
         fes=["aptSeq", "ym_s"], controls=["floor_no", "age_at_deal", "log_area"],
         cluster="umd_full_cd", kmin=KMIN, kmax=KMAX)
 
-    # 거래량: 법정동-월 패널
-    pan = df.groupby(["umd_full_cd", "ym_s"]).size().rename("n").reset_index()
+    # 거래량: 법정동 × 사건월 패널.
+    # 달력 월이 아니라 사건월(23일~다음달 22일)로 묶는다. 달력 월로 묶으면
+    # 지정이 걸친 2020년 6월 한 칸이 처치 전후를 섞어 버린다 (백로그 6b).
+    pan = df.groupby(["umd_full_cd", "em"]).size().rename("n").reset_index()
     meta = df.groupby("umd_full_cd").agg(treated=("treated", "first")).reset_index()
     pan = pan.merge(meta, on="umd_full_cd")
-    pan["deal_date"] = pd.PeriodIndex(pan.ym_s, freq="M").to_timestamp()
-    pan["kq"] = policy.event_quarter(pan.deal_date, EVENT)
-    pan["log_n"] = np.log(pan.n)
+
+    # 거래가 한 건도 없는 달은 groupby 에서 아예 빠진다. 빠진 채로 두면
+    # '거래가 있었던 달'만 보게 되어 감소 효과가 과소추정된다. 0 으로 채운다.
+    full = pd.MultiIndex.from_product(
+        [meta.umd_full_cd, range(int(pan.em.min()), int(pan.em.max()) + 1)],
+        names=["umd_full_cd", "em"]).to_frame(index=False)
+    pan = (full.merge(pan, on=["umd_full_cd", "em"], how="left")
+              .drop(columns=["treated"])
+              .merge(meta, on="umd_full_cd"))
+    n_zero = int(pan.n.isna().sum())
+    pan["n"] = pan.n.fillna(0)
+    pan["kq"] = np.floor(pan.em / 3).astype(int)
+    pan["em_s"] = pan.em.astype(str)
+    pan["log_n"] = np.log1p(pan.n)          # 0 이 있으므로 log1p
+    print(f"거래량 패널 {len(pan):,}칸 (법정동 {pan.umd_full_cd.nunique()} × "
+          f"사건월 {pan.em.nunique()}) · 거래 0인 칸 {n_zero}개")
     vol = econ.event_study(
         pan, y="log_n", treated="treated", kq="kq",
-        fes=["umd_full_cd", "ym_s"], controls=[], cluster="umd_full_cd",
+        fes=["umd_full_cd", "em_s"], controls=[], cluster="umd_full_cd",
         kmin=KMIN, kmax=KMAX)
 
     for nm, r in (("가격 (log ㎡당가)", price), ("거래량 (log 건수)", vol)):

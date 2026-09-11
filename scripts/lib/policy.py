@@ -103,12 +103,30 @@ def assign_kept_2025(df: pd.DataFrame) -> pd.Series:
     return df["aptSeq"].isin(KEPT_2025)
 
 
-def event_quarter(dates: pd.Series, event: str) -> pd.Series:
-    """사건 효력일 기준 분기. 0 = 사건이 포함된 분기."""
-    import numpy as np
+def event_month(dates: pd.Series, event: str) -> pd.Series:
+    """사건 효력일 기준 경과 개월. 0 = 효력일이 속한 '사건월'.
+
+    달력 월이 아니라 **효력일에 맞춘 월**이다. 2020-06-23 지정이면
+    한 달은 23일에 시작해 다음 달 22일에 끝난다.
+
+        2020-06-22  ->  -1   (지정 전날)
+        2020-06-23  ->   0   (지정 당일)
+        2020-07-22  ->   0
+        2020-07-23  ->   1
+
+    달력 월로 자르면 6월 1~22일의 지정 전 거래가 k=0 에 섞여 들어간다.
+    실제로 강남·송파 k=0 구간 3,343건 중 1,532건(45.8%)이 지정 전이었고,
+    그만큼 처치 직후 효과가 희석되고 있었다 (백로그 6b).
+    """
     e = EVENTS[event]["effect"]
-    m = (dates.dt.year - e.year) * 12 + (dates.dt.month - e.month)
-    return np.floor(m / 3).astype(int)
+    d = pd.to_datetime(dates) - pd.Timedelta(days=e.day - 1)
+    return (d.dt.year - e.year) * 12 + (d.dt.month - e.month)
+
+
+def event_quarter(dates: pd.Series, event: str) -> pd.Series:
+    """사건 효력일 기준 분기. 0 = 효력일 직후 3개월."""
+    import numpy as np
+    return np.floor(event_month(dates, event) / 3).astype(int)
 
 
 # --- 공고 계열 분류 ---------------------------------------------------------
