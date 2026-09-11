@@ -126,8 +126,17 @@ def main() -> None:
     E.assign(일자=E.일자.dt.date).to_csv(
         io.POLICY / "ltz_events.csv", index=False, encoding="utf-8-sig")
 
-    # 패널은 구간에서 뽑는다. 그 달의 절반 넘게 지정이면 지정으로 본다.
+    # 패널의 상태는 구간에서 오지만, **계열은 그 달에 실제로 걸려 있던 것**
+    # 이어야 한다. 구간 전체의 합집합을 쓰면 나중에 다른 계열이 덧붙은 동이
+    # 처음부터 그랬던 것처럼 보여, 같은 날 같은 계열로 지정된 동끼리 묶이지
+    # 않는다. 실제로 청담동이 대치·삼성동과 갈라졌다.
     months = pd.period_range("2006-01", "2026-08", freq="M")
+    ser_of: dict[tuple, set] = {}
+    for r in z.itertuples():
+        for m in pd.period_range(r.s.to_period("M"), r.e.to_period("M"), freq="M"):
+            ser_of.setdefault((r.자치구, r.법정동, m), set()).update(
+                str(r.계열).split("|"))
+
     pan = []
     for _, r in S.iterrows():
         s, e = pd.Timestamp(r.시작일), pd.Timestamp(r.종료일)
@@ -136,8 +145,9 @@ def main() -> None:
                 continue
             lo, hi = max(s, m.start_time), min(e, m.end_time)
             frac = (hi - lo).days / (m.end_time - m.start_time).days
+            ser = sorted(x for x in ser_of.get((r.자치구, r.법정동, m), ()) if x)
             pan.append({"자치구": r.자치구, "법정동": r.법정동,
-                        "연월": str(m), "상태": r.상태, "계열": r.계열,
+                        "연월": str(m), "상태": r.상태, "계열": "|".join(ser),
                         "지정일수비율": round(frac, 3)})
     P = (pd.DataFrame(pan)
          .sort_values(["자치구", "법정동", "연월", "상태"])

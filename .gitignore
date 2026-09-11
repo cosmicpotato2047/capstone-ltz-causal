@@ -1,29 +1,22 @@
-# 인증
-.env
-
-# 원자료 스냅샷 (303MB, 1984개 JSON) — scripts/collect.py 로 재생성
-data/raw/
-data/processed/
-
-# 저작권 자료 (개인 열람용, 배포 금지)
-docs/papers/
-
-# 파이썬
-__pycache__/
-*.pyc
-.venv/
-.ipynb_checkpoints/
-
-# 컴파일 캐시
-*.pyc
-
-# 편집기 설정 (Obsidian 등)
-.obsidian/
-.vscode/
-.idea/
 
 # 개인용 (발표 스크립트 등) — 공개 저장소에 올리지 않음
-docs/private/
-
 # 서울시보 원본 (수백~수천 쪽. 발췌본만 커밋)
+# 원자료 스냅샷 (303MB, 1984개 JSON) — scripts/collect.py 로 재생성
+# 인증
+# 저작권 자료 (개인 열람용, 배포 금지)
+# 컴파일 캐시
+# 파이썬
+# 편집기 설정 (Obsidian 등)
+*.pyc
+.env
+.idea/
+.ipynb_checkpoints/
+.obsidian/
+.venv/
+.vscode/
+__pycache__/
 data/policy/notices/seoulsibo_raw/
+data/processed/
+data/raw/
+docs/papers/
+docs/private/

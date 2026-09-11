@@ -59,9 +59,21 @@ FROZEN_GLOBS = ["docs/reports/*.md", "docs/slides/*.html"]
 SNAPSHOT_RE = re.compile(r"스냅샷|수집 ?시점|20\d\d-\d\d-\d\d 수집")
 
 
+# 정수가 아닌 값(효과 크기 등)은 JSON 에서 끌어올 수 없어 따로 둔다.
+# 값 자체보다 **폐기된 표현이 살아있는 문서에 남아 있는지**가 중요하다.
+RETIRED_TEXT = {
+    "-59%": "거래량 k=0. 달력 월 정렬 + 빈칸 방치 (결정기록 0013 이전)",
+    "−59%": "같음",
+    "-58.7%": "같음",
+    "−58.7%": "같음",
+}
+
+
 def load_current() -> dict[str, int]:
     out = {}
     for name, spec in WATCHED.items():
+        if "source" not in spec:          # 수동 관리 항목은 건너뛴다
+            continue
         f, path = spec["source"]
         p = io.RESULTS / f"{f}.json"
         if not p.exists():
@@ -76,6 +88,33 @@ def load_current() -> dict[str, int]:
 def numbers_in(text: str) -> set[int]:
     """1,234 또는 1234 형태의 정수를 모두 뽑는다."""
     return {int(m.replace(",", "")) for m in re.findall(r"\d{1,3}(?:,\d{3})+|\d{4,}", text)}
+
+
+def check_retired_text() -> int:
+    """폐기된 표현이 살아있는 문서에 남아 있는가."""
+    bad = 0
+    print()
+    print("=" * 74)
+    print("4) 폐기된 표현이 살아있는 문서에 남아 있는가")
+    print("=" * 74)
+    for rel in LIVING:
+        p = io.ROOT / rel
+        if not p.exists():
+            continue
+        for ln in p.read_text(encoding="utf-8").splitlines():
+            # 옛 값임을 명시한 줄은 통과시킨다. '-59% -> -76%' 처럼 변경
+            # 이력을 적는 것은 정당하고, 오히려 남겨야 한다.
+            # 예외어는 좁게 둔다. '이전'은 '지정 이전'에도 걸려 못 쓴다.
+            if any(w in ln for w in ("→", "->", "종전", "폐기", "0013")):
+                continue
+            for expr, why in RETIRED_TEXT.items():
+                if expr in ln:
+                    print(f"  [오류] {rel} 에 '{expr}' — {why}")
+                    print(f"         {ln.strip()[:78]}")
+                    bad += 1
+    if not bad:
+        print("  없음")
+    return bad
 
 
 def main() -> None:
@@ -142,6 +181,8 @@ def main() -> None:
     if errors:
         print(f"실패 — 살아있는 문서에 폐기된 값 {len(errors)}건")
         print("동결 문서(주차 보고서·발표자료)의 옛값은 그 시점의 기록이므로 고치지 않는다.")
+        sys.exit(1)
+    if check_retired_text():
         sys.exit(1)
     print(f"통과 — 살아있는 문서에 폐기된 값 없음" + (f" (경고 {len(warns)}건)" if warns else ""))
 
