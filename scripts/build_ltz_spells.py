@@ -30,7 +30,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib import io, policy  # noqa: E402
+from lib import geo, io, policy  # noqa: E402
 
 io.setup_stdout()
 
@@ -45,6 +45,20 @@ def main() -> None:
     z = z[z.효력일.notna() & (z.효력일 != "") & z.종료일.notna() & (z.종료일 != "")].copy()
     z["s"] = pd.to_datetime(z.효력일)
     z["e"] = pd.to_datetime(z.종료일)
+
+    # 자치구 전역 지정은 동 분해 없이 자치구만 적혀 있다. 2025-10-20 서울
+    # 25개 구 지정이 그렇다. 법정동 기준표로 펴야 그림과 패널에 나타난다.
+    whole = z[z.단위 == "자치구"] if "단위" in z.columns else z.iloc[0:0]
+    if len(whole):
+        ex = []
+        for r in whole.itertuples():
+            for dong in sorted(geo.DONGS.get(r.자치구, ())):
+                d = r._asdict()
+                d.pop("Index", None)
+                d["법정동"] = dong
+                ex.append(d)
+        z = pd.concat([z[z.단위 != "자치구"], pd.DataFrame(ex)], ignore_index=True)
+        print(f"자치구 전역 지정 {len(whole)}행 → 법정동 {len(ex):,}행으로 폄")
 
     tl = pd.read_csv(N / "policy_timeline.csv")
     tl["stem"] = tl.파일.str.rsplit(".", n=1).str[0]

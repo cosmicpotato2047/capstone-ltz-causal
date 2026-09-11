@@ -26,10 +26,11 @@ import re
 import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib import io, policy  # noqa: E402
+from lib import geo, io, policy  # noqa: E402
 
 io.setup_stdout()
 
@@ -71,14 +72,20 @@ PERIOD = re.compile(r"(?:재)?지정\s*기간\s*:?\s*(?:[\s\S]{0,80}?)"
 RESET = re.compile(r"^\s*(?:[가-힣]{2,5}(?:특별시|광역시|특별자치시|특별자치도|도)"
                    r"|[가-힣]{2,5}(?:시|군)|붙\s*임\s*\d*|별\s*첨\s*\d*"
                    r"|[^\n]{0,20}지형도면[^\n]{0,20})\s*$")
-# 공고가 행정동 이름을 쓰는 경우가 있다. '금호4가동'(행정동) -> '금호동4가'(법정동).
-HJ_GA = re.compile(r"^([가-힣]{1,4})(\d)가동$")
+# 자치구 이름에서 '구'를 뗀 형태. 전역 지정 공고는 이렇게 나열한다.
+#   서울특별시 (25개 구)
+#   강남, 강동, 강북, 강서, 관악, 광진, ... 중, 중랑      605.2
+BARE = {g[:-1]: g for g in GU_LIST}
+BARE_LINE = re.compile(r"^\s*[가-힣]{1,4}(?:\s*,\s*[가-힣]{1,4})+\s*,?\s*$")
 
 
-def to_beopjeong(dong: str) -> str:
-    """행정동 표기를 법정동 표기로 되돌린다. 해당 없으면 그대로."""
-    m = HJ_GA.match(dong)
-    return f"{m.group(1)}동{m.group(2)}가" if m else dong
+def bare_gus(ln: str) -> list[str]:
+    """자치구 이름만 쉼표로 나열한 줄이면 정식 이름 목록을, 아니면 빈 목록을."""
+    if not BARE_LINE.match(ln):
+        return []
+    toks = [t.strip() for t in ln.strip().rstrip(",").split(",") if t.strip()]
+    hit = [BARE[t] for t in toks if t in BARE]
+    return hit if len(hit) == len(toks) and len(hit) >= 2 else []
 
 
 def area_of(ln: str) -> float | None:
@@ -106,8 +113,23 @@ def main() -> None:
         base = {"파일": f.stem, "계열": ser, "효력일": eff, "종료일": exp}
         lines = [re.sub(r"[ \t]+", " ", x).strip() for x in raw.splitlines()]
 
-        cur_gu, pending = "", None
+        cur_gu, pending, gu_all = "", None, []
         for n, ln in enumerate(lines):
+            # ① 자치구 전역 지정 — 동 분해 없이 자치구만 나열하는 공고.
+            #    여러 줄에 걸쳐 나열되므로 모았다가 면적 줄이 오면 쏟는다.
+            hit = bare_gus(ln)
+            if hit:
+                gu_all += hit
+                continue
+            if gu_all:
+                a = area_of(ln)
+                for g2 in dict.fromkeys(gu_all):
+                    rows.append({**base, "자치구": g2, "법정동": "", "지번": "",
+                                 "단위": "자치구", "면적_km2": None, "면적공유": True})
+                gu_all = []
+                if a is not None:
+                    continue
+
             g = GU_ONLY.match(ln)
             if g:
                 cur_gu, pending = g.group(1), None
@@ -129,8 +151,9 @@ def main() -> None:
                 if gu:
                     cur_gu = gu
                 if cur_gu:
-                    pending = {**base, "자치구": cur_gu, "법정동": to_beopjeong(dong),
-                               "지번": jibun, "면적_km2": None, "면적공유": False}
+                    pending = {**base, "자치구": cur_gu,
+                               "법정동": geo.normalize(dong, cur_gu), "지번": jibun,
+                               "단위": "법정동", "면적_km2": None, "면적공유": False}
                 continue
             # 지번 없이 동만 적는 공고도 있다 — '압구정동 / 1,149,476 / 압구정 아파트지구'.
             # 바로 다음 줄이 면적일 때만 인정해 오탐을 막는다.
@@ -141,22 +164,39 @@ def main() -> None:
                 if a is not None:
                     dongs = [x.strip() for x in d.group(0).split(",") if x.strip()]
                     for dong in dongs:
-                        rows.append({**base, "자치구": cur_gu, "법정동": to_beopjeong(dong),
-                                     "지번": "", "면적_km2": a,
+                        rows.append({**base, "자치구": cur_gu,
+                                     "법정동": geo.normalize(dong, cur_gu), "지번": "",
+                                     "단위": "법정동", "면적_km2": a,
                                      "면적공유": len(dongs) > 1})
                     continue
             for dong, km2 in INLINE.findall(ln):    # 대치동(3.53㎢)
                 if cur_gu:
-                    rows.append({**base, "자치구": cur_gu, "법정동": to_beopjeong(dong),
-                                 "지번": "", "면적공유": False,
+                    rows.append({**base, "자치구": cur_gu,
+                                 "법정동": geo.normalize(dong, cur_gu), "지번": "",
+                                 "단위": "법정동", "면적공유": False,
                                  "면적_km2": float(km2.replace(",", ""))})
         if pending:
             rows.append(pending)
+        for g2 in dict.fromkeys(gu_all):
+            rows.append({**base, "자치구": g2, "법정동": "", "지번": "",
+                         "단위": "자치구", "면적_km2": None, "면적공유": True})
 
     if not rows:
         sys.exit("구역을 찾지 못했습니다.")
-    df = (pd.DataFrame(rows)
-          .drop_duplicates(subset=["파일", "자치구", "법정동", "지번"])
+    df = pd.DataFrame(rows)
+
+    # 기준표에 없는 (자치구, 법정동) 은 판독 오류다. 글꼴 복원이 '미아동'을
+    # '미안동'으로 만들거나 '숭인동'에서 '인동'만 떼어낸 것들이다.
+    # 실재하는 법정동 목록이 있으니 여기서 건다.
+    bad = df[(df.단위 == "법정동") &
+             ~np.array([geo.exists(g, n) for g, n in zip(df.자치구, df.법정동)])]
+    if len(bad):
+        print(f"[걸러냄] 기준표에 없는 법정동 {len(bad)}행")
+        for (g, n), k in bad.groupby(["자치구", "법정동"]).size().items():
+            print(f"    {g} {n} ({k}행)")
+        df = df.drop(index=bad.index)
+
+    df = (df.drop_duplicates(subset=["파일", "자치구", "법정동", "지번", "단위"])
           .sort_values(["효력일", "자치구", "법정동"])
           .reset_index(drop=True))
     out = NOTICES / "zones.csv"
