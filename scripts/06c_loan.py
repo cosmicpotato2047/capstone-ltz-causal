@@ -50,7 +50,7 @@ plt.rcParams["axes.unicode_minus"] = False
 
 # loan_events.csv 에서 확인한 1차 자료 기준 날짜
 RULE_ON = pd.Timestamp("2019-12-17")    # 15억 초과 주담대 금지 시행
-RULE_OFF = pd.Timestamp("2023-03-02")   # 감독규정 개정으로 한도 규제 폐지
+RULE_OFF = pd.Timestamp("2022-12-01")   # 15억 초과 주담대 허용 (금지 폐지)
 LTV_ON = pd.Timestamp("2019-12-23")     # 9억 초과분 LTV 20%
 THRESHOLDS = (9.0, 15.0)                # 억원
 BAND = 0.5                              # 문턱 위아래 이 폭으로 견준다
@@ -71,10 +71,12 @@ def main() -> None:
     print("=" * 76)
     print("1. 규제가 실제로 물렸는가 — 문턱 바로 아래 쏠림")
     print("=" * 76)
+    # 구간은 반드시 위 상수에서 끌어온다. 날짜를 여기 또 적으면 어긋난다.
     periods = [
-        ("규제 이전", "2018-01-01", "2019-12-16"),
-        ("15억 금지 중", "2019-12-17", "2023-03-01"),
-        ("폐지 이후", "2023-03-02", "2026-05-31"),
+        ("규제 이전", "2018-01-01", str((RULE_ON - pd.Timedelta(days=1)).date())),
+        ("15억 금지 중", str(RULE_ON.date()),
+         str((RULE_OFF - pd.Timedelta(days=1)).date())),
+        ("폐지 이후", str(RULE_OFF.date()), "2026-05-31"),
     ]
     tab = {}
     for thr in THRESHOLDS:
