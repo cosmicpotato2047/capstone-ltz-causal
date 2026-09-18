@@ -168,8 +168,9 @@ def spec_es(df: pd.DataFrame) -> Spec:
                 lambda b: b[j], [(G, T)])
 
 
-def spec_did(df: pd.DataFrame) -> Spec:
-    lo, hi = -PRE, POST - 1
+def spec_did(df: pd.DataFrame, lo: int = -PRE, hi: int = POST - 1,
+             name: str = "24개월 이중차분") -> Spec:
+    """법정동 × 사건월 이중차분. 창 [lo, hi], 사후는 em >= 0."""
     codes = sorted(df.umd_full_cd.unique())
     em = np.arange(lo, hi + 1)
     T, G = em.size, len(codes)
@@ -177,32 +178,32 @@ def spec_did(df: pd.DataFrame) -> Spec:
            .unstack(fill_value=0).reindex(index=codes, columns=em, fill_value=0))
     tr = df.groupby("umd_full_cd").treated.first().reindex(codes).to_numpy(bool)
     post = (em >= 0).astype(float)
-    return Spec("24개월 이중차분", np.log1p(cnt.to_numpy(float)).reshape(-1),
+    return Spec(name, np.log1p(cnt.to_numpy(float)).reshape(-1),
                 lambda t: np.outer(t, post).reshape(1, -1).astype(float),
                 twoway([(G, T)]), np.repeat(np.arange(G), T), G, tr, 0,
                 lambda b: b[0], [(G, T)])
 
 
-def spec_ddd(df: pd.DataFrame, high: float = HIGH) -> tuple[Spec, pd.DataFrame]:
-    """06c_loan 3절과 같은 사양. 칸 = (법정동, 가격군)."""
-    pre = df[df.deal_date.between(RULE_ON - pd.DateOffset(years=2), RULE_ON)]
-    med = pre.groupby("aptSeq").amount_manwon.median() / 10000
-    g = df.assign(base=df.aptSeq.map(med))
-    g = g[g.base.notna()].copy()
-    g["high"] = g.base > high
-    lo, hi = KMIN * 3, KMAX * 3 + 2
+def spec_triple(g: pd.DataFrame, flag: str, lo: int, hi: int,
+                name: str) -> Spec:
+    """삼중차분 일반형. 칸 = (법정동, flag 참/거짓), 시간 고정효과는 flag 별.
+
+    g 에는 umd_full_cd, em(사건월), treated, 그리고 bool 열 flag 가 있어야 한다.
+    설명변수는 [처치×사후, 처치×사후×flag]. 둘째 계수가 flag 쪽이 더 움직인 폭이다.
+    사후는 em >= 0 이다. 창은 [lo, hi] 사건월.
+    """
     em = np.arange(lo, hi + 1)
     T = em.size
     codes = sorted(g.umd_full_cd.unique())
     G = len(codes)
     idx = {c: i for i, c in enumerate(codes)}
     tr = g.groupby("umd_full_cd").treated.first().reindex(codes).to_numpy(bool)
-    post = (np.floor(em / 3) >= 0).astype(float)
+    post = (em >= 0).astype(float)
 
     ys, cls, groups, hflag = [], [], [], []
     for h in (False, True):
-        cells = sorted(g[g.high == h].umd_full_cd.unique())
-        cnt = (g[(g.high == h) & g.em.between(lo, hi)]
+        cells = sorted(g[g[flag] == h].umd_full_cd.unique())
+        cnt = (g[(g[flag] == h) & g.em.between(lo, hi)]
                .groupby(["umd_full_cd", "em"]).size()
                .unstack(fill_value=0).reindex(index=cells, columns=em, fill_value=0))
         ys.append(np.log1p(cnt.to_numpy(float)).reshape(-1))
@@ -217,6 +218,15 @@ def spec_ddd(df: pd.DataFrame, high: float = HIGH) -> tuple[Spec, pd.DataFrame]:
     def make(t):
         d = t[cl].astype(float) * pst
         return np.stack([d, d * hf])
-    s = Spec("삼중차분 (차이)", y, make, twoway(groups), cl, G, tr, 1,
-             lambda b: b[1], groups)
-    return s, g
+    return Spec(name, y, make, twoway(groups), cl, G, tr, 1, lambda b: b[1], groups)
+
+
+def spec_ddd(df: pd.DataFrame, high: float = HIGH) -> tuple[Spec, pd.DataFrame]:
+    """06c_loan 3절과 같은 사양. 칸 = (법정동, 가격군)."""
+    pre = df[df.deal_date.between(RULE_ON - pd.DateOffset(years=2), RULE_ON)]
+    med = pre.groupby("aptSeq").amount_manwon.median() / 10000
+    g = df.assign(base=df.aptSeq.map(med))
+    g = g[g.base.notna()].copy()
+    g["high"] = g.base > high
+    # 사건분기 기준 사후(floor(em/3) >= 0)는 em >= 0 과 같다
+    return spec_triple(g, "high", KMIN * 3, KMAX * 3 + 2, "삼중차분 (차이)"), g
