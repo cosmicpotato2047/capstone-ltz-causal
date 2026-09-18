@@ -183,13 +183,13 @@ def spec_did(df: pd.DataFrame) -> Spec:
                 lambda b: b[0], [(G, T)])
 
 
-def spec_ddd(df: pd.DataFrame) -> tuple[Spec, pd.DataFrame]:
+def spec_ddd(df: pd.DataFrame, high: float = HIGH) -> tuple[Spec, pd.DataFrame]:
     """06c_loan 3절과 같은 사양. 칸 = (법정동, 가격군)."""
     pre = df[df.deal_date.between(RULE_ON - pd.DateOffset(years=2), RULE_ON)]
     med = pre.groupby("aptSeq").amount_manwon.median() / 10000
     g = df.assign(base=df.aptSeq.map(med))
     g = g[g.base.notna()].copy()
-    g["high"] = g.base > HIGH
+    g["high"] = g.base > high
     lo, hi = KMIN * 3, KMAX * 3 + 2
     em = np.arange(lo, hi + 1)
     T = em.size
