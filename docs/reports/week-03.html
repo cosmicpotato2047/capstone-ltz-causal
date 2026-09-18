@@ -98,6 +98,12 @@ pre{background:var(--surface); border:1px solid var(--rule-soft);
   padding:14px 16px; overflow-x:auto; font-size:13px; line-height:1.6}
 pre code{background:none; padding:0}
 
+figure{margin:22px 0 28px}
+figure a{display:block}
+figure img{display:block; width:100%; height:auto; background:#fff;
+  border:1px solid var(--rule-soft)}
+figcaption{font-size:13px; color:var(--ink-3); margin-top:8px; line-height:1.55}
+
 @media (max-width:940px){
   .shell{grid-template-columns:1fr; gap:0}
   nav.toc{display:none}
@@ -106,7 +112,7 @@ pre code{background:none; padding:0}
   .topbar, nav.toc{display:none}
   .shell{display:block; max-width:none; padding:0}
   body{background:#fff; font-size:11pt}
-  h2{break-after:avoid} table,pre,blockquote{break-inside:avoid}
+  h2{break-after:avoid} table,pre,blockquote,figure{break-inside:avoid}
   a{color:#000; text-decoration:none}
 }
 </style>
@@ -184,7 +190,7 @@ pre code{background:none; padding:0}
 </tr>
 </tbody>
 </table></div>
-<p><strong><a href="https://cosmicpotato2047.github.io/capstone-ltz-causal/output/figures/06_inference.png">→ 추론 그림</a></strong></p>
+<figure><a href="../../output/figures/06_inference.png"><img src="../../output/figures/06_inference.png" alt="그림 1. 위: 효과가 0 이라고 가정하고 만든 가짜 자료 9,999벌의 t 분포. 아래: 4개 동을 처치로 고르는 17,550가지의 효과 분포. 빨간 선이 진짜다. 지정 직후(왼쪽)는 어느 쪽에서도 맨 끝에 있다." loading="lazy"></a><figcaption>그림 1. 위: 효과가 0 이라고 가정하고 만든 가짜 자료 9,999벌의 t 분포. 아래: 4개 동을 처치로 고르는 17,550가지의 효과 분포. 빨간 선이 진짜다. 지정 직후(왼쪽)는 어느 쪽에서도 맨 끝에 있다.</figcaption></figure>
 <h3 id="1-3-그래서">1.3 그래서</h3>
 <ul>
 <li><strong>지정 직후 효과는 확정한다.</strong> 어느 4개 동을 골라도 진짜 처치동만큼 줄어든 조합이 없다. 합성대조군(−71.0%, 기증자 151개 중 1위)과도 맞는다.</li>
@@ -257,7 +263,7 @@ pre code{background:none; padding:0}
 </tr>
 </tbody>
 </table></div>
-<p><strong><a href="https://cosmicpotato2047.github.io/capstone-ltz-causal/output/figures/13b_contamination.png">→ 사건연구 궤적 비교</a></strong></p>
+<figure><a href="../../output/figures/13b_contamination.png"><img src="../../output/figures/13b_contamination.png" alt="그림 2. 통제군에서 오염 동을 뺄 때의 분기별 효과. 점선은 각 동이 지정된 분기다. 세 선이 2분기까지 겹치다가 오염이 시작된 3분기·6분기에 벌어진다." loading="lazy"></a><figcaption>그림 2. 통제군에서 오염 동을 뺄 때의 분기별 효과. 점선은 각 동이 지정된 분기다. 세 선이 2분기까지 겹치다가 오염이 시작된 3분기·6분기에 벌어진다.</figcaption></figure>
 <p>세 궤적은 지정 후 2분기까지 겹친다. 압구정·거여가 지정된 3분기째에 처음 벌어지고, 나머지 넷이 지정된 6분기째에 더 벌어진다. <strong>벌어지는 시점이 오염 시작 시점과 정확히 같다.</strong></p>
 <h3 id="2-3-그래서">2.3 그래서</h3>
 <ul>
@@ -315,7 +321,7 @@ pre code{background:none; padding:0}
 </tr>
 </tbody>
 </table></div>
-<p><strong><a href="https://cosmicpotato2047.github.io/capstone-ltz-causal/output/figures/06f_threshold.png">→ 경계 민감도 그림</a></strong></p>
+<figure><a href="../../output/figures/06f_threshold.png"><img src="../../output/figures/06f_threshold.png" alt="그림 3. 왼쪽: 경계를 옮길 때 고가(빨강)·저가(파랑) 단지의 효과. 고가는 어디서나 평평하고 저가만 미끄러진다. 숫자는 처치 단지 수(저가/고가). 오른쪽: 차이 계수와 부트스트랩 p." loading="lazy"></a><figcaption>그림 3. 왼쪽: 경계를 옮길 때 고가(빨강)·저가(파랑) 단지의 효과. 고가는 어디서나 평평하고 저가만 미끄러진다. 숫자는 처치 단지 수(저가/고가). 오른쪽: 차이 계수와 부트스트랩 p.</figcaption></figure>
 <p>고가 쪽은 경계가 어디든 −44 ~ −54% 로 평평하다. <strong>15억을 골라서 나온 결과는 아니지만, 15억이 특별한 자리도 아니다.</strong> 저가 쪽만 경계를 따라 매끄럽게 미끄러진다.</p>
 <h3 id="3-2-저가-는-사실상-소형-이었다">3.2 '저가'는 사실상 '소형'이었다</h3>
 <p>9억 이하 처치 단지의 전용면적 중위값이 36.4㎡ 다(9억 초과는 84.8㎡). 가격 경계를 낮출수록 '저가'가 '소형'과 겹친다.</p>
@@ -353,7 +359,7 @@ pre code{background:none; padding:0}
 </tr>
 </tbody>
 </table></div>
-<p><strong><a href="https://cosmicpotato2047.github.io/capstone-ltz-causal/output/figures/06g_area_exemption.png">→ 면적 면제 검증 그림</a></strong></p>
+<figure><a href="../../output/figures/06g_area_exemption.png"><img src="../../output/figures/06g_area_exemption.png" alt="그림 4. 가운데: 2022-06-23 기준 강화 전후, 크기별로 본 처치동 대비 통제동 거래. 소형(빨강)만 효력 뒤에 떨어진다. 오른쪽: 기준을 바꾸지 않은 2021-06-23. 소형은 제자리이고 대형은 2020 지정 직후 폭락에서 회복한다." loading="lazy"></a><figcaption>그림 4. 가운데: 2022-06-23 기준 강화 전후, 크기별로 본 처치동 대비 통제동 거래. 소형(빨강)만 효력 뒤에 떨어진다. 오른쪽: 기준을 바꾸지 않은 2021-06-23. 소형은 제자리이고 대형은 2020 지정 직후 폭락에서 회복한다.</figcaption></figure>
 <p><strong>소형은 규칙이 바뀐 해에만 줄었다.</strong> 효력 직전 분기를 빼도 −27%, 사전 기간을 24개월로 늘려도 −32% 다. 소형 기준을 30~60㎡ 로 옮겨도 방향이 같다.</p>
 <p><strong>첫 설계는 위약에서 실패했다.</strong> 처음에는 처치동 안에서 소형과 대형을 견줬는데, 규칙이 안 바뀐 2021년에도 비슷한 크기의 '효과'가 나왔다. 2020년 지정 직후 폭락했던 대형 거래가 회복하면서 소형이 상대적으로 줄어든 것처럼 보였기 때문이다. 대형을 비교에서 빼고 같은 크기끼리 견주자 위약이 0 으로 돌아왔다.</p>
 <h3 id="3-4-1주차-질문에-대한-답">3.4 1주차 질문에 대한 답</h3>

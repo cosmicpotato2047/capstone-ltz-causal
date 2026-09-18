@@ -5,8 +5,11 @@
 같은 폴더에 같은 이름의 .html 을 쓴다. 발표 자료(docs/slides/)와 같은
 색·글꼴을 쓰되, 슬라이드가 아니라 한 줄로 읽는 문서로 배치한다.
 
-목차는 h2 를 훑어 자동으로 만든다. 인쇄하면(Ctrl+P) 목차와 상단 막대가
-빠지고 본문만 나온다.
+목차는 h2 를 훑어 자동으로 만든다. 한 줄짜리 `![설명](경로)` 는 캡션 달린
+그림이 되고, 누르면 원본이 열린다. 경로는 보고서 파일 기준 상대 경로로 쓴다
+(`../../output/figures/…png`). 그래야 GitHub 에서 마크다운을 볼 때도 보인다.
+
+인쇄하면(Ctrl+P) 목차와 상단 막대가 빠지고 본문만 나온다.
 """
 
 from __future__ import annotations
@@ -116,6 +119,12 @@ pre{background:var(--surface); border:1px solid var(--rule-soft);
   padding:14px 16px; overflow-x:auto; font-size:13px; line-height:1.6}
 pre code{background:none; padding:0}
 
+figure{margin:22px 0 28px}
+figure a{display:block}
+figure img{display:block; width:100%; height:auto; background:#fff;
+  border:1px solid var(--rule-soft)}
+figcaption{font-size:13px; color:var(--ink-3); margin-top:8px; line-height:1.55}
+
 @media (max-width:940px){
   .shell{grid-template-columns:1fr; gap:0}
   nav.toc{display:none}
@@ -124,7 +133,7 @@ pre code{background:none; padding:0}
   .topbar, nav.toc{display:none}
   .shell{display:block; max-width:none; padding:0}
   body{background:#fff; font-size:11pt}
-  h2{break-after:avoid} table,pre,blockquote{break-inside:avoid}
+  h2{break-after:avoid} table,pre,blockquote,figure{break-inside:avoid}
   a{color:#000; text-decoration:none}
 }
 """
@@ -183,6 +192,14 @@ def render(src: Path) -> Path:
         return f'<h{m.group(1)} id="{anchor}">{inner}</h{m.group(1)}>'
 
     body = re.sub(r"<h([23])>(.*?)</h\1>", stamp, body, flags=re.S)
+
+    # 한 줄에 그림만 있는 문단은 설명이 붙은 그림으로 바꾼다.
+    # 마크다운 `![설명](경로)` 의 설명이 캡션이 되고, 누르면 원본이 열린다.
+    body = re.sub(
+        r'<p><img alt="([^"]*)" src="([^"]+)"\s*/?></p>',
+        lambda m: (f'<figure><a href="{m[2]}"><img src="{m[2]}" alt="{m[1]}" '
+                   f'loading="lazy"></a><figcaption>{m[1]}</figcaption></figure>'),
+        body)
 
     # 넓은 표는 제 안에서 가로로 스크롤되게 감싼다
     body = body.replace("<table>", '<div class="tw"><table>')
