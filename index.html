@@ -1,4 +1,4 @@
-<title>서울 토지거래허가구역의 인과효과 추정</title>
+<title>서울 아파트 실거래와 정책 공고를 결합한 미시 패널 구축과 토지거래허가구역 인과효과 추정</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -57,14 +57,19 @@ footer{margin-top:56px; padding-top:20px; border-top:1px solid var(--rule-soft);
 
 <div class="wrap">
 
-<h1>서울 토지거래허가구역의 인과효과 추정</h1>
-<p class="sub">2020년 국제교류복합지구 인근 지정이 아파트 거래량과 가격에 미친 영향</p>
+<h1>서울 아파트 실거래와 정책 공고를 결합한 미시 패널 구축과 토지거래허가구역 인과효과 추정</h1>
+<p class="sub">토지거래허가제는 서울 아파트의 거래와 가격에 무엇을 했는가</p>
 <p class="meta">이찬희 · 졸업작품 2026 ·
   <a href="https://github.com/cosmicpotato2047/capstone-ltz-causal">저장소</a></p>
 
 <h2>주차 보고서</h2>
 <p class="note">그 주에 무엇을 알게 되었고 설계가 어떻게 바뀌었는지 적는다.</p>
 
+<a class="card" href="docs/reports/week-03.html">
+  <div class="t">3주차 결과 보고서 <span class="x">2026-09-18</span></div>
+  <div class="d">지정 직후 효과 확정(17,550가지 중 1위). 효과가 단지마다 달랐던
+    이유는 대출이 아니라 허가 대상 면적 기준. 통제군 오염 제외.</div>
+</a>
 <a class="card" href="docs/reports/week-02.html">
   <div class="t">2주차 결과 보고서 <span class="x">2026-09-11</span></div>
   <div class="d">정책 원문 판독 완료, 대출 규제 분류와 삼중차분,
@@ -102,11 +107,20 @@ footer{margin-top:56px; padding-top:20px; border-top:1px solid var(--rule-soft);
   <div class="d">세로축 법정동, 가로축 시간. 지정 기간을 한눈에 본다.</div>
 </a>
 
+<h2>이번 주 분석 그림</h2>
+<p class="note">3주차 보고서의 근거가 되는 그림이다.</p>
+<ul>
+  <li><a href="output/figures/06_inference.png">적은 클러스터 추론 — 부트스트랩과 17,550가지 가짜 배정</a></li>
+  <li><a href="output/figures/13b_contamination.png">통제군 오염 동을 뺄 때의 사건연구 궤적</a></li>
+  <li><a href="output/figures/06f_threshold.png">고가·저가 경계를 9~20억으로 옮길 때</a></li>
+  <li><a href="output/figures/06g_area_exemption.png">면적 면제 검증 — 2022 기준 강화와 2021 위약</a></li>
+</ul>
+
 <h2>결정기록</h2>
 <p class="note">설계를 정할 때마다 왜 그렇게 정했는지 한 편씩 남긴다.
   근거와 함께 버린 대안도 적는다.</p>
 <ul>
-  <li><a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/tree/main/docs/decisions">결정기록 전체 (18편)</a></li>
+  <li><a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/tree/main/docs/decisions">결정기록 전체 (22편)</a></li>
   <li><a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/tree/main/docs/journal">작업 일지</a></li>
 </ul>
 

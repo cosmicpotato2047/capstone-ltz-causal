@@ -1,4 +1,4 @@
-# 서울 토지거래허가구역의 인과효과 추정
+# 서울 아파트 실거래와 정책 공고를 결합한 미시 패널 구축과 토지거래허가구역 인과효과 추정
 
 컴퓨터공학 졸업작품 (2026-2학기). 서울시 토지거래허가구역(토허제) 지정·해제가
 아파트 **거래량과 가격**에 미친 인과효과를 실거래 미시자료로 추정한다.
@@ -13,9 +13,10 @@
 pip install -r requirements.txt
 cp .env.example .env          # 공공데이터포털 Decoding 키 입력
 python run_all.py --collect   # 수집부터 전부 (수십 분)
-python run_all.py             # 수집 생략, 정제부터
-python run_all.py --only 04   # 특정 단계만
-python run_all.py --extra     # 선행연구 재현 + 문서 수치 검증 포함
+python run_all.py             # 수집 생략, 정제부터 문서까지 전부
+python run_all.py --list      # 단계 목록
+python run_all.py --only 06g  # 특정 단계만
+python run_all.py --from 06   # 이 단계부터 끝까지
 ```
 
 데이터 출처는 국토교통부 「아파트 매매 실거래 **상세** 자료」(공공데이터포털).

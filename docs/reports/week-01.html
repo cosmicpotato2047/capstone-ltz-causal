@@ -1,0 +1,805 @@
+<title>1주차 결과 보고서 · 서울 토허구역 인과추정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --ground:#f4f6f7; --surface:#fcfcfb; --surface-2:#eceef0;
+  --ink:#12161a; --ink-2:#454b52; --ink-3:#7d848c;
+  --rule:#c9ced4; --rule-soft:#e2e6e9;
+  --accent:#2a78d6; --accent-soft:#dbe8f8;
+  --warn:#e34948; --warn-soft:#f8dedd;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+    --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+    --rule:#343a3f; --rule-soft:#282d31;
+    --accent:#3987e5; --accent-soft:#1d2f45;
+    --warn:#e66767; --warn-soft:#3d2526;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+  --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+  --rule:#343a3f; --rule-soft:#282d31;
+  --accent:#3987e5; --accent-soft:#1d2f45;
+  --warn:#e66767; --warn-soft:#3d2526;
+}
+
+*{box-sizing:border-box}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans KR","Malgun Gothic",system-ui,sans-serif;
+  font-size:16px; line-height:1.78; -webkit-font-smoothing:antialiased}
+
+.topbar{position:sticky; top:0; z-index:40; background:var(--ground);
+  border-bottom:3px double var(--rule)}
+.topbar-in{max-width:1120px; margin:0 auto; padding:12px 28px;
+  display:flex; gap:16px; align-items:baseline; justify-content:space-between}
+.brand{font-family:"Nanum Myeongjo","Batang",serif; font-size:17px;
+  font-weight:800; letter-spacing:-.02em}
+.docno{font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+  letter-spacing:.1em; color:var(--ink-3); text-transform:uppercase;
+  white-space:nowrap}
+
+.shell{max-width:1120px; margin:0 auto; padding:0 28px;
+  display:grid; grid-template-columns:1fr 224px; gap:52px; align-items:start}
+main{min-width:0; padding:40px 0 96px}
+
+nav.toc{position:sticky; top:74px; padding:44px 0 0;
+  font-size:12.5px; line-height:1.5}
+nav.toc .lbl{font-family:"IBM Plex Mono",monospace; font-size:10px;
+  letter-spacing:.12em; color:var(--ink-3); text-transform:uppercase;
+  padding-bottom:10px; border-bottom:1px solid var(--rule-soft);
+  margin-bottom:12px}
+nav.toc a{display:block; padding:5px 0; color:var(--ink-3);
+  text-decoration:none; border-left:2px solid transparent; padding-left:10px;
+  margin-left:-12px; transition:color .15s, border-color .15s}
+nav.toc a:hover{color:var(--ink)}
+nav.toc a.on{color:var(--ink); border-left-color:var(--accent); font-weight:500}
+
+h1,h2,h3{font-family:"Nanum Myeongjo","Batang",serif; text-wrap:balance;
+  letter-spacing:-.01em; line-height:1.35}
+h1{font-size:30px; font-weight:800; margin:0 0 6px}
+h2{font-size:22px; font-weight:700; margin:56px 0 16px;
+  padding-top:22px; border-top:1px solid var(--rule)}
+h3{font-size:17px; font-weight:700; margin:32px 0 10px; color:var(--ink)}
+h1 + p{color:var(--ink-2); font-size:16px; margin:0 0 4px}
+p{margin:0 0 15px}
+a{color:var(--accent); text-underline-offset:3px;
+  text-decoration-thickness:1px}
+strong{font-weight:600}
+hr{border:0; border-top:1px solid var(--rule-soft); margin:36px 0}
+hr + h2{border-top:0; padding-top:0; margin-top:30px}
+ul,ol{margin:0 0 15px; padding-left:22px}
+li{margin:0 0 7px}
+
+table{border-collapse:collapse; width:100%; margin:18px 0 22px;
+  font-size:14px; background:var(--surface);
+  font-variant-numeric:tabular-nums}
+th,td{border:1px solid var(--rule-soft); padding:7px 11px;
+  text-align:left; vertical-align:top}
+th{background:var(--surface-2); font-weight:600; font-size:13px;
+  color:var(--ink-2)}
+.tw{overflow-x:auto; margin:18px 0 22px}
+.tw table{margin:0}
+
+blockquote{margin:18px 0; padding:11px 16px; background:var(--accent-soft);
+  border-left:3px solid var(--accent); font-size:14px; color:var(--ink-2)}
+blockquote p{margin:0}
+blockquote strong{color:var(--ink)}
+
+code{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:13px;
+  background:var(--surface-2); padding:1px 5px; border-radius:3px}
+pre{background:var(--surface); border:1px solid var(--rule-soft);
+  padding:14px 16px; overflow-x:auto; font-size:13px; line-height:1.6}
+pre code{background:none; padding:0}
+
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr; gap:0}
+  nav.toc{display:none}
+}
+@media print{
+  .topbar, nav.toc{display:none}
+  .shell{display:block; max-width:none; padding:0}
+  body{background:#fff; font-size:11pt}
+  h2{break-after:avoid} table,pre,blockquote{break-inside:avoid}
+  a{color:#000; text-decoration:none}
+}
+</style>
+<div class="topbar"><div class="topbar-in">
+  <span class="brand">서울 토허구역 인과추정</span>
+  <span class="docno">WEEK 01</span>
+</div></div>
+<div class="shell">
+  <main><h1>1주차 결과 보고서</h1>
+<p><strong>서울 토지거래허가구역의 인과효과 추정</strong></p>
+<p>2026-09-03 · 1주차 (D-78) · 저장소 https://github.com/cosmicpotato2047/capstone-ltz-causal</p>
+<hr />
+<h2 id="요약">요약</h2>
+<p>제안서에서 계획한 1층(데이터 파이프라인) 구축을 완료하고, 2층(인과추정)의 예비 분석까지 수행했다. 주요 결과는 다섯 가지다.</p>
+<ol>
+<li><strong>거래량 효과가 크고 식별이 깨끗하다.</strong> 2020년 6월 지정 직후 처치동 거래량이 약 59% 감소했다가 3분기 만에 회복된다. 사전 추세는 평행하다.</li>
+<li><strong>가격 효과는 사전 추세 위배가 확인되었다.</strong> 지정 3분기 전부터 처치동이 상대적으로 약화되는 추세가 이미 진행 중이었다. 주 결과변수를 가격에서 거래량으로 변경했다.</li>
+<li><strong>효과의 비대칭을 확인했다.</strong> 거래량 반응은 가격보다 열 배 크지만 3분기 만에 회복되고, 가격 반응은 2분기 늦게 시작해 7분기까지 지속된다. 동결은 일시적, 가격 격차는 지속적이다.</li>
+<li><strong>국내 선행연구는 실제로 상반되지 않는다.</strong> 세 편의 본문 결과는 모두 같은 방향(억제)을 가리킨다. 겉보기 불일치는 초록의 서술 방식과 이중차분 계수를 명시하지 않은 데서 비롯되며, 부호를 실제로 뒤집은 것은 결측 처리 하나뿐이다.</li>
+<li><strong>규제 유지 단지에서 파급효과의 증거를 발견했다.</strong> 규제가 유지된 잠실주공5단지가 해제 기간에 거래량 3배 증가를 보였다.</li>
+</ol>
+<hr />
+<h2 id="1-데이터-파이프라인-구축">1. 데이터 파이프라인 구축</h2>
+<h3 id="1-1-자료-확보">1.1 자료 확보</h3>
+<p>국토교통부 「아파트 매매 실거래 <strong>상세</strong> 자료」 API 접근에 성공했다. 동일 기관의 「아파트 매매 실거래가 자료」와는 별개 서비스로, 활용신청이 개별적으로 이루어진다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>엔드포인트</td>
+<td><code>RTMSDataSvcAptTradeDev</code></td>
+</tr>
+<tr>
+<td>제공 필드</td>
+<td>32개</td>
+</tr>
+<tr>
+<td>수집 범위</td>
+<td>8개 자치구 × 2006-01 ~ 2026-08 (248개월)</td>
+</tr>
+<tr>
+<td>원자료</td>
+<td>JSON 1,984개, 303MB</td>
+</tr>
+<tr>
+<td>정제 후 표본</td>
+<td><strong>472,782건</strong></td>
+</tr>
+<tr>
+<td>단지 수</td>
+<td>3,502개</td>
+</tr>
+<tr>
+<td>수집 시점</td>
+<td><strong>2026-09-03</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>상세 자료에는 다음 세 필드가 포함되어 있으며, 이는 당초 예상보다 전처리 부담을 크게 줄였다.</p>
+<ul>
+<li><code>aptSeq</code> — 단지 고유 식별자. 단지명 문자열 정규화 작업이 불필요해졌다. 실거래 자료의 단지명은 "선경1차(1동-7동)", "쌍용대치아파트1동,2동,3동,5동,6동"처럼 표기가 불규칙하여, 식별자가 없었다면 상당한 수작업이 필요했다.</li>
+<li><code>umdCd</code> — 법정동 코드. 토허구역이 동 단위로 지정되므로 처치 배정 키로 직접 사용 가능하다.</li>
+<li><code>roadNmCd</code>, <code>bonbun</code>, <code>bubun</code> — 지오코딩을 통한 공간 분석의 기반.</li>
+</ul>
+<h3 id="1-2-정제-규칙">1.2 정제 규칙</h3>
+<p>거래 해제(취소) 건 <strong>6,293건(1.3%)</strong> 을 표본에서 제외했다. 신고 후 취소된 거래는 시세 조작 목적의 허위 신고를 포함할 수 있으며, 규제 시점 전후로 집중될 경우 추정치를 왜곡한다.</p>
+<p><strong>신고 지연에 따른 절단.</strong> 실거래 신고기한이 계약일로부터 30일이므로 최근 월은 과소집계된다. 실제로 2026-05 1,826건에서 2026-08 266건으로 급감하는 것이 확인되어, 분석 구간을 <strong>2026-05까지</strong>로 절단한다.</p>
+<h3 id="1-3-재현성">1.3 재현성</h3>
+<p>원자료를 (자치구, 계약년월) 단위 JSON으로 캐시하여 중단 후 재개가 가능하도록 했다. 실거래 자료는 취소와 지연신고로 소급 갱신되므로, 이 스냅샷이 결과 재현의 기준이 된다. 수집 시점을 저장소 README에 명시했다.</p>
+<hr />
+<h2 id="2-정책-이력-검증">2. 정책 이력 검증</h2>
+<p>서울특별시 공고 원문을 기준으로 토허구역 지정 이력을 코드화했다. 발표일·공고일·효력발생일을 분리 기록했다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>사건</th>
+<th>공고</th>
+<th>효력</th>
+<th>대상</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>최초 지정</td>
+<td>서울시 공고 2020-1832</td>
+<td>2020-06-23</td>
+<td>삼성·청담·대치·잠실, 구역 내 모든 토지</td>
+</tr>
+<tr>
+<td>2차 지정</td>
+<td>(2021)</td>
+<td>2021-04-27</td>
+<td>압구정·여의도·목동·성수</td>
+</tr>
+<tr>
+<td>연례 재지정</td>
+<td>2021-1667 / 2022-1795 / …</td>
+<td>매년 6월</td>
+<td>동일 범위</td>
+</tr>
+<tr>
+<td>용도 한정</td>
+<td>(2023-11)</td>
+<td>2023-11</td>
+<td>허가 대상을 아파트로 한정</td>
+</tr>
+<tr>
+<td><strong>부분 해제</strong></td>
+<td><strong>2025-497</strong></td>
+<td><strong>2025-02-13</strong></td>
+<td><strong>305곳 중 291곳 해제, 14곳 유지</strong></td>
+</tr>
+<tr>
+<td>확대 지정</td>
+<td>2025-953</td>
+<td>2025-03-24</td>
+<td>강남3구·용산 전체 아파트</td>
+</tr>
+<tr>
+<td>재지정</td>
+<td>2025-2774</td>
+<td>2025-10-01</td>
+<td>동일 범위, ~2026-12-31</td>
+</tr>
+<tr>
+<td>전역 확대</td>
+<td>10·15 대책</td>
+<td>2025-10-20</td>
+<td><strong>서울 25개 자치구 전체</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-1-확인된-사항">2.1 확인된 사항</h3>
+<p><strong>아파트 기준 처치가 연속적이다.</strong> 2020-06-23부터 2025-02-12까지 1,695일(4.6년) 동안 재지정 공백이 하루도 없다. 처치 변수를 이진값으로 두어도 무방하다.</p>
+<p>2023년 11월 조정으로 허가 대상이 아파트로 한정되고 타 용도가 해제되었으나, <strong>아파트는 계속 처치 상태</strong>였으므로 본 연구의 처치 정의는 영향받지 않는다.</p>
+<h3 id="2-2-분석-구간-결정">2.2 분석 구간 결정</h3>
+<p><strong>2025년 10월 20일 이후는 인과 식별이 불가능하다.</strong> 토허구역이 서울 25개 자치구 전체로 확대되어 시내에 미처치 집단이 존재하지 않으며, 나흘 앞선 10월 16일에 규제지역(조정대상지역·투기과열지구)도 서울 전역으로 확대되어 두 정책이 교란된다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구간</th>
+<th>길이</th>
+<th>통제군 상태</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2020-06-23 ~ 2025-02-12</td>
+<td>55.6개월</td>
+<td>서울 대부분이 유효한 통제군</td>
+</tr>
+<tr>
+<td>2025-02-13 ~ 2025-03-23</td>
+<td>1.3개월</td>
+<td>처치 해제 창</td>
+</tr>
+<tr>
+<td>2025-03-24 ~ 2025-10-19</td>
+<td>6.8개월</td>
+<td>21개 자치구가 통제군</td>
+</tr>
+<tr>
+<td>2025-10-20 이후</td>
+<td>—</td>
+<td><strong>통제군 없음. 규제지역과 교란</strong></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="3-예비-분석-2020년-6월-지정">3. 예비 분석: 2020년 6월 지정</h2>
+<h3 id="3-1-표본-규모">3.1 표본 규모</h3>
+<p>강남구·송파구 내에서 처치동(삼성·청담·대치·잠실) 대 통제동으로 비교한다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>±24개월</th>
+<th>사전</th>
+<th>사후</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>처치동</td>
+<td>4,764건</td>
+<td>1,505건</td>
+</tr>
+<tr>
+<td>통제동</td>
+<td>13,304건</td>
+<td>7,827건</td>
+</tr>
+</tbody>
+</table></div>
+<p>처치동만 279개 단지, 월평균 243건이며 거래가 0인 달이 없어 사전 추세를 관측할 수 있다.</p>
+<h3 id="3-2-사건-시점-분석">3.2 사건 시점 분석</h3>
+<p>단지·계약월 양방향 고정효과 하에서 면적·층·연식을 통제하고, 처치동 × 분기 더미의 계수를 추정했다. 기준분기는 k = −1, 표준오차는 법정동 클러스터. 모든 수치는 <strong>통제동 대비</strong>이며 절대 변화가 아니다.</p>
+<p>여기서 k는 달력 분기가 아니라 사건 월(2020년 6월)을 기준으로 3개월씩 끊은 것이다(k=0은 2020년 6~8월). <strong>지정일이 6월 23일인데 k=0에 6월 전체가 들어가, k=0 거래의 45.8%가 지정 이전이다.</strong> 따라서 k=0 추정치는 효과를 과소평가하며, 깨끗한 첫 사후 분기는 k=1이다. 사건 시점 정렬 정밀화를 백로그 6b로 등록했다.</p>
+<p><img alt="event study" src="output/figures/event_study_2020.png" /></p>
+<p><strong>거래량 (법정동-월 패널, log 건수)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>분기</th>
+<th>계수</th>
+<th>실효 효과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>k = −8 ~ −3</td>
+<td>대부분 비유의</td>
+<td>사전 추세 평행</td>
+</tr>
+<tr>
+<td><strong>k = 0</strong></td>
+<td>−0.885</td>
+<td><strong>−59%</strong></td>
+</tr>
+<tr>
+<td><strong>k = 1</strong></td>
+<td>−0.955</td>
+<td><strong>−62%</strong></td>
+</tr>
+<tr>
+<td>k = 2</td>
+<td>−0.449</td>
+<td>−36%</td>
+</tr>
+<tr>
+<td>k ≥ 3</td>
+<td>비유의</td>
+<td>회복</td>
+</tr>
+</tbody>
+</table></div>
+<p>지정 즉시 거래가 60% 가까이 감소했다가 약 3분기에 걸쳐 회복된다. <strong>일시적 동결 효과</strong>로 해석되며, 허가 절차라는 마찰이 부과되었다가 시장이 절차에 적응하는 과정과 부합한다.</p>
+<p>이 크기는 중국 주택구입제한 문헌에서 보고된 거래량 50~75% 감소 범위의 중앙에 위치한다.</p>
+<p><strong>가격 (log ㎡당 거래가)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>분기</th>
+<th>계수</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>k = −5, −4, −3</td>
+<td><strong>+0.024, +0.033, +0.038 (모두 유의)</strong></td>
+</tr>
+<tr>
+<td>k = 2 ~ 7</td>
+<td>−0.059 ~ −0.086 (유의)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>사전 추세가 평행하지 않다.</strong> 기준분기 대비 사전 계수가 유의하게 양수라는 것은, 처치동이 지정 이전부터 통제동 대비 상대적으로 약화되고 있었음을 뜻한다. 사후의 하락(−6.8% ~ −8.2%)이 정책 효과인지 기존 추세의 연장인지 이 설계로는 분리할 수 없다.</p>
+<p>2020년 상반기가 2019년 12·16 대책의 여파로 고가 지역이 먼저 조정받던 시기라는 점과 정합적이다.</p>
+<h3 id="3-3-효과의-두-가지-비대칭">3.3 효과의 두 가지 비대칭</h3>
+<p>거래량과 가격의 반응은 크기와 시간 구조가 모두 다르다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>분기</th>
+<th>거래량</th>
+<th>가격</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>k=0</td>
+<td><strong>−58.7%</strong></td>
+<td>+0.5%</td>
+</tr>
+<tr>
+<td>k=1</td>
+<td><strong>−61.5%</strong></td>
+<td>−1.1%</td>
+</tr>
+<tr>
+<td>k=2</td>
+<td><strong>−36.2%</strong></td>
+<td><strong>−6.7%</strong></td>
+</tr>
+<tr>
+<td>k=3</td>
+<td>−22.8%</td>
+<td><strong>−5.7%</strong></td>
+</tr>
+<tr>
+<td>k=4~7</td>
+<td>비유의 (회복)</td>
+<td><strong>−6.3 ~ −8.2%</strong> (지속)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>규모의 비대칭.</strong> 거래량 −60%, 가격 −7%로 약 열 배 차이다. 이는 토허제가 가격을 누르는 장치가 아니라 거래를 막는 장치임을 뜻한다. 정책 목표가 가격 안정이었다면 목표와 수단이 어긋나 있다.</p>
+<p><strong>시간 구조의 비대칭.</strong> 거래량은 즉시 반응했다가 3분기 만에 회복되는 반면, 가격은 2분기 늦게 반응해서 7분기까지 지속된다. 허가제가 걸리면 거래는 즉시 마비되지만 매도자가 곧바로 호가를 낮추지는 않는다(하방 경직성). 반년쯤 지나 매도 압력이 있는 물건부터 양보가 나타나며 가격이 반응하고, 그 사이 시장은 절차에 적응해 거래가 정상화되지만 벌어진 가격 격차는 남는다.</p>
+<p>즉 <strong>동결은 일시적이고 가격 격차는 지속적</strong>이다. 두 효과의 수명이 다르다.</p>
+<p><strong>반사실 대비 규모.</strong> 처치지역이 통제지역의 상승률을 따랐다면 ㎡당 2,653만 원이었을 것을 실제로는 2,454만 원이었다. 전용 84㎡ 기준 약 1.4~1.7억 원의 차이다. 다만 그 대가로 거래가 60% 얼어붙어 반년 이상 지속되었다. 효과와 비용을 함께 놓아야 정책 평가가 된다.</p>
+<p><em>가격 결과는 사전 추세 위배가 확인되었으므로 방향은 일관되나 크기는 유보한다(3.2절). 거래량 결과는 사전 추세가 평행하다.</em></p>
+<h3 id="3-4-강건성">3.4 강건성</h3>
+<p>12개 사양에서 가격 효과의 부호와 유의성이 모두 동일했다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>요인</th>
+<th>영향</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>분석 창 (±12/24/36개월)</td>
+<td>거의 없음</td>
+</tr>
+<tr>
+<td>통제군 (2개구 / 8개구)</td>
+<td>거의 없음</td>
+</tr>
+<tr>
+<td><strong>단위 고정효과 (법정동 → 단지)</strong></td>
+<td><strong>−13% → −7%, 크기가 절반</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>단지 수준 통제 유무가 효과 크기를 두 배 가른다. 집계자료로는 도달할 수 없는 지점이다.</p>
+<h3 id="3-5-설계-변경">3.5 설계 변경</h3>
+<p>사전 추세 위배를 근거로 <strong>주 결과변수를 가격에서 거래량으로 변경</strong>했다. 결정 기록은 <code>docs/decisions/</code>에 별도로 남긴다.</p>
+<p>가격은 주 결과가 아니라 <strong>선행연구와의 대조 지점</strong>으로 배치하고, Rambachan &amp; Roth (2023)의 민감도 분석을 적용하여 "사전 추세가 사후에도 이어졌다고 가정할 때 처치효과가 어느 구간에 놓이는가"를 제시하는 방향으로 전환한다.</p>
+<hr />
+<h2 id="4-선행연구-재현">4. 선행연구 재현</h2>
+<h3 id="4-1-국내-문헌의-분화">4.1 국내 문헌의 분화</h3>
+<p>2020년 6월 지정을 다룬 국내 연구 3편을 원문으로 확인했다. 초록만 보면 결론이 갈리는 것처럼 보이나, <strong>본문의 결과는 세 편 모두 같은 방향을 가리킨다.</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>연구</th>
+<th>초록·요약이 주는 인상</th>
+<th>본문이 실제로 보고한 것</th>
+<th>재현 결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>전상현·김성용·박종선 (2025)</td>
+<td>"허가구역 가격 상승"</td>
+<td>초록이 서술한 것은 Zone·Time <strong>주효과</strong>이며 이중차분 계수가 아니다. DID 계수는 p=0.053으로 비유의. 본문 결론은 "거래건수 60% 이상 감소, 가격에는 영향을 주지 않았다"</td>
+<td>결측 정상 처리 시 −0.045(p=0.221), 거래건수 통제 제거 시 −0.112(p=0.002)</td>
+</tr>
+<tr>
+<td>이한웅·이춘원 (2025)</td>
+<td>"매매가 유의 상승"</td>
+<td>보고된 t-검정은 각 집단 <strong>내부</strong>의 사전-사후 비교. 본문은 "잠실동보다 오히려 비잠실 지역에서 더 큰 폭의 가격 상승이 관측되었다"고 명시</td>
+<td>논문 표로 DID 계산 시 ±6개월부터 음(−). 본 연구 재현값과 일치</td>
+</tr>
+<tr>
+<td>양지영·정준호 (2025)</td>
+<td>"억제"</td>
+<td>합성대조군법. 처치지역 상승 억제, 인근 지역 급등</td>
+<td>방향 일치. 도너풀 오염은 억제 효과를 <strong>과소평가</strong>하는 방향</td>
+</tr>
+<tr>
+<td><strong>본 연구</strong></td>
+<td>—</td>
+<td>—</td>
+<td><strong>억제 −6~8%, 거래량 −59%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="겉보기-불일치의-세-층위">겉보기 불일치의 세 층위</h3>
+<p><strong>① 초록이 본문과 다르게 읽힌다.</strong> 전상현 외의 초록은 "허가구역 거래가격이 비허가구역 대비 유의하게 상승"이라고 쓰지만, 이는 Zone 계수(+0.326)로 <strong>허가구역이 원래 비싸다</strong>는 수준 차이를 뜻한다. 뒤이은 "정책 시행 후에도 유의하게 상승" 역시 Time 계수(+0.272)로 <strong>시장 전반의 상승</strong>이다. 둘 다 정책 효과가 아니며, 초록은 이중차분 계수를 언급조차 하지 않는다.</p>
+<p><strong>② 이중차분 계수를 명시적으로 제시하지 않는다.</strong> 이한웅·이춘원은 재료를 모두 제공하지만 차이의 차이를 계산해 보여주지 않는다. 독자가 직접 빼야 알 수 있고, 그 결과는 ±6개월부터 음(−)이다.</p>
+<p><strong>③ 그 위에 분석 문제가 얹힌다.</strong> 결측 처리(전상현 외), 거래건수를 통제변수로 포함(전상현 외), 도너풀 오염(양지영·정준호). 그러나 <strong>부호를 실제로 뒤집을 만큼 결정적이었던 것은 결측 처리 하나뿐이다.</strong></p>
+<p>즉 겉보기 불일치의 상당 부분은 분석의 결함이 아니라 <strong>비교 대상을 명시하지 않는 서술 관행</strong>에서 비롯된다. 이 관찰이 본 연구의 서술 원칙으로 이어진다(<code>docs/decisions/0006</code>).</p>
+<h3 id="4-2-부호가-갈리는-1차-요인-통제군의-부재">4.2 부호가 갈리는 1차 요인: 통제군의 부재</h3>
+<p>단순 전후 비교로는 상승이 나타난다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>㎡당 평균가 (만원)</th>
+<th>사전 24개월</th>
+<th>사후 24개월</th>
+<th>변화</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>처치동</td>
+<td>2,087</td>
+<td>2,454</td>
+<td><strong>+17.5%</strong></td>
+</tr>
+<tr>
+<td>통제동</td>
+<td>1,534</td>
+<td>1,950</td>
+<td><strong>+27.1%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>처치동만 보면 17.5% 상승이지만, 같은 기간 통제동은 27.1% 상승했다. 상대적으로 <strong>9.5%p 뒤처진다.</strong> 2020~2021년은 서울 전반이 급등한 시기이므로, 통제군 없이는 정책효과와 시장 흐름을 분리할 수 없다.</p>
+<h3 id="4-3-전상현-외-2025-사양-재현">4.3 전상현 외(2025) 사양 재현</h3>
+<p>해당 연구의 사양은 동-월 패널 675개(27개 동 × 25개월), 종속변수는 동-월 평균 ㎡당가의 로그, 설명변수는 구역더미·시점더미·교호항·<strong>거래건수</strong>이며 고정효과가 없다.</p>
+<p>동일 격자를 구성하면 정확히 675개가 되고, <strong>거래가 없는 빈 셀이 31개</strong> 발생한다(삼전·석촌·압구정·율현동, 전부 통제동). 해당 논문의 기술통계는 가격과 로그가격의 최소값을 모두 0으로 보고한다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>Zone</th>
+<th>Time</th>
+<th><strong>Zone#Time</strong></th>
+<th>거래건수</th>
+<th>R²</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>논문 보고값</td>
+<td>+0.3263</td>
+<td>+0.2724</td>
+<td><strong>+0.2928</strong></td>
+<td>+0.0116</td>
+<td>0.0757</td>
+</tr>
+<tr>
+<td>빈 셀 0 코딩</td>
+<td>+0.3464</td>
+<td>+0.2334</td>
+<td><strong>+0.3549</strong></td>
+<td>+0.0138</td>
+<td>0.0804</td>
+</tr>
+<tr>
+<td>빈 셀 정상 제외</td>
+<td>+0.3038</td>
+<td>+0.1964</td>
+<td><strong>−0.0448</strong></td>
+<td>+0.0023</td>
+<td>0.2496</td>
+</tr>
+</tbody>
+</table></div>
+<p>빈 셀을 0으로 코딩하면 네 계수와 R²가 모두 논문 보고값에 근사하게 재현된다. 정상 처리하면 <strong>교호항 부호가 반전</strong>되고 R²는 3배가 된다. 실제 로그가격이 7.1 부근인데 0을 대입하면 극단적 이상치가 되며, 그것이 전부 통제군에 위치하기 때문이다.</p>
+<p>추가로, 해당 사양은 <strong>거래건수를 통제변수로 포함</strong>한다. 거래량 감소는 토허제의 결과이므로 이를 통제하면 정책 효과 경로가 차단된다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>사양</th>
+<th>교호항</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>거래건수 통제 포함</td>
+<td>−0.045 (p = 0.221)</td>
+</tr>
+<tr>
+<td>거래건수 통제 제거</td>
+<td>−0.112 (p = 0.002)</td>
+</tr>
+<tr>
+<td>+ 동·월 고정효과</td>
+<td>−0.122 (p &lt; 0.001)</td>
+</tr>
+</tbody>
+</table></div>
+<p>다만 해당 논문의 본문은 초록보다 신중하다. 교호항의 p값이 0.053으로 5% 수준에서 유의하지 않으며, 저자들도 "통계적 유의성이 다소 미흡"하다고 명시하고 결론에서 "가격에는 영향을 주지 않았다"고 서술한다.</p>
+<p>재현 코드는 <code>scripts/replicate/jeon2025.py</code>로 공개한다.</p>
+<h3 id="4-4-세-논문의-지역-정의를-적용한-재현">4.4 세 논문의 지역 정의를 적용한 재현</h3>
+<p>결론 차이가 대상 지역의 차이에서 비롯되었을 가능성을 검토했다. 세 논문의 처치군·통제군 정의를 본 연구 자료에 그대로 적용한 결과는 다음과 같다(종속변수 log ㎡당가, 2020.6.23 전후 36개월).</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>사양</th>
+<th>통제·FE 없음</th>
+<th>단지·월 FE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>이한웅 (처치 잠실동 단독 / 통제 송파구 나머지)</td>
+<td>−8.7%</td>
+<td><strong>−6.4%</strong></td>
+</tr>
+<tr>
+<td>전상현 (처치 4개 동 / 통제 강남·송파)</td>
+<td>−11.8%</td>
+<td><strong>−6.0%</strong></td>
+</tr>
+<tr>
+<td>양지영 (처치 4개 동 / 통제 5개 구)</td>
+<td>−13.3%</td>
+<td><strong>−6.5%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>처치군을 잠실동 하나로 좁히든 통제군을 5개 구로 넓히든 <strong>전부 음(−)이며, 단지 고정효과를 넣으면 −6~7%로 수렴한다.</strong> 지역 정의는 결론을 바꾸지 않는다. 결론 차이의 원인은 분석 단위와 결측 처리에 있다.</p>
+<h3 id="4-5-이한웅-이춘원-2025-사양-재현">4.5 이한웅·이춘원(2025) 사양 재현</h3>
+<p>해당 연구는 처치군을 잠실동, 통제군을 송파구 나머지 동으로 두고 정책 전후 3년을 분석했다. <strong>보고된 t-검정은 각 집단 내부의 사전-사후 비교이며 이중차분 계수가 아니다.</strong> 논문 표의 수치로 차이의 차이를 직접 계산하면 다음과 같다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>기간</th>
+<th>잠실동</th>
+<th>송파구 나머지</th>
+<th>차이(DID)</th>
+<th>본 연구 재현</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>±3개월</td>
+<td>+16.5%</td>
+<td>+4.3%</td>
+<td>+12.2%p</td>
+<td><strong>+12.2%p</strong></td>
+</tr>
+<tr>
+<td>±6개월</td>
+<td>+9.6%</td>
+<td>+12.5%</td>
+<td>−2.9%p</td>
+<td>−3.4%p</td>
+</tr>
+<tr>
+<td>±12개월</td>
+<td>+19.0%</td>
+<td>+22.9%</td>
+<td>−3.9%p</td>
+<td><strong>−3.9%p</strong></td>
+</tr>
+<tr>
+<td>±36개월</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><strong>−13.7%p</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>거래량도 논문 −87.4%/−69.2%/−73.4%에 대해 본 연구 −87.8%/−69.3%/−73.8%로 재현된다. <strong>관측 기간을 늘리면 부호가 뒤집힌다.</strong> 저자들도 본문에서 "잠실동보다 오히려 비잠실 지역에서 더 큰 폭의 가격 상승이 관측되었다"고 서술한다.</p>
+<p>±3개월만 양(+)인 이유는 표본 구성 변화다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>기간</th>
+<th>단순 (통제 없음)</th>
+<th>단지·월 고정효과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>±3개월</strong></td>
+<td><strong>+8.2%</strong> (유의)</td>
+<td><strong>−0.1%</strong> (소멸)</td>
+</tr>
+<tr>
+<td>±6개월</td>
+<td>−4.5%</td>
+<td>−3.0%</td>
+</tr>
+<tr>
+<td>±12개월</td>
+<td>−3.4%</td>
+<td>−8.2%</td>
+</tr>
+<tr>
+<td>±36개월</td>
+<td>−8.7%</td>
+<td>−6.4%</td>
+</tr>
+</tbody>
+</table></div>
+<p>지정 직후 3개월 잠실동 거래는 411건에서 <strong>50건</strong>으로 88% 감소했고, 그 과정에서 평균 면적이 86.8㎡ → 80.7㎡, 평균 연식이 18.4년 → 20.5년으로 이동했으며 거래 단지도 13개 → 11개로 줄었다. <strong>같은 집이 비싸진 것이 아니라 다른 집이 팔린 것이다.</strong> 단지 고정효과를 넣으면 +8.2%가 −0.1%로 소멸한다.</p>
+<p>재현 코드는 <code>scripts/replicate/lee2025.py</code>로 공개한다.</p>
+<h3 id="4-6-양지영-정준호-2025-의-도너-풀">4.6 양지영·정준호(2025)의 도너 풀</h3>
+<p>해당 연구는 합성대조군법을 사용하며 대조군 15개 동에 <strong>압구정동·성수1가동·성수2가동</strong>을 포함한다. 이 세 동은 <strong>2021년 4월 27일 토허구역으로 지정</strong>되었으며, 연구 기간이 2018-06 ~ 2022-05이므로 마지막 13개월 동안 대조군의 20%가 처치를 받은 상태가 된다.</p>
+<p>이는 토허제를 단일 사건이 아니라 <strong>다중 처치 시점</strong>으로 다루어야 하는 근거가 된다.</p>
+<hr />
+<h2 id="5-새로운-발견-동일-동-내-파급효과">5. 새로운 발견: 동일 동 내 파급효과</h2>
+<p>2025년 2월 13일 해제 조치는 4개 동 아파트 305곳 중 291곳을 해제하고 재건축 추진 14곳은 지정을 유지했다. 해제 창 39일(2025-02-13 ~ 03-23) 동안의 거래량은 다음과 같다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>39일 구간</th>
+<th>해제군</th>
+<th>유지군</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>해제 직전</td>
+<td>104건</td>
+<td>43건</td>
+</tr>
+<tr>
+<td><strong>해제 창</strong></td>
+<td><strong>577건 (5.5배)</strong></td>
+<td><strong>92건 (2.1배)</strong></td>
+</tr>
+<tr>
+<td>재지정 직후</td>
+<td>34건</td>
+<td>56건</td>
+</tr>
+<tr>
+<td>전년 동기</td>
+<td>104건</td>
+<td>28건</td>
+</tr>
+</tbody>
+</table></div>
+<p>해제군은 5.5배로 급증했다가 재지정 후 기준선 아래로 붕괴했다. 유지군은 2.1배 증가에 그쳤고 재지정 후에도 유지되었다. 통제변수 없이 원자료 건수만으로 나타난 패턴이다.</p>
+<p><strong>단지별로 보면 예외가 하나 있다.</strong> 규제가 유지된 단지 대부분은 거의 반응하지 않았으나(개포우성1 −1건, 대치우성 0건, 쌍용대치 0건), <strong>잠실주공5단지는 11건에서 32건으로 3배 증가</strong>했다.</p>
+<p>이는 해제 소식이 잠실동 전체의 가격 기대를 끌어올려 규제 유지 단지까지 영향을 미쳤을 가능성을 시사한다. 같은 동의 해제군(리센츠 +62건, 잠실엘스 +46건, 트리지움 +43건)이 압도적으로 급증한 것과 정합적이다.</p>
+<p>방법론적으로 이는 <strong>SUTVA 위배</strong>에 해당하며, 유지군을 순수 통제군으로 사용할 수 없음을 뜻한다. 동시에 새로운 연구 질문을 제기한다.</p>
+<blockquote>
+<p>부동산 규제의 효과는 규제 대상에 국한되는가, 아니면 인근 비대상 자산으로 파급되는가</p>
+</blockquote>
+<p>삼중차분의 세 번째 축(재건축 여부) 비교군을 4개 동 <strong>바깥</strong>에서 구성해야 하는 이유가 여기에 있다.</p>
+<hr />
+<h2 id="6-인프라">6. 인프라</h2>
+<ul>
+<li><strong>저장소 개설</strong>: https://github.com/cosmicpotato2047/capstone-ltz-causal (public)</li>
+<li><strong>기록 체계</strong>: 작업 일지(<code>docs/journal/</code>), 설계 결정 기록(<code>docs/decisions/</code>), 주차 보고서(<code>docs/reports/</code>)로 삼분</li>
+<li><strong>인증 분리</strong>: API 키는 <code>.env</code>로 분리하고 버전관리에서 제외</li>
+<li><strong>원자료 제외</strong>: 303MB 원자료와 저작권 자료는 버전관리에서 제외하되, 수집 스크립트로 재생성 가능</li>
+</ul>
+<hr />
+<h2 id="7-미해결-사항">7. 미해결 사항</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>상태</th>
+<th>영향</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2020년 지정의 공간 범위</td>
+<td>공고상 14.4㎢(삼성·청담·대치 9.2 + 잠실 5.2). 법정동 전체와 일치하는지 미확정</td>
+<td>일부라면 처치 오분류 → 추정치를 하한으로 해석</td>
+</tr>
+<tr>
+<td>지정 유지 14개 단지 명단</td>
+<td>서울시 설명자료는 14곳, 2025-1831호 표기는 13행, "우성1·2·3차"를 분리하면 15개</td>
+<td>삼중차분 처치 정의. 좁은·넓은 정의 병행으로 대응</td>
+</tr>
+<tr>
+<td>2020년 이전 기존 지정</td>
+<td>강남·서초 자연녹지지역이 1998-05-31부터 지정, 용산구는 2020-05-20 국토부 지정</td>
+<td>사전 기간 오염 여부 확인 필요</td>
+</tr>
+<tr>
+<td>법정동 클러스터 수</td>
+<td>강남·송파 기준 27개로 다소 적음</td>
+<td>통제군 확대 또는 wild cluster bootstrap 적용</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="8-다음-작업">8. 다음 작업</h2>
+<p>주차별 배분 대신 우선순위 백로그(<code>docs/backlog.md</code>)로 관리한다. 위에서부터 처리한다.</p>
+<ol>
+<li><strong>자체 가격지수 구축</strong> — 반복매매 쌍 377,289쌍 확보. 반복매매지수와 헤도닉지수를 산출하고 한국부동산원 지수와 대조. 시스템 파트의 핵심이며 M1(4주차)까지 완료 목표</li>
+<li><strong>거래량 분석 정밀화</strong> — 단지-월 패널로 전환, 클러스터 확대, wild cluster bootstrap (현재 법정동 클러스터 27개)</li>
+<li><strong>사양 곡선 작성</strong> — 분석 단위, 고정효과 수준, 결측 처리, 관측 기간, 통제변수 구성을 조합하여 어느 선택이 결론을 바꾸는지 체계적으로 제시. RQ4의 완성된 답</li>
+<li><strong>결정 기록 소급 작성</strong> — 미룰수록 근거가 흐려진다</li>
+<li><strong>Honest DiD</strong> — 가격이 부 결과변수로 내려갔으므로 우선순위 하향</li>
+<li><strong>공고 원문 확보 (외부 대기)</strong> — 토지조서·지형도면. 확보 전까지 추정치를 하한으로 해석</li>
+</ol>
+<h3 id="마일스톤">마일스톤</h3>
+<ul>
+<li><strong>M1 (4주차, 09/24)</strong> — 2020.6 지정의 거래량 효과를 강건성 검정과 함께 제시</li>
+<li><strong>M2 (7주차, 10/15)</strong> — 2025.2 해제·3 재지정 삼중차분, 파급효과 분해</li>
+<li><strong>M3 (10주차, 11/05)</strong> — 분석 종료, 결과 동결</li>
+<li><strong>M4 (12주차, 11/19)</strong> — 최종본, 클린 환경 재현 확인</li>
+</ul></main>
+  <nav class="toc"><div class="lbl">목차</div><a href="#요약">요약</a><a href="#1-데이터-파이프라인-구축">1. 데이터 파이프라인 구축</a><a href="#2-정책-이력-검증">2. 정책 이력 검증</a><a href="#3-예비-분석-2020년-6월-지정">3. 예비 분석: 2020년 6월 지정</a><a href="#4-선행연구-재현">4. 선행연구 재현</a><a href="#5-새로운-발견-동일-동-내-파급효과">5. 새로운 발견: 동일 동 내 파급효과</a><a href="#6-인프라">6. 인프라</a><a href="#7-미해결-사항">7. 미해결 사항</a><a href="#8-다음-작업">8. 다음 작업</a></nav>
+</div>
+<script>
+const heads=[...document.querySelectorAll('main h2[id]')];
+const links=[...document.querySelectorAll('nav.toc a')];
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(!e.isIntersecting)return;
+    const i=heads.indexOf(e.target);
+    links.forEach((a,j)=>a.classList.toggle('on',i===j));});
+},{rootMargin:'-70px 0px -75% 0px'});
+heads.forEach(h=>io.observe(h));
+</script>

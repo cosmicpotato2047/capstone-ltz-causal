@@ -56,9 +56,15 @@ def main() -> None:
 
     rows, dump = [], []
     for f in files:
-        doc = fitz.open(f)
-        text = re.sub(r"[ \t]+", " ", "\n".join(p.get_text() for p in doc))
-        issue = re.search(r"시보(\d{8})", f.name).group(1)
+        # 서브셋 글꼴이 깨진 시보가 많아 복원기를 쓴다 (lib/pdftext, 결정기록 0009)
+        text = text_of(f)
+        m = re.search(r"시보(\d{8})", f.name)
+        if m:
+            issue = m.group(1)
+        else:
+            # '시보2020호3590_...' 처럼 호수만 있는 파일은 지면 머리의 발행일을 쓴다
+            h = re.search(r"(20\d\d)\.\s*(\d{1,2})\.\s*(\d{1,2})\.", text)
+            issue = f"{h.group(1)}{int(h.group(2)):02d}{int(h.group(3)):02d}" if h else "미상"
 
         found = blocks(text)
         if not found:                       # 공고 헤더를 못 찾으면 파일 전체를 한 블록으로
