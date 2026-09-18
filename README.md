@@ -3,6 +3,7 @@
 컴퓨터공학 졸업작품 (2026-2학기). 서울시 토지거래허가구역(토허제) 지정·해제가
 아파트 **거래량과 가격**에 미친 인과효과를 실거래 미시자료로 추정한다.
 
+- [연구의 뼈대](docs/framing.md) — 무엇을 묻고 왜 의미가 있나, 지금의 답
 - [주제 제안서](docs/proposal.md)
 - [선행연구 정리](docs/prior_work.md)
 - [주차별 결과 보고서](docs/reports/)
@@ -56,7 +57,8 @@ output/
   results/            추정 결과 JSON — 문서의 수치는 여기서 가져온다
 
 docs/
-  proposal.md         주제 제안서
+  framing.md          연구의 뼈대 — 질문·범위·의의, 이정표마다 답을 갱신
+  proposal.md         주제 제안서 (제출본)
   prior_work.md       선행연구
   journal/            작업 일지 (작업한 날만, 일자별 파일)
   decisions/          설계 결정 기록 (번호별) → 논문 방법론 절의 원재료
@@ -86,6 +88,7 @@ docs/
 
 | 알고 싶은 것 | 볼 곳 |
 |---|---|
+| **이 연구가 무엇을 묻고 왜 의미가 있나** | [docs/framing.md](docs/framing.md) |
 | **지금 뭘 하고 있고 다음은 뭔가** | [docs/backlog.md](docs/backlog.md) — 맨 위 "현재 상태" |
 | 이번 주에 뭘 했나 | [docs/reports/](docs/reports/) — 주차별 보고서 |
 | 왜 그렇게 설계했나 | [docs/decisions/](docs/decisions/) — 번호별 결정 기록 |

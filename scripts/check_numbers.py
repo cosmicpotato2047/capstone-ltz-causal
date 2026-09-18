@@ -54,7 +54,8 @@ WATCHED = {
 }
 
 # --- 문서 분류 --------------------------------------------------------------
-LIVING = ["docs/backlog.md", "README.md", "docs/glossary.md", "docs/proposal.md"]
+LIVING = ["docs/backlog.md", "README.md", "docs/glossary.md", "docs/proposal.md",
+          "docs/framing.md"]
 FROZEN_GLOBS = ["docs/reports/*.md", "docs/slides/*.html"]
 SNAPSHOT_RE = re.compile(r"스냅샷|수집 ?시점|20\d\d-\d\d-\d\d 수집")
 
