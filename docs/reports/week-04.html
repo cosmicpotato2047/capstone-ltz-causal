@@ -123,7 +123,7 @@ figcaption{font-size:13px; color:var(--ink-3); margin-top:8px; line-height:1.55}
 <div class="shell">
   <main><h1>4주차 결과 보고서</h1>
 <p><strong>서울 아파트 실거래와 정책 공고를 결합한 미시 패널 구축과 토지거래허가구역 인과효과 추정</strong></p>
-<p>2026-09-24 · 4주차 (D-57) · 저장소 https://github.com/cosmicpotato2047/capstone-ltz-causal</p>
+<p>2026-09-23 · 4주차 (D-58) · 저장소 https://github.com/cosmicpotato2047/capstone-ltz-causal</p>
 <p>원자료 스냅샷: 실거래 2026-09-03 수집(분석 8개 자치구 472,782건 · 서울 25개 자치구 1,407,186건), 공고는 2026-08-20 공고분(국토교통부 제2026-1105호)까지. 이 보고서의 숫자는 이 스냅샷 기준이다.</p>
 <hr />
 <h2 id="요약">요약</h2>
@@ -133,7 +133,7 @@ figcaption{font-size:13px; color:var(--ink-3); margin-top:8px; line-height:1.55}
 <p><strong>규제가 다시 걸리자 거래가 끊겼다.</strong> 2025-03-24 재지정 직후 5주 동안 처치동 거래가 <strong>−78.9%</strong>(같은 동의 유지 단지 대비). 발표(3/19)와 효력(3/24) 사이 나흘에 막차가 다섯 배로 몰렸다가 효력일부터 하루 0~2건으로 떨어진다.</p>
 </li>
 <li>
-<p><strong>1년 전에 적어 둔 예측이 맞았다.</strong> 3주차 보고서는 "2020년 지정은 대지 18㎡ 초과만 허가 대상이라 소형이 빠져나갔고, 2025년은 처음부터 6㎡라 소형도 줄어야 한다"고 적었다. 실제로 소형 효과가 <strong>2020년 +125.7% → 2025년 −71.5%</strong>로 뒤집혔다. 결과를 보기 전에 세운 예측이다.</p>
+<p><strong>지난주에 적어 둔 예측이 맞았다.</strong> 3주차 보고서(09/18)는 "2020년 지정은 대지 18㎡ 초과만 허가 대상이라 소형이 빠져나갔고, 2025년은 처음부터 6㎡라 소형도 줄어야 한다"고 적었다. 실제로 소형 효과가 <strong>2020년 +125.7% → 2025년 −71.5%</strong>로 뒤집혔다. 결과를 보기 전에 세운 예측이다.</p>
 </li>
 <li>
 <p><strong>파급은 같은 동 안에만 있었다.</strong> 2025년 2월 해제 때 규제가 유지된 16개 단지는 규제가 하나도 바뀌지 않았는데 거래가 <strong>−26.5%</strong> 줄었다. 바로 옆 단지의 규제가 풀리자 수요가 그쪽으로 옮겨 간 것이다. 반면 처치동에 맞닿은 동은 어느 사양에서도 늘지 않았다.</p>
@@ -326,7 +326,7 @@ figcaption{font-size:13px; color:var(--ink-3); margin-top:8px; line-height:1.55}
 <p>자세히: <a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/decisions/0023-2025-처치역전-재지정중심.md">결정기록 0023</a></p>
 </blockquote>
 <hr />
-<h2 id="3-1년-전-예측이-맞았다">3. 1년 전 예측이 맞았다</h2>
+<h2 id="3-지난주-예측이-맞았다">3. 지난주 예측이 맞았다</h2>
 <p>3주차 보고서(결정기록 0022)는 효과가 단지마다 달랐던 주된 이유를 <strong>허가 대상의 면적 기준</strong>으로 결론지었다. 2020년 지정은 주거지역 대지 18㎡ 초과만 허가 대상이라 대지지분이 작은 소형이 사실상 규제 밖이었다는 것이다. 그리고 그 결론이 옳다면 따라 나오는 예측을 함께 적어 두었다.</p>
 <blockquote>
 <p>2025년 재지정은 처음부터 6㎡ 기준이다. 소형 면제가 없으므로 <strong>2025년에는 소형도 대형과 같이 줄어야 한다.</strong></p>
@@ -688,7 +688,7 @@ python run_all.py --only 12  # 한 단계만
 <p>추정 부품도 둘 늘었다. <code>scripts/lib/econ.py</code> 의 <code>ppml()</code>(칸 고정효과를 닫힌 식으로 흡수한 포아송)과 <code>scripts/lib/geo.py</code> 의 <code>touching()</code>(경계 다각형으로 맞닿은 법정동 찾기)이다. <code>ppml()</code>은 statsmodels로 같은 모형을 돌려 계수와 표준오차가 일치하는지 확인하고 썼다.</p>
 <p><strong>전체 재실행으로 확인한 것.</strong> M2를 채웠으므로 <code>run_all.py</code> 31단계를 처음부터 다시 돌렸다(793초). <strong>분석 결과 파일과 그림은 하나도 바뀌지 않았다.</strong> 다만 1·2주차 보고서 HTML 두 개가 지난주 생성기 변경분을 반영하지 않은 채 남아 있던 것을 찾아 다시 만들었다(내용은 그대로, 그림 스타일만 추가).</p>
 <p><strong>작업 일지</strong>: <a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/journal/2026-09-23.md">2026-09-23</a> · <strong>지난 보고서</strong>: <a href="https://cosmicpotato2047.github.io/capstone-ltz-causal/docs/reports/week-03.html">3주차</a></p></main>
-  <nav class="toc"><div class="lbl">목차</div><a href="#요약">요약</a><a href="#1-제안서의-설계를-두-번-바꿨다">1. 제안서의 설계를 두 번 바꿨다</a><a href="#2-2025년-규제가-풀렸다가-다시-걸렸다">2. 2025년 — 규제가 풀렸다가 다시 걸렸다</a><a href="#3-1년-전-예측이-맞았다">3. 1년 전 예측이 맞았다</a><a href="#4-어디로-번졌는가">4. 어디로 번졌는가</a><a href="#5-가격에서-생긴-숙제">5. 가격에서 생긴 숙제</a><a href="#6-이번-주에-확정된-숫자">6. 이번 주에 확정된 숫자</a><a href="#7-마일스톤-점검">7. 마일스톤 점검</a><a href="#8-미해결-사항과-다음-작업">8. 미해결 사항과 다음 작업</a><a href="#부록-재현">부록: 재현</a></nav>
+  <nav class="toc"><div class="lbl">목차</div><a href="#요약">요약</a><a href="#1-제안서의-설계를-두-번-바꿨다">1. 제안서의 설계를 두 번 바꿨다</a><a href="#2-2025년-규제가-풀렸다가-다시-걸렸다">2. 2025년 — 규제가 풀렸다가 다시 걸렸다</a><a href="#3-지난주-예측이-맞았다">3. 지난주 예측이 맞았다</a><a href="#4-어디로-번졌는가">4. 어디로 번졌는가</a><a href="#5-가격에서-생긴-숙제">5. 가격에서 생긴 숙제</a><a href="#6-이번-주에-확정된-숫자">6. 이번 주에 확정된 숫자</a><a href="#7-마일스톤-점검">7. 마일스톤 점검</a><a href="#8-미해결-사항과-다음-작업">8. 미해결 사항과 다음 작업</a><a href="#부록-재현">부록: 재현</a></nav>
 </div>
 <script>
 const heads=[...document.querySelectorAll('main h2[id]')];
