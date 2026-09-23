@@ -106,3 +106,40 @@ def normalize(dong: str, gu: str = "") -> str:
         if not pool or c in pool:
             return c
     return dong
+
+
+def polygons():
+    """법정동 경계를 DataFrame 으로. 열: cd8, 법정동, 자치구, geom.
+
+    shapely 가 있어야 한다. 파급효과(백로그 12)와 공간 회귀불연속(16)에서 쓴다.
+    """
+    import pandas as pd
+    from shapely.geometry import shape
+    feats = json.loads(NEIGHBORHOODS.read_text(encoding="utf-8"))["features"]
+    df = pd.DataFrame([{"cd8": str(f["properties"]["EMD_CD"]),
+                        "법정동": f["properties"]["EMD_KOR_NM"],
+                        "geom": shape(f["geometry"])} for f in feats])
+    gu = municipalities()
+    df["자치구"] = df.cd8.str[:5].map(gu)
+    return df
+
+
+def touching(dongs: set[str], gus: set[str]) -> set[str]:
+    """주어진 법정동 덩어리에 **맞닿은** 법정동 이름 집합 (덩어리 자신은 뺀다).
+
+    `dongs` 는 법정동 이름, `gus` 는 그 동이 속한 자치구 이름이다. 이름만으로는
+    다른 구의 같은 이름 동에 걸리므로 자치구를 함께 받는다.
+
+        geo.touching({"대치동","삼성동","청담동","잠실동"}, {"강남구","송파구"})
+
+    경계가 단순화된 자료라 꼭짓점이 미세하게 어긋날 수 있다. 그래서 '닿았다'를
+    교차(intersects)로 본다. 실제로 강남·송파 처치 4개 동에 14개 동이 닿는다.
+    """
+    from shapely.ops import unary_union
+    g = polygons()
+    core = g[(g.자치구.isin(gus)) & (g.법정동.isin(dongs))]
+    if core.empty:
+        raise ValueError("맞닿은 동을 찾을 덩어리가 비어 있다")
+    u = unary_union(core.geom.tolist())
+    hit = {n for n, gm in zip(g.법정동, g.geom) if gm.intersects(u)}
+    return hit - set(core.법정동)

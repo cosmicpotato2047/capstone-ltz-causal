@@ -98,6 +98,12 @@ pre{background:var(--surface); border:1px solid var(--rule-soft);
   padding:14px 16px; overflow-x:auto; font-size:13px; line-height:1.6}
 pre code{background:none; padding:0}
 
+figure{margin:22px 0 28px}
+figure a{display:block}
+figure img{display:block; width:100%; height:auto; background:#fff;
+  border:1px solid var(--rule-soft)}
+figcaption{font-size:13px; color:var(--ink-3); margin-top:8px; line-height:1.55}
+
 @media (max-width:940px){
   .shell{grid-template-columns:1fr; gap:0}
   nav.toc{display:none}
@@ -106,7 +112,7 @@ pre code{background:none; padding:0}
   .topbar, nav.toc{display:none}
   .shell{display:block; max-width:none; padding:0}
   body{background:#fff; font-size:11pt}
-  h2{break-after:avoid} table,pre,blockquote{break-inside:avoid}
+  h2{break-after:avoid} table,pre,blockquote,figure{break-inside:avoid}
   a{color:#000; text-decoration:none}
 }
 </style>
@@ -309,7 +315,7 @@ pre code{background:none; padding:0}
 <h3 id="3-2-사건-시점-분석">3.2 사건 시점 분석</h3>
 <p>단지·계약월 양방향 고정효과 하에서 면적·층·연식을 통제하고, 처치동 × 분기 더미의 계수를 추정했다. 기준분기는 k = −1, 표준오차는 법정동 클러스터. 모든 수치는 <strong>통제동 대비</strong>이며 절대 변화가 아니다.</p>
 <p>여기서 k는 달력 분기가 아니라 사건 월(2020년 6월)을 기준으로 3개월씩 끊은 것이다(k=0은 2020년 6~8월). <strong>지정일이 6월 23일인데 k=0에 6월 전체가 들어가, k=0 거래의 45.8%가 지정 이전이다.</strong> 따라서 k=0 추정치는 효과를 과소평가하며, 깨끗한 첫 사후 분기는 k=1이다. 사건 시점 정렬 정밀화를 백로그 6b로 등록했다.</p>
-<p><img alt="event study" src="output/figures/event_study_2020.png" /></p>
+<figure><a href="output/figures/event_study_2020.png"><img src="output/figures/event_study_2020.png" alt="event study" loading="lazy"></a><figcaption>event study</figcaption></figure>
 <p><strong>거래량 (법정동-월 패널, log 건수)</strong></p>
 <div class="tw"><table>
 <thead>
