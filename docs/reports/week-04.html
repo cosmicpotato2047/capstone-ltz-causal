@@ -1,0 +1,702 @@
+<title>4주차 결과 보고서 · 서울 토허구역 인과추정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --ground:#f4f6f7; --surface:#fcfcfb; --surface-2:#eceef0;
+  --ink:#12161a; --ink-2:#454b52; --ink-3:#7d848c;
+  --rule:#c9ced4; --rule-soft:#e2e6e9;
+  --accent:#2a78d6; --accent-soft:#dbe8f8;
+  --warn:#e34948; --warn-soft:#f8dedd;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+    --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+    --rule:#343a3f; --rule-soft:#282d31;
+    --accent:#3987e5; --accent-soft:#1d2f45;
+    --warn:#e66767; --warn-soft:#3d2526;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+  --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+  --rule:#343a3f; --rule-soft:#282d31;
+  --accent:#3987e5; --accent-soft:#1d2f45;
+  --warn:#e66767; --warn-soft:#3d2526;
+}
+
+*{box-sizing:border-box}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans KR","Malgun Gothic",system-ui,sans-serif;
+  font-size:16px; line-height:1.78; -webkit-font-smoothing:antialiased}
+
+.topbar{position:sticky; top:0; z-index:40; background:var(--ground);
+  border-bottom:3px double var(--rule)}
+.topbar-in{max-width:1120px; margin:0 auto; padding:12px 28px;
+  display:flex; gap:16px; align-items:baseline; justify-content:space-between}
+.brand{font-family:"Nanum Myeongjo","Batang",serif; font-size:17px;
+  font-weight:800; letter-spacing:-.02em}
+.docno{font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+  letter-spacing:.1em; color:var(--ink-3); text-transform:uppercase;
+  white-space:nowrap}
+
+.shell{max-width:1120px; margin:0 auto; padding:0 28px;
+  display:grid; grid-template-columns:1fr 224px; gap:52px; align-items:start}
+main{min-width:0; padding:40px 0 96px}
+
+nav.toc{position:sticky; top:74px; padding:44px 0 0;
+  font-size:12.5px; line-height:1.5}
+nav.toc .lbl{font-family:"IBM Plex Mono",monospace; font-size:10px;
+  letter-spacing:.12em; color:var(--ink-3); text-transform:uppercase;
+  padding-bottom:10px; border-bottom:1px solid var(--rule-soft);
+  margin-bottom:12px}
+nav.toc a{display:block; padding:5px 0; color:var(--ink-3);
+  text-decoration:none; border-left:2px solid transparent; padding-left:10px;
+  margin-left:-12px; transition:color .15s, border-color .15s}
+nav.toc a:hover{color:var(--ink)}
+nav.toc a.on{color:var(--ink); border-left-color:var(--accent); font-weight:500}
+
+h1,h2,h3{font-family:"Nanum Myeongjo","Batang",serif; text-wrap:balance;
+  letter-spacing:-.01em; line-height:1.35}
+h1{font-size:30px; font-weight:800; margin:0 0 6px}
+h2{font-size:22px; font-weight:700; margin:56px 0 16px;
+  padding-top:22px; border-top:1px solid var(--rule)}
+h3{font-size:17px; font-weight:700; margin:32px 0 10px; color:var(--ink)}
+h1 + p{color:var(--ink-2); font-size:16px; margin:0 0 4px}
+p{margin:0 0 15px}
+a{color:var(--accent); text-underline-offset:3px;
+  text-decoration-thickness:1px}
+strong{font-weight:600}
+hr{border:0; border-top:1px solid var(--rule-soft); margin:36px 0}
+hr + h2{border-top:0; padding-top:0; margin-top:30px}
+ul,ol{margin:0 0 15px; padding-left:22px}
+li{margin:0 0 7px}
+
+table{border-collapse:collapse; width:100%; margin:18px 0 22px;
+  font-size:14px; background:var(--surface);
+  font-variant-numeric:tabular-nums}
+th,td{border:1px solid var(--rule-soft); padding:7px 11px;
+  text-align:left; vertical-align:top}
+th{background:var(--surface-2); font-weight:600; font-size:13px;
+  color:var(--ink-2)}
+.tw{overflow-x:auto; margin:18px 0 22px}
+.tw table{margin:0}
+
+blockquote{margin:18px 0; padding:11px 16px; background:var(--accent-soft);
+  border-left:3px solid var(--accent); font-size:14px; color:var(--ink-2)}
+blockquote p{margin:0}
+blockquote strong{color:var(--ink)}
+
+code{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:13px;
+  background:var(--surface-2); padding:1px 5px; border-radius:3px}
+pre{background:var(--surface); border:1px solid var(--rule-soft);
+  padding:14px 16px; overflow-x:auto; font-size:13px; line-height:1.6}
+pre code{background:none; padding:0}
+
+figure{margin:22px 0 28px}
+figure a{display:block}
+figure img{display:block; width:100%; height:auto; background:#fff;
+  border:1px solid var(--rule-soft)}
+figcaption{font-size:13px; color:var(--ink-3); margin-top:8px; line-height:1.55}
+
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr; gap:0}
+  nav.toc{display:none}
+}
+@media print{
+  .topbar, nav.toc{display:none}
+  .shell{display:block; max-width:none; padding:0}
+  body{background:#fff; font-size:11pt}
+  h2{break-after:avoid} table,pre,blockquote,figure{break-inside:avoid}
+  a{color:#000; text-decoration:none}
+}
+</style>
+<div class="topbar"><div class="topbar-in">
+  <span class="brand">서울 토허구역 인과추정</span>
+  <span class="docno">WEEK 04</span>
+</div></div>
+<div class="shell">
+  <main><h1>4주차 결과 보고서</h1>
+<p><strong>서울 아파트 실거래와 정책 공고를 결합한 미시 패널 구축과 토지거래허가구역 인과효과 추정</strong></p>
+<p>2026-09-24 · 4주차 (D-57) · 저장소 https://github.com/cosmicpotato2047/capstone-ltz-causal</p>
+<p>원자료 스냅샷: 실거래 2026-09-03 수집(분석 8개 자치구 472,782건 · 서울 25개 자치구 1,407,186건), 공고는 2026-08-20 공고분(국토교통부 제2026-1105호)까지. 이 보고서의 숫자는 이 스냅샷 기준이다.</p>
+<hr />
+<h2 id="요약">요약</h2>
+<p><strong>2차 마일스톤(M2)을 목표보다 3주 앞당겨 채웠다.</strong> 2025년 해제·재지정 구간과 파급효과 분해를 모두 끝냈다. 결과는 다섯 가지다.</p>
+<ol>
+<li>
+<p><strong>규제가 다시 걸리자 거래가 끊겼다.</strong> 2025-03-24 재지정 직후 5주 동안 처치동 거래가 <strong>−78.9%</strong>(같은 동의 유지 단지 대비). 발표(3/19)와 효력(3/24) 사이 나흘에 막차가 다섯 배로 몰렸다가 효력일부터 하루 0~2건으로 떨어진다.</p>
+</li>
+<li>
+<p><strong>1년 전에 적어 둔 예측이 맞았다.</strong> 3주차 보고서는 "2020년 지정은 대지 18㎡ 초과만 허가 대상이라 소형이 빠져나갔고, 2025년은 처음부터 6㎡라 소형도 줄어야 한다"고 적었다. 실제로 소형 효과가 <strong>2020년 +125.7% → 2025년 −71.5%</strong>로 뒤집혔다. 결과를 보기 전에 세운 예측이다.</p>
+</li>
+<li>
+<p><strong>파급은 같은 동 안에만 있었다.</strong> 2025년 2월 해제 때 규제가 유지된 16개 단지는 규제가 하나도 바뀌지 않았는데 거래가 <strong>−26.5%</strong> 줄었다. 바로 옆 단지의 규제가 풀리자 수요가 그쪽으로 옮겨 간 것이다. 반면 처치동에 맞닿은 동은 어느 사양에서도 늘지 않았다.</p>
+</li>
+<li>
+<p><strong>선행연구의 '인근 급등'은 기준점이 만든 말이다.</strong> 맞닿은 동의 거래는 <strong>처치동을 기준에 두면 +115.5%</strong>, <strong>서울 나머지 17개 구를 기준에 두면 −9.0%</strong>다. 같은 자료, 같은 창, 같은 사양이고 무엇과 견주는지만 다르다. 옆 동이 늘어서가 아니라 처치동이 58% 줄어서 그렇게 보인다.</p>
+</li>
+<li>
+<p><strong>가격에서 숙제가 하나 생겼다.</strong> 같은 가격대끼리 견주면 처치동의 가격 효과가 −9.7%에서 <strong>−2.1%(비유의)</strong>로 약해진다. 거래량은 −57.8%에서 −63.7%로 그대로다. 가격대 효과인지 처치의 일부인지 지금 자료로는 가르지 못한다.</p>
+</li>
+</ol>
+<p><strong>이번 주의 성격.</strong> 두 항목 모두 제안서가 적어 둔 설계가 자료와 맞지 않았고, 설계를 바꿔야 했다. 바꾼 이유와 버린 설계를 결정기록에 그대로 남겼다.</p>
+<hr />
+<h2 id="1-제안서의-설계를-두-번-바꿨다">1. 제안서의 설계를 두 번 바꿨다</h2>
+<p>두 항목 다 <strong>분석을 짜기 전에 원자료부터 봤고</strong>, 그때 계획이 안 되는 것을 알았다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>제안서의 계획</th>
+<th>바꾼 것</th>
+<th>왜</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9 · 2025 구간</td>
+<td><strong>해제</strong>(2/13)를 주 사건으로, 재건축 여부를 세 번째 축으로</td>
+<td><strong>재지정</strong>(3/24)을 주 사건으로, <strong>전용면적</strong>을 세 번째 축으로</td>
+<td>해제 구간에는 움직이지 않은 비교군이 없다. 유지군에 소형 거래가 0건이라 재건축 축을 못 세운다</td>
+</tr>
+<tr>
+<td>12 · 파급효과</td>
+<td>인접 지역과 견준다</td>
+<td><strong>기준점을 서울 전체로</strong> 옮기고, 세 층으로 나눈다</td>
+<td>인접만 기준에 두면 '인근이 올랐다'와 '처치동이 눌렸다'를 못 가른다</td>
+</tr>
+</tbody>
+</table></div>
+<p>제안서가 정한 마일스톤 M2의 목표("2025년 해제·재지정의 삼중차분 결과와 파급효과 분해")는 그대로 충족된다. 삼중차분은 하되 축과 사건이 달라졌다.</p>
+<blockquote>
+<p>자세히: <a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/decisions/0023-2025-처치역전-재지정중심.md">결정기록 0023</a> · <a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/decisions/0024-파급효과-기준점.md">0024</a></p>
+</blockquote>
+<hr />
+<h2 id="2-2025년-규제가-풀렸다가-다시-걸렸다">2. 2025년 — 규제가 풀렸다가 다시 걸렸다</h2>
+<h3 id="2-1-39일짜리-창">2.1 39일짜리 창</h3>
+<p>2025-02-13 서울시는 국제교류복합지구 토허구역을 대부분 해제하면서 재건축 추진 단지 16개만 남겼다. 39일 뒤인 2025-03-24 강남3구·용산 전 아파트를 다시 묶었다. 처치가 1 → 0 → 1로 뒤집힌 드문 구간이다.</p>
+<p>이 구간의 집단은 넷이다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>집단</th>
+<th>2/13 해제</th>
+<th>3/24 재지정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>해제군 (처치 4개 동의 유지군 아닌 단지)</td>
+<td>규제 → <strong>무규제</strong></td>
+<td>무규제 → <strong>규제</strong></td>
+</tr>
+<tr>
+<td>강남·송파 나머지 동</td>
+<td>변화 없음 (무규제)</td>
+<td>무규제 → <strong>규제</strong></td>
+</tr>
+<tr>
+<td>유지군 16개 단지</td>
+<td>변화 없음 (규제)</td>
+<td>변화 없음 (규제)</td>
+</tr>
+<tr>
+<td>비처치 4개 구 (강동·성동·광진·동작)</td>
+<td>변화 없음 (무규제)</td>
+<td>변화 없음 (무규제)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>해제 쪽은 재지 못한다.</strong> 해제 후 5주 동안 해제군 거래가 4.73배로 뛰었는데, 규제와 아무 상관 없는 비처치 4개 구도 <strong>2.76배</strong> 올랐다. 2025년 2~3월은 서울 전체가 오르던 때다. 통제군을 무엇으로 두느냐에 따라 추정치가 +31.3% ~ +145.6%로 벌어지고, 앞선 해의 같은 날짜에 건 가짜 사건에서도 비슷한 크기가 나온다. <strong>"해제 뒤 거래가 늘었다"까지만 쓴다.</strong></p>
+<p><strong>재지정 쪽은 반대다.</strong> 이때는 변하지 않은 집단이 둘 있다 — 유지군 16개와 비처치 4개 구.</p>
+<h3 id="2-2-재지정-직후-거래는-끊겼다">2.2 재지정 직후 거래는 끊겼다</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>처치</th>
+<th>통제</th>
+<th>기저</th>
+<th>효과</th>
+<th>p</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>해제군</strong></td>
+<td><strong>유지군 16개</strong></td>
+<td><strong>정상 13주</strong></td>
+<td><strong>−78.9%</strong></td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>해제군</td>
+<td>유지군 16개</td>
+<td>해제창 5주</td>
+<td>−92.3%</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>해제군</td>
+<td>비처치 4개 구</td>
+<td>정상 13주</td>
+<td>−86.1%</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>강남·송파 전체</td>
+<td>비처치 4개 구</td>
+<td>정상 13주</td>
+<td>−87.9%</td>
+<td>0.000</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>기저를 무엇으로 두느냐가 −79%와 −92%를 가른다.</strong> 재지정 직전 5주는 해제로 과열된 구간이라 그것을 기저로 쓰면 낙폭이 커진다. 주 사양은 해제 이전의 정상 구간을 기저로 한 <strong>−78.9%</strong>다.</p>
+<p><strong>발표와 효력 사이 나흘에 막차가 몰렸다.</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>집단</th>
+<th>3/15~18</th>
+<th>3/20~23 (발표 후)</th>
+<th>3/24~27 (효력 후)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>해제군</td>
+<td>30건</td>
+<td><strong>155건</strong></td>
+<td><strong>2건</strong></td>
+</tr>
+<tr>
+<td>강남·송파 나머지 동</td>
+<td>114건</td>
+<td><strong>268건</strong></td>
+<td><strong>0건</strong></td>
+</tr>
+<tr>
+<td>유지군 16개</td>
+<td>10건</td>
+<td>12건</td>
+<td>12건</td>
+</tr>
+<tr>
+<td>비처치 4개 구</td>
+<td>146건</td>
+<td>134건</td>
+<td>67건</td>
+</tr>
+</tbody>
+</table></div>
+<p>새로 규제될 집단만 닷새 안에 다섯 배로 몰렸다가 효력일에 끊겼다. 규제를 받지 않는 두 집단은 움직이지 않는다. 2020년 공고와 효력 사이 닷새의 막차가 훨씬 크게 반복됐다.</p>
+<h3 id="2-3-다만-여섯-주짜리-충격이다">2.3 다만 여섯 주짜리 충격이다</h3>
+<p>사후를 12주로 늘리면 유지군 대비 −14.1%(p=0.370)까지 줄어든다. 거래는 재지정 후 6주쯤 얼어 있다가 5월부터 돌아온다. <strong>"지속"이 아니라 "직후"의 숫자다.</strong></p>
+<figure><a href="../../output/figures/09_release_2025.png"><img src="../../output/figures/09_release_2025.png" alt="그림 1. 왼쪽: 주별 거래(해제 전 13주 평균 = 100). 해제군은 해제 직후와 재지정 막차에 두 번 치솟았다가 끊긴다. 가운데: 발표와 효력 사이 나흘의 막차와 그 뒤의 절벽. 오른쪽: 허가 대상 면적 기준이 바뀌자 소형도 같이 줄었다." loading="lazy"></a><figcaption>그림 1. 왼쪽: 주별 거래(해제 전 13주 평균 = 100). 해제군은 해제 직후와 재지정 막차에 두 번 치솟았다가 끊긴다. 가운데: 발표와 효력 사이 나흘의 막차와 그 뒤의 절벽. 오른쪽: 허가 대상 면적 기준이 바뀌자 소형도 같이 줄었다.</figcaption></figure>
+<h3 id="2-4-통제군이-결론을-만들지-않았는가">2.4 통제군이 결론을 만들지 않았는가</h3>
+<p>유지군 16개는 서울시가 재건축 추진을 보고 고른 집단이지 무작위가 아니다. 그래서 유지군 대신 비처치 4개 구에서 16개 단지를 무작위로 뽑아 통제군으로 쓰는 일을 2,000번 반복했다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>가짜 중위</th>
+<th>2.5%</th>
+<th>97.5%</th>
+<th>실제(유지군)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>재지정 효과</td>
+<td>−86.8%</td>
+<td>−93.1%</td>
+<td>−71.6%</td>
+<td><strong>−78.9%</strong> (86번째 백분위)</td>
+</tr>
+</tbody>
+</table></div>
+<p>실제값은 가짜 분포 안에 있고, 가짜 통제군 쪽이 더 큰 감소를 낸다. <strong>유지군을 쓰는 편이 보수적이다.</strong></p>
+<blockquote>
+<p>자세히: <a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/decisions/0023-2025-처치역전-재지정중심.md">결정기록 0023</a></p>
+</blockquote>
+<hr />
+<h2 id="3-1년-전-예측이-맞았다">3. 1년 전 예측이 맞았다</h2>
+<p>3주차 보고서(결정기록 0022)는 효과가 단지마다 달랐던 주된 이유를 <strong>허가 대상의 면적 기준</strong>으로 결론지었다. 2020년 지정은 주거지역 대지 18㎡ 초과만 허가 대상이라 대지지분이 작은 소형이 사실상 규제 밖이었다는 것이다. 그리고 그 결론이 옳다면 따라 나오는 예측을 함께 적어 두었다.</p>
+<blockquote>
+<p>2025년 재지정은 처음부터 6㎡ 기준이다. 소형 면제가 없으므로 <strong>2025년에는 소형도 대형과 같이 줄어야 한다.</strong></p>
+</blockquote>
+<p>같은 통제군(비처치 4개 구)에 같은 사양을 두 사건에 걸었다. 창은 사전 13주 · 사후 5주로 같다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>사건</th>
+<th>허가 대상</th>
+<th>40㎡ 이상</th>
+<th>40㎡ 미만</th>
+<th>차이 계수</th>
+<th>p</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2020-06-23 지정</td>
+<td>대지 18㎡ 초과</td>
+<td>−95.0%</td>
+<td><strong>+125.7%</strong></td>
+<td>+3.818</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>2025-03-24 재지정</td>
+<td>대지 6㎡ 초과</td>
+<td>−89.4%</td>
+<td><strong>−71.5%</strong></td>
+<td>+0.987</td>
+<td>0.388</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>2020년에 소형은 줄지 않은 정도가 아니라 늘었다.</strong> 허가 대상이 아니었으므로 규제를 피하려는 수요가 소형으로 몰린 것으로 읽는다. 2025년에는 그 통로가 닫혀 있었고 소형도 −71.5% 줄었다. 소형이 덜 줄어든 폭(차이 계수)이 3.818에서 0.987로 내려앉고 통계적으로 유의하지 않게 된다.</p>
+<p><strong>사후에 맞춘 설명이 아니다.</strong> 결과를 보기 전에 결정기록에 적어 둔 예측이고, 그 예측이 다른 사건·다른 연도·다른 통제군에서 확인됐다. 이 연구가 "규제를 거느냐가 아니라 어떻게 거느냐가 효과를 정한다"고 말할 근거가 한 겹 두꺼워졌다.</p>
+<p>다만 <strong>소형 거래는 2020년 75건, 2025년 111건뿐이다.</strong> 방향은 믿을 만하지만 크기는 아니다. 2025년의 차이 계수가 0과 구분되지 않는 것도 표본이 작아서일 수 있다. 그래서 "소형이 대형과 똑같이 줄었다"가 아니라 <strong>"2020년과 달리 소형도 크게 줄었다"</strong>로 쓴다.</p>
+<hr />
+<h2 id="4-어디로-번졌는가">4. 어디로 번졌는가</h2>
+<p>토허제의 명분은 가격 안정이다. 규제 밖 단지로 수요가 옮겨 갔을 뿐이라면 규제는 문제를 푼 것이 아니라 <strong>옮긴 것</strong>이다. 선행연구 두 편이 '인근 지역 급등'을 보고했다.</p>
+<h3 id="4-1-규제-밖이-세-층으로-있다">4.1 규제 밖이 세 층으로 있다</h3>
+<p>층마다 사건이 다르다. 법정동 경계 다각형으로 처치 4개 동에 맞닿은 동을 뽑으니 14개였다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>층</th>
+<th>사건</th>
+<th>규제 밖에 무엇이</th>
+<th>답</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>같은 동 안</strong></td>
+<td>2025-02 해제</td>
+<td>유지군 16개 단지</td>
+<td><strong>있다</strong> — 거래 −26.5% (p&lt;0.001)</td>
+</tr>
+<tr>
+<td><strong>옆 동</strong></td>
+<td>2020-06 지정</td>
+<td>맞닿은 11개 동</td>
+<td><strong>없다</strong> — −9.0%, 공통지지에서 −19.0%</td>
+</tr>
+<tr>
+<td><strong>옆 구</strong></td>
+<td>2025-03 재지정</td>
+<td>인접 4개 구</td>
+<td><strong>모른다</strong> — +23.0% (p=0.157)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>층 1이 이 연구에서 가장 가까이서 잰 파급이다.</strong> 유지군 16개는 규제가 하나도 바뀌지 않았는데, 바로 옆 단지의 규제가 풀리자 거래가 26.5% 줄었다. 같은 동, 같은 학군, 같은 시기다. 제안서가 "파급효과를 인접 지역이 아니라 동일 지역 내에서 측정할 수 있는 조건"이라 쓴 것이 이것이고, 이번에 처음 쟀다.</p>
+<p><strong>반면 한 층만 멀어져도 파급이 없다.</strong> 2020년 지정에서 맞닿은 동은 어느 사양에서도 거래가 늘지 않았다.</p>
+<h3 id="4-2-같은-자료에서-정반대-결론이-나온다">4.2 같은 자료에서 정반대 결론이 나온다</h3>
+<p>기준점만 바꿔 가며 같은 계산을 반복했다. 맞닿은 동이고, 자료·창·사양이 모두 같다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>기준점</th>
+<th>거래량</th>
+<th>가격</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>① 처치동</strong></td>
+<td><strong>+115.5%</strong> (0.000)</td>
+<td>+4.3% (0.111)</td>
+</tr>
+<tr>
+<td>② 강남·송파 비인접 동</td>
+<td>−6.8% (0.331)</td>
+<td>−3.6% (0.055)</td>
+</tr>
+<tr>
+<td>③ 나머지 17개 구</td>
+<td>−9.0% (0.088)</td>
+<td>−5.0% (0.001)</td>
+</tr>
+<tr>
+<td>④ ③ + 가격대 공통지지</td>
+<td>−19.0% (0.021)</td>
+<td>+0.3% (0.748)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>①이 '인근 급등'이다.</strong> 맞닿은 동의 거래가 처치동보다 116% 많아진 것은 사실이다. 그런데 그것은 옆 동이 늘어서가 아니라 <strong>처치동이 58% 줄어서</strong>다. 옆 동은 가만히 있어도 상대적으로 두 배가 된다. 기준점을 서울 전체로 한 칸 옮기면 −9%가 된다.</p>
+<p>처치동으로 같은 사다리를 놓으면 거래량은 기준점을 어떻게 바꿔도 −57 ~ −64%다. <strong>주 결과는 이 사다리에서 움직이지 않는다.</strong></p>
+<figure><a href="../../output/figures/12_spillover.png"><img src="../../output/figures/12_spillover.png" alt="그림 2. 왼쪽: 고리별 분기 거래량(나머지 17개 구 대비, 사전 = 0). 처치동만 −80%까지 떨어지고 나머지는 0 근처다. 가운데: 고리별 분기 가격. 오른쪽: 기준점을 바꾸면 맞닿은 동의 효과가 +115%에서 −19%로 뒤집힌다." loading="lazy"></a><figcaption>그림 2. 왼쪽: 고리별 분기 거래량(나머지 17개 구 대비, 사전 = 0). 처치동만 −80%까지 떨어지고 나머지는 0 근처다. 가운데: 고리별 분기 가격. 오른쪽: 기준점을 바꾸면 맞닿은 동의 효과가 +115%에서 −19%로 뒤집힌다.</figcaption></figure>
+<h3 id="4-3-선행연구와의-관계">4.3 선행연구와의 관계</h3>
+<p><strong>본문 결과와는 어긋나지 않는다.</strong> 9월 3일에 세 논문의 지역 정의를 이 자료에 그대로 적용해 본 적이 있다. 어떻게 바꾸어도 전부 음수였고 단지 고정효과를 넣으면 −6 ~ −7%로 모였다. 어긋나는 것은 <strong>'인근 급등'이라는 서술 하나</strong>다.</p>
+<p><strong>비난이 아니라 서술 관행의 문제로 다룬다.</strong> 인근만 기준에 두면 '인근이 올랐다'와 '처치동이 눌렸다'를 구분할 수 없다. 서울 전체를 기준에 놓아야 갈린다. 그리고 <strong>동 단위 집계 자료로는 이 사다리를 만들 수 없다</strong> — 처치동 바깥 서울 전역의 단지를 같은 표에 놓아야 하기 때문이다. 미시 패널이 답한 또 하나의 질문이다.</p>
+<blockquote>
+<p>자세히: <a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/decisions/0024-파급효과-기준점.md">결정기록 0024</a> · 용어: <a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/glossary.md">기준점 · 공통지지</a></p>
+</blockquote>
+<hr />
+<h2 id="5-가격에서-생긴-숙제">5. 가격에서 생긴 숙제</h2>
+<p>처치동 아파트는 서울 최상위 가격대에 몰려 있고, 2020~2021년은 중저가가 급등하고 고가가 뒤처진 시기다. 그래서 지정 전 ㎡당가가 처치동 범위(1,142~2,649만원)에 드는 단지만 남겨 다시 쟀다. 통제군은 서초·마포·양천·용산 등 17개 구의 440개 단지 14,804건이다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>전체 표본</th>
+<th>가격대 공통지지</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>거래량</td>
+<td>−57.8% (0.000)</td>
+<td><strong>−63.7%</strong> (0.000)</td>
+</tr>
+<tr>
+<td>가격</td>
+<td>−9.7% (0.000)</td>
+<td><strong>−2.1%</strong> (0.270)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>거래량은 단단하고 가격은 약해진다.</strong> 읽는 방법이 둘이다.</p>
+<ul>
+<li>토허제의 가격 효과로 보였던 것이 사실은 2020~21년 고가 단지가 뒤처진 것이다</li>
+<li>규제가 고가 단지에 걸렸으니 가격대를 맞추는 것은 처치의 일부를 빼는 것이다</li>
+</ul>
+<p><strong>지금 자료로는 가르지 못한다.</strong> 두 사양을 나란히 싣고, 1주차에 정한 대로 가격은 방향만 말한다. 가르는 일은 헤도닉 지수(백로그 8)와 사전 추세 민감도 분석(11)의 몫이며 M3에서 다룬다.</p>
+<p><strong>버린 사양을 밝혀 둔다.</strong> 가격대를 통제하려고 처음에는 가격 10분위 × 시점 고정효과를 넣었다. 처치동 가격 효과가 −1.0%까지 사라지길래 확인해 보니, <strong>최상위 분위 거래의 20.3%가 처치동이고 처치동과 맞닿은 동을 합치면 49.4%</strong>였다. 처치가 제 통제군이 되어 효과를 기계적으로 흡수하는 구조다. 고정효과로 빼는 대신 표본을 줄여 비교 대상을 명시적으로 고르는 쪽으로 바꿨다.</p>
+<hr />
+<h2 id="6-이번-주에-확정된-숫자">6. 이번 주에 확정된 숫자</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>무엇</th>
+<th>값</th>
+<th>어떻게 쟀나</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2025-03-24 재지정 직후 5주</td>
+<td><strong>−78.9%</strong></td>
+<td>처치동 단지 대 같은 동 유지군 16개, 해제 전 13주 기저</td>
+</tr>
+<tr>
+<td>같은 것, 통제군을 바꾸면</td>
+<td>−86.1%</td>
+<td>처치동 단지 대 비처치 4개 구</td>
+</tr>
+<tr>
+<td>같은 것, 사후 12주로 늘리면</td>
+<td>−14.1% (p=0.370)</td>
+<td>6주쯤 얼었다가 5월부터 회복</td>
+</tr>
+<tr>
+<td>재지정 막차 (발표~효력 나흘)</td>
+<td>30건 → <strong>155건</strong> → 2건</td>
+<td>해제군 원자료</td>
+</tr>
+<tr>
+<td>2020 지정 · 소형(40㎡ 미만)</td>
+<td><strong>+125.7%</strong></td>
+<td>대 비처치 4개 구, 사전 13주 사후 5주</td>
+</tr>
+<tr>
+<td>2025 재지정 · 소형</td>
+<td><strong>−71.5%</strong></td>
+<td>같은 사양</td>
+</tr>
+<tr>
+<td>파급 · 같은 동 안 (유지군)</td>
+<td><strong>−26.5%</strong></td>
+<td>대 먼 통제군, 해제 전 13주 사후 5주</td>
+</tr>
+<tr>
+<td>파급 · 옆 동 (맞닿은 11개 동)</td>
+<td>−9.0% ~ −19.0%</td>
+<td>대 나머지 17개 구, 2020 지정 ±12개월</td>
+</tr>
+<tr>
+<td>파급 · 옆 구 (인접 4개 구)</td>
+<td>+23.0% (p=0.157)</td>
+<td>대 먼 17개 구, 재지정 전후</td>
+</tr>
+<tr>
+<td>2020 지정 거래량 (서울 기준)</td>
+<td>−57.8% ~ <strong>−63.7%</strong></td>
+<td>대 나머지 17개 구 / 가격대 공통지지</td>
+</tr>
+<tr>
+<td>2020 지정 가격 (서울 기준)</td>
+<td>−9.7% → <strong>−2.1%</strong> (비유의)</td>
+<td>전체 표본 → 가격대 공통지지</td>
+</tr>
+</tbody>
+</table></div>
+<p>거래량은 포아송 유사최대우도로, 가격은 log ㎡당가에 단지·시점 고정효과를 넣어 쟀다. 클러스터는 법정동이다. 지난주까지 쓰던 log1p 선형 모형을 바꾼 이유는 규모 차이다 — 해제군 단지의 거래 중위가 2년에 2건인데 유지군은 28건이라, 칸마다 무게가 같은 모형은 거래가 드문 작은 단지에 끌려간다. 두 값을 결과 파일에 함께 저장한다.</p>
+<hr />
+<h2 id="7-마일스톤-점검">7. 마일스톤 점검</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>시점</th>
+<th>조건</th>
+<th>상태</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>09/24</td>
+<td>2020년 지정의 거래량 효과를 강건성 검정과 함께 제시</td>
+<td><strong>충족</strong> (09/18)</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>10/15</td>
+<td>2025년 해제·재지정 삼중차분과 동일 동 내 파급효과</td>
+<td><strong>충족</strong> (09/23)</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>11/05</td>
+<td>분석 동결</td>
+<td>다음 착수</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>11/19</td>
+<td>클린 환경 재현</td>
+<td><code>run_all.py</code> 31단계, 전체 재실행 확인</td>
+</tr>
+</tbody>
+</table></div>
+<p>M2를 목표보다 3주 앞당겨 채웠다. 이로써 <a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/framing.md">연구의 뼈대</a>의 다섯 질문 중 넷이 채워졌다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>질문</th>
+<th>지금의 답</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>얼마나 줄었나</td>
+<td>직후 3개월 −71 ~ −80%</td>
+</tr>
+<tr>
+<td>언제까지 갔나</td>
+<td>24개월 평균 −25 ~ −38% (범위)</td>
+</tr>
+<tr>
+<td>누구에게 달랐나</td>
+<td>허가 대상 면적 기준. 2025년 재지정에서 예측 확인</td>
+</tr>
+<tr>
+<td>어디로 번졌나</td>
+<td><strong>같은 동 안에만. 옆 동은 음수, 옆 구는 비유의</strong></td>
+</tr>
+<tr>
+<td>가격은 잡혔나</td>
+<td><strong>여전히 말하지 못한다. 이번 주에 오히려 더 불확실해졌다</strong></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="8-미해결-사항과-다음-작업">8. 미해결 사항과 다음 작업</h2>
+<p><strong>미해결</strong></p>
+<ul>
+<li><strong>가격 효과가 가격대 통제에 약해진다.</strong> 처치 효과인지 가격대 효과인지 가르지 못했다(5절).</li>
+<li><strong>재지정 효과는 여섯 주짜리다.</strong> 12주로 늘리면 통제군에 따라 −14%와 −60%로 갈린다. 지속 기간은 아직 말하지 못한다.</li>
+<li><strong>소형 거래가 적다.</strong> 2020년 75건, 2025년 111건이다.</li>
+<li><strong>옆 구로의 파급은 부호만 있다.</strong> 창이 5주로 짧고, 늘리면 2025-06-27 대출 규제가 섞인다.</li>
+<li><strong>대지지분이 아니라 전용면적으로 대신했다.</strong> 지난주와 같다.</li>
+<li><strong>평균 회귀와 통제군 오염을 동시에 걷어낸 24개월 사양</strong>이 없다. 지난주와 같다.</li>
+</ul>
+<p><strong>다음 작업 (M3, 11/05)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>순서</th>
+<th>내용</th>
+<th>받는 숙제</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>헤도닉 가격지수 (백로그 8)</td>
+<td>5절 — 특성을 명시적으로 통제해 가격대와 처치를 가른다</td>
+</tr>
+<tr>
+<td>2</td>
+<td>처치 역전 추정량 dCDH (10)</td>
+<td>2절의 집단 정의를 그대로 쓴다</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Honest DiD 민감도 구간 (11)</td>
+<td>5절 — 가격 효과의 강건 구간</td>
+</tr>
+<tr>
+<td>4</td>
+<td>사양 곡선 (5b)</td>
+<td>분석 동결 전 마지막 점검</td>
+</tr>
+</tbody>
+</table></div>
+<p>10월 2일 발표에는 M1·M2 결과를 함께 넣는다.</p>
+<hr />
+<h2 id="부록-재현">부록: 재현</h2>
+<pre><code>python run_all.py            # 정제부터 보고서까지 전부 (수집 제외)
+python run_all.py --list     # 단계 목록
+python run_all.py --only 12  # 한 단계만
+</code></pre>
+<p>이번 주에 새로 만든 분석 스크립트는 둘이다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>스크립트</th>
+<th>무엇</th>
+<th>결정기록</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scripts/09_release_2025.py</code></td>
+<td>2025 해제·재지정, 면적 기준 예측 검정</td>
+<td>0023</td>
+</tr>
+<tr>
+<td><code>scripts/12_spillover.py</code></td>
+<td>파급효과 세 층 분해, 기준점 사다리</td>
+<td>0024</td>
+</tr>
+</tbody>
+</table></div>
+<p>추정 부품도 둘 늘었다. <code>scripts/lib/econ.py</code> 의 <code>ppml()</code>(칸 고정효과를 닫힌 식으로 흡수한 포아송)과 <code>scripts/lib/geo.py</code> 의 <code>touching()</code>(경계 다각형으로 맞닿은 법정동 찾기)이다. <code>ppml()</code>은 statsmodels로 같은 모형을 돌려 계수와 표준오차가 일치하는지 확인하고 썼다.</p>
+<p><strong>전체 재실행으로 확인한 것.</strong> M2를 채웠으므로 <code>run_all.py</code> 31단계를 처음부터 다시 돌렸다(793초). <strong>분석 결과 파일과 그림은 하나도 바뀌지 않았다.</strong> 다만 1·2주차 보고서 HTML 두 개가 지난주 생성기 변경분을 반영하지 않은 채 남아 있던 것을 찾아 다시 만들었다(내용은 그대로, 그림 스타일만 추가).</p>
+<p><strong>작업 일지</strong>: <a href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/journal/2026-09-23.md">2026-09-23</a> · <strong>지난 보고서</strong>: <a href="https://cosmicpotato2047.github.io/capstone-ltz-causal/docs/reports/week-03.html">3주차</a></p></main>
+  <nav class="toc"><div class="lbl">목차</div><a href="#요약">요약</a><a href="#1-제안서의-설계를-두-번-바꿨다">1. 제안서의 설계를 두 번 바꿨다</a><a href="#2-2025년-규제가-풀렸다가-다시-걸렸다">2. 2025년 — 규제가 풀렸다가 다시 걸렸다</a><a href="#3-1년-전-예측이-맞았다">3. 1년 전 예측이 맞았다</a><a href="#4-어디로-번졌는가">4. 어디로 번졌는가</a><a href="#5-가격에서-생긴-숙제">5. 가격에서 생긴 숙제</a><a href="#6-이번-주에-확정된-숫자">6. 이번 주에 확정된 숫자</a><a href="#7-마일스톤-점검">7. 마일스톤 점검</a><a href="#8-미해결-사항과-다음-작업">8. 미해결 사항과 다음 작업</a><a href="#부록-재현">부록: 재현</a></nav>
+</div>
+<script>
+const heads=[...document.querySelectorAll('main h2[id]')];
+const links=[...document.querySelectorAll('nav.toc a')];
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(!e.isIntersecting)return;
+    const i=heads.indexOf(e.target);
+    links.forEach((a,j)=>a.classList.toggle('on',i===j));});
+},{rootMargin:'-70px 0px -75% 0px'});
+heads.forEach(h=>io.observe(h));
+</script>
