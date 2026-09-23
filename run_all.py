@@ -58,6 +58,7 @@ STEPS: list[tuple[str, str, str, list[str], str]] = [
     ("13b", "분석", "scripts/13b_contamination.py", [], "오염 동 제외 (0020)"),
     ("06f", "분석", "scripts/06f_threshold.py", [], "노출도 문턱 민감도 (0021)"),
     ("06g", "분석", "scripts/06g_area_exemption.py", [], "면적 면제 검증 (0022)"),
+    ("09", "분석", "scripts/09_release_2025.py", [], "2025 해제·재지정 (0023)"),
 
     ("R1", "재현", "scripts/replicate/jeon2025.py", [], "선행연구 재현 — 전상현 외 2025"),
     ("R2", "재현", "scripts/replicate/lee2025.py", [], "선행연구 재현 — 이한웅·이춘원 2025"),
