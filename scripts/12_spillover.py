@@ -226,6 +226,8 @@ def main() -> None:
     print("=" * 92)
     d3 = d.copy()
     bad3 = designated(REDESIG - pd.DateOffset(months=6), REDESIG + pd.DateOffset(months=3))
+    # 층 3 의 기준점은 25 − 4(강남3구·용산) − 4(인접) = 17개 구다.
+    # 층 2 의 R4(19개 구)와 다른 집단이니 이름을 섞지 말 것.
     g3 = pd.Series("먼 17개 구", index=d3.index)
     g3[d3.sgg_nm.isin(SGG_NEAR)] = "인접 4개 구"
     g3[d3.sgg_nm.isin(SGG_2025)] = "새로 규제"
@@ -260,7 +262,7 @@ def main() -> None:
     ladder = []
     steps = [("1. 기준점 = 처치동 (선행연구의 시선)", w, RINGS[0]),
              ("2. 기준점 = 강남·송파 비인접 동", w, RINGS[2]),
-             ("3. 기준점 = 나머지 17개 구", w, BASE_RING),
+             ("3. 기준점 = 나머지 19개 구", w, BASE_RING),
              ("4. 3 + 가격대 공통지지", band, BASE_RING)]
     for lab, s, ctl in steps:
         r = both(s, RINGS[1], ctl, "고리", "em", -PRE, POST - 1)
@@ -272,7 +274,7 @@ def main() -> None:
     print("\n  처치동으로 같은 사다리")
     lad0 = []
     for lab, s, ctl in [("1. 기준점 = 강남·송파 비인접 동", w, RINGS[2]),
-                        ("2. 기준점 = 나머지 17개 구", w, BASE_RING),
+                        ("2. 기준점 = 나머지 19개 구", w, BASE_RING),
                         ("3. 2 + 가격대 공통지지", band, BASE_RING)]:
         r = both(s, RINGS[0], ctl, "고리", "em", -PRE, POST - 1)
         lad0.append({"단계": lab, "기준점": ctl, **r})
@@ -299,7 +301,7 @@ def main() -> None:
                 ms=4, label=rg)
     ax.axhline(0, color="#999", lw=.8)
     ax.axvline(-0.5, color="#1a202c", ls="--", lw=1.2)
-    ax.set_title("거래량 — 나머지 17개 구 대비 (사전 = 0)")
+    ax.set_title("거래량 — 나머지 19개 구 대비 (사전 = 0)")
     ax.set_xlabel("지정 기준 분기")
     ax.set_ylabel("단지당 거래의 상대 변화 (%)")
     ax.legend(fontsize=8)
@@ -318,7 +320,7 @@ def main() -> None:
         ax.plot(m.index, 100 * m[rg], "o-", color=c, lw=1.7, ms=4, label=rg)
     ax.axhline(0, color="#999", lw=.8)
     ax.axvline(-0.5, color="#1a202c", ls="--", lw=1.2)
-    ax.set_title("가격 — 같은 단지 안의 변화, 17개 구 대비")
+    ax.set_title("가격 — 같은 단지 안의 변화, 19개 구 대비")
     ax.set_xlabel("지정 기준 분기")
     ax.set_ylabel("log ㎡당가 차이 (%)")
     ax.grid(alpha=.25)

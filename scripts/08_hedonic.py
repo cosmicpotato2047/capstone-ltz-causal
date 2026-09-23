@@ -143,8 +143,12 @@ def main() -> None:
     print("=" * 88)
     rs = pd.read_csv(io.PROCESSED / "rs_index.csv", encoding="utf-8-sig")
     rs = rs.set_index("연월")
+    # 반복매매지수(07)의 통제동은 강남·송파 비처치 **전부**다. 지수끼리 견주려면
+    # 같은 동 집합이어야 하므로 여기서도 오염 6개를 빼지 않는다.
+    # 오염을 뺀 사양은 아래에서 따로 낸다(2절의 이중차분은 0020 대로 뺀다).
+    control_rs = gs[~gs.처치]
     idx = {}
-    for name, sub in (("처치동", treated), ("통제동", control)):
+    for name, sub in (("처치동", treated), ("통제동", control_rs)):
         idx[(name, "중위가(총액)")] = median_index(sub, "amount_manwon")
         idx[(name, "중위가(㎡당)")] = median_index(sub, "price_per_m2")
         idx[(name, "헤도닉")] = hedonic_index(sub, unit_fe=False)
@@ -191,7 +195,17 @@ def main() -> None:
                     "변화_pct": round(100 * (b / a - 1), 1)})
         print(f"  {k:<14}{a:>13.3f}{b:>13.3f}{100 * (b / a - 1):>9.1f}%")
     out["지수_사다리"] = lad
-    print("  네 지수가 같은 방향이면 구성 변화가 결론을 만들지 않았다는 뜻이다")
+    print("  다섯 지수가 같은 방향이면 구성 변화가 결론을 만들지 않았다는 뜻이다")
+
+    # 오염 6개 동을 뺀 통제동으로 헤도닉+단지만 다시 — 07 과의 동 집합 차이 점검
+    h2 = hedonic_index(control, unit_fe=True)
+    t2 = tab[("처치동", "헤도닉+단지")]
+    a2 = float((t2.reindex(pre_m) / h2.reindex(pre_m)).mean())
+    b2 = float((t2.reindex(post_m) / h2.reindex(post_m)).mean())
+    ex = round(100 * (b2 / a2 - 1), 1)
+    print(f"  (점검) 통제동에서 오염 6개 동을 빼면 헤도닉+단지는 {ex:+.1f}% — "
+          f"위 표의 {lad[3]['변화_pct']:+.1f}% 와 견줄 것")
+    out["지수_사다리_오염제외"] = {"헤도닉+단지_pct": ex}
 
     # ==================================================================
     print("\n" + "=" * 88)
