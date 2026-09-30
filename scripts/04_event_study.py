@@ -50,7 +50,10 @@ def main() -> None:
 
     price = econ.event_study(
         df, y="log_price_per_m2", treated="treated", kq="kq",
-        fes=["aptSeq", "ym_s"], controls=["floor_no", "age_at_deal", "log_area"],
+        # 연식(age_at_deal)은 넣지 않는다. 단지 고정효과 아래에서 연식은 시간의
+        # 일차함수라 월 고정효과에 완전히 흡수된다(제거 후 잔차 1e-10). 넣어도
+        # 계수는 소수점까지 같지만, 읽는 사람이 통제된 줄로 안다.
+        fes=["aptSeq", "ym_s"], controls=["floor_no", "log_area"],
         cluster="umd_full_cd", kmin=KMIN, kmax=KMAX)
 
     # 거래량: 법정동 × 사건월 패널.

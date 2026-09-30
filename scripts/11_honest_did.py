@@ -153,21 +153,23 @@ def run(t: pd.DataFrame, ks: list[int], label: str, claim: str) -> dict:
     print(f"\n  붕괴값  점추정 M̄ = {bd_p:.2f} · 표본오차 포함 M̄ = {bd_c:.2f}")
 
     print(f"\n  Δ^SD(M) — 직선에서 벗어나는 폭을 분기마다 M 까지")
-    print(f"  {'M':>6}{'편의 상한':>12}{'구간 (표본오차 포함)':>26}")
+    print(f"  {'M':>6}{'분기마다':>10}{'편의 상한':>11}{'구간 (표본오차 포함)':>26}")
     sd_rows = []
     grid = [0.0, 0.002, 0.005, 0.01, 0.02, 0.03]
     for m in grid:
         b = sd_bound(lags, m)
         lo_c = pct(beta - drift - b - Z * se)
         hi_c = pct(beta - drift + b + Z * se)
-        sd_rows.append({"M": m, "편의상한": round(b, 4),
+        sd_rows.append({"M": m, "M_pctp": round(pct(m), 2), "편의상한": round(b, 4),
                         "구간_lo": round(lo_c, 1), "구간_hi": round(hi_c, 1),
                         "0포함": bool(lo_c <= 0 <= hi_c)})
         mark = "  <- 0 을 품는다" if lo_c <= 0 <= hi_c else ""
-        print(f"  {m:>6.3f}{b:>12.4f}   [{lo_c:>7.1f}%, {hi_c:>7.1f}%]{mark}")
+        print(f"  {m:>6.3f}{pct(m):>9.2f}%p{b:>11.4f}   "
+              f"[{lo_c:>7.1f}%, {hi_c:>7.1f}%]{mark}")
     unit_sd = sd_bound(lags, 1.0)
     bd_sd = breakaway = breakdown(beta - drift, se, unit_sd, use_se=True)
-    print(f"  붕괴값  M = {bd_sd:.4f}  (직선 연장 편의 {pct(drift):+.1f}% 를 뺀 뒤)")
+    print(f"  붕괴값  M = {bd_sd:.4f} = 분기마다 {pct(bd_sd):.2f}%p 씩 휨"
+          f"  (직선 연장 편의 {pct(drift):+.1f}% 를 뺀 뒤)")
 
     return {"대상": label, "주장": claim, "분기": ks,
             "계수": round(beta, 4), "효과_pct": round(pct(beta), 1),
@@ -176,7 +178,8 @@ def run(t: pd.DataFrame, ks: list[int], label: str, claim: str) -> dict:
             "사전기울기": round(slope, 4), "직선연장_pct": round(pct(drift), 1),
             "RM": rows, "붕괴_Mbar_점추정": round(bd_p, 2),
             "붕괴_Mbar_구간": round(bd_c, 2),
-            "SD": sd_rows, "붕괴_M": round(bd_sd, 4)}
+            "SD": sd_rows, "붕괴_M": round(bd_sd, 4),
+            "붕괴_M_pctp": round(pct(bd_sd), 2)}
 
 
 def main() -> None:
