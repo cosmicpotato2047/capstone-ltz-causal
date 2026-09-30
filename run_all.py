@@ -63,6 +63,7 @@ STEPS: list[tuple[str, str, str, list[str], str]] = [
     ("08", "분석", "scripts/08_hedonic.py", [], "헤도닉 지수·가격 효과 범위 (0025)"),
     ("11", "분석", "scripts/11_honest_did.py", [], "사전추세 민감도 구간 (0026)"),
     ("10", "분석", "scripts/10_dcdh.py", [], "처치 역전 추정량·가중치 진단 (0027)"),
+    ("5b", "분석", "scripts/05b_spec_curve.py", [], "사양 곡선 336개 (0028)"),
 
     ("R1", "재현", "scripts/replicate/jeon2025.py", [], "선행연구 재현 — 전상현 외 2025"),
     ("R2", "재현", "scripts/replicate/lee2025.py", [], "선행연구 재현 — 이한웅·이춘원 2025"),
