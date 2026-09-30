@@ -242,12 +242,30 @@ def main() -> None:
     Ya, Da = Y.to_numpy(), D.to_numpy()
     t_rel, t_red = cols.index(0), cols.index(WK_RUSH + 1)
 
+    N = p.pivot(index="aptSeq", columns="wk", values="n").to_numpy()
+
+    def agg_ratio(t: int, lag: int, key: str,
+                  only: np.ndarray | None = None) -> float:
+        """집계 배수 비 — 건수를 그대로 더해서 낸다. PPML 과 같은 무게다."""
+        d0, d1 = Da[:, t - 1], Da[:, t]
+        si, so = (d0 == 0) & (d1 == 1), (d0 == 1) & (d1 == 0)
+        s0, s1 = (d0 == 0) & (d1 == 0), (d0 == 1) & (d1 == 1)
+        if only is not None:
+            si, so = si & only, so & only
+        A, B_ = (si, s0) if key == "부과" else (s1, so)
+        ra = N[A, t + lag].sum() / max(N[A, t - 1].sum(), 1e-9)
+        rb = N[B_, t + lag].sum() / max(N[B_, t - 1].sum(), 1e-9)
+        return float(np.log(ra / rb)) if ra > 0 and rb > 0 else np.nan
+
+    # 막차 주간을 뺐으므로 재지정 쪽은 기준(4주)과 첫 사후(6주) 사이가 2주다.
+    # 해제 쪽은 1주다. 시차 번호가 아니라 **기준에서 지난 주 수**로 맞춰야 한다.
+    gap = {t_rel: cols[t_rel] - cols[t_rel - 1], t_red: cols[t_red] - cols[t_red - 1]}
     rows = []
     for tlab, t, key in (("해제 (2/13)", t_rel, "해제"),
                          ("재지정 (3/24)", t_red, "부과")):
-        print(f"\n  {tlab}  — {key}")
-        print(f"  {'시차':>5}{'단순평균':>11}{'95% 구간':>22}"
-              f"{'거래 가중':>11}{'95% 구간':>22}")
+        print(f"\n  {tlab}  — {key}  (기준 {cols[t-1]}주, 첫 사후 {cols[t]}주)")
+        print(f"  {'경과':>5}{'단순평균':>11}{'95% 구간':>21}"
+              f"{'거래 가중':>11}{'95% 구간':>21}{'집계 배수':>11}")
         for l in range(LAGS):
             if t + l >= len(cols):
                 continue
@@ -255,23 +273,46 @@ def main() -> None:
             r2 = didm(Ya, Da, t, l, base)
             if key not in r1:
                 continue
+            elapsed = cols[t + l] - cols[t - 1]
             b1 = boot(Ya, Da, grp, t, l, np.ones(len(Ya)), rng, key)
             b2 = boot(Ya, Da, grp, t, l, base, rng, key)
             c1 = np.percentile(b1, [2.5, 97.5])
             c2 = np.percentile(b2, [2.5, 97.5])
+            ag = agg_ratio(t, l, key)
             rows.append({"전환": tlab, "성분": key, "시차_주": l,
+                         "경과_주": int(elapsed),
                          "단순_pct": round(pct(r1[key][0]), 1),
                          "단순_lo": round(pct(c1[0]), 1), "단순_hi": round(pct(c1[1]), 1),
                          "가중_pct": round(pct(r2[key][0]), 1),
                          "가중_lo": round(pct(c2[0]), 1), "가중_hi": round(pct(c2[1]), 1),
+                         "집계_pct": round(pct(ag), 1),
                          "전환_단지": r1[key][1], "비교_단지": r1[key][2]})
-            print(f"  {l:>5}{pct(r1[key][0]):>10.1f}%"
+            print(f"  {elapsed:>4}주{pct(r1[key][0]):>10.1f}%"
                   f"  [{pct(c1[0]):>6.1f}%,{pct(c1[1]):>6.1f}%]"
                   f"{pct(r2[key][0]):>10.1f}%"
-                  f"  [{pct(c2[0]):>6.1f}%,{pct(c2[1]):>6.1f}%]")
+                  f"  [{pct(c2[0]):>6.1f}%,{pct(c2[1]):>6.1f}%]"
+                  f"{pct(ag):>10.1f}%")
         n = rows[-1]
         print(f"  (전환 단지 {n['전환_단지']}개 · 비교 단지 {n['비교_단지']}개)")
     out["DID_M"] = rows
+
+    # 재부과(해제군)와 최초 부과(새로 규제)를 나눠 본다
+    print("\n  재지정을 둘로 나누면 — 규제를 39일 겪어 본 쪽과 처음 겪는 쪽")
+    print(f"  {'경과':>5}{'재부과 (해제군)':>18}{'최초 부과 (새로 규제)':>22}")
+    split = []
+    idx_rel = grp == "해제군"
+    idx_new = grp == "새로 규제"
+    for l in range(LAGS):
+        if t_red + l >= len(cols):
+            continue
+        e = cols[t_red + l] - cols[t_red - 1]
+        a = agg_ratio(t_red, l, "부과", idx_rel)
+        b2_ = agg_ratio(t_red, l, "부과", idx_new)
+        split.append({"경과_주": int(e), "재부과_pct": round(pct(a), 1),
+                      "최초부과_pct": round(pct(b2_), 1)})
+        print(f"  {e:>4}주{pct(a):>17.1f}%{pct(b2_):>21.1f}%")
+    print("  (집계 배수. 두 집단 모두 계속 꺼져 있던 집단과 견준다)")
+    out["부과_분해"] = split
 
     # ==================================================================
     print("\n" + "=" * 88)
@@ -295,18 +336,26 @@ def main() -> None:
     print("\n" + "=" * 88)
     print("6. 부과와 해제는 대칭인가")
     print("=" * 88)
+    # **기준에서 지난 주 수**로 맞춰야 한다. 시차 번호로 맞추면 부과 쪽은
+    # 2주, 해제 쪽은 1주짜리 변화를 나란히 놓게 된다(막차 주간을 뺐기 때문).
     sym = []
-    for l in range(LAGS):
-        a = [r for r in rows if r["성분"] == "부과" and r["시차_주"] == l]
-        b = [r for r in rows if r["성분"] == "해제" and r["시차_주"] == l]
-        if a and b:
-            sym.append({"시차_주": l, "부과_pct": a[0]["가중_pct"],
-                        "해제_pct": b[0]["가중_pct"],
-                        "차이_pct포인트": round(a[0]["가중_pct"] - b[0]["가중_pct"], 1)})
-    print(f"  {'시차':>5}{'부과':>11}{'해제':>11}{'차이':>12}   (거래 가중)")
-    for s in sym:
-        print(f"  {s['시차_주']:>5}{s['부과_pct']:>10.1f}%{s['해제_pct']:>10.1f}%"
-              f"{s['차이_pct포인트']:>11.1f}%p")
+    print(f"  {'경과':>5}{'부과':>22}{'해제':>22}{'차이':>10}   (거래 가중)")
+    for e in sorted({r["경과_주"] for r in rows}):
+        a = [r for r in rows if r["성분"] == "부과" and r["경과_주"] == e]
+        b = [r for r in rows if r["성분"] == "해제" and r["경과_주"] == e]
+        if not (a and b):
+            continue
+        ov = not (a[0]["가중_hi"] < b[0]["가중_lo"] or b[0]["가중_hi"] < a[0]["가중_lo"])
+        sym.append({"경과_주": e, "부과_pct": a[0]["가중_pct"],
+                    "해제_pct": b[0]["가중_pct"],
+                    "차이_pct포인트": round(a[0]["가중_pct"] - b[0]["가중_pct"], 1),
+                    "구간_겹침": bool(ov)})
+        print(f"  {e:>4}주{a[0]['가중_pct']:>9.1f}%"
+              f"  [{a[0]['가중_lo']:>6.1f},{a[0]['가중_hi']:>6.1f}]"
+              f"{b[0]['가중_pct']:>9.1f}%"
+              f"  [{b[0]['가중_lo']:>6.1f},{b[0]['가중_hi']:>6.1f}]"
+              f"{a[0]['가중_pct'] - b[0]['가중_pct']:>9.1f}%p"
+              + ("  구간 겹침" if ov else "  안 겹침"))
     out["대칭성"] = sym
 
     # ==================================================================
@@ -325,13 +374,13 @@ def main() -> None:
         s = [r for r in rows if r["성분"] == key]
         if not s:
             continue
-        x = [r["시차_주"] for r in s]
+        x = [r["경과_주"] for r in s]
         ax.plot(x, [r["가중_pct"] for r in s], "o-", color=c, lw=1.8, label=key)
         ax.fill_between(x, [r["가중_lo"] for r in s], [r["가중_hi"] for r in s],
                         color=c, alpha=.15)
     ax.axhline(0, color="#1a202c", lw=.9)
     ax.set_title("DID_M — 규제가 있을 때 거래가 얼마나 낮은가")
-    ax.set_xlabel("전환 뒤 주")
+    ax.set_xlabel("기준에서 지난 주")
     ax.set_ylabel("효과 (%)")
     ax.legend(fontsize=9)
     ax.grid(alpha=.25)
