@@ -72,6 +72,7 @@ STEPS: list[tuple[str, str, str, list[str], str]] = [
     ("V1", "시각화", "scripts/plot_ltz_heatmap.py", [], "지정 이력 히트맵"),
     ("V2", "시각화", "scripts/plot_ltz_map.py", [], "지정 이력 지도 (시점 슬라이더)"),
     ("V3", "시각화", "scripts/plot_price_map.py", [], "25개 자치구 가격 지도"),
+    ("V3p", "시각화", "scripts/plot_price_map.py", ["--plain"], "같은 지도 — 여백 없는 발표용"),
     ("V4", "시각화", "scripts/build_apt_directory.py", [], "서울 아파트 단지 목록"),
 ]
 

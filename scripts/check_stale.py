@@ -34,11 +34,19 @@ WATCH = [
     ("data/processed", "*"),
     ("data/policy", "*.csv"),
 ]
-# 손으로 관리하거나 다른 주기로 만드는 것
-SKIP = {
-    "data/policy/loan_events.csv",          # 손으로 정리한 표 (0015)
-    "data/policy/regulated_area_events.csv",  # 손으로 정리한 표
-}
+# 파이프라인이 만들지 **않는 것이 맞는** 파일. 앞부분이 맞으면 건너뛴다.
+# 여기 적을 때는 왜 파이프라인 밖인지 한 줄로 남긴다.
+SKIP = (
+    ("data/policy/loan_events.csv", "손으로 정리한 표 (0015)"),
+    ("data/policy/regulated_area_events.csv", "손으로 정리한 표"),
+    ("data/policy/notices/manifest.csv", "공고 원문 보관 대장. 손으로 적는다 (README)"),
+    ("data/policy/notices/seoulsibo_pages.csv",
+     "extract_seoulsibo.py 산출. 서울시보 원본 2.9GB 가 있어야 돈다"),
+    ("output/results/explore_loan_heterogeneity.json",
+     "scripts/explore/ 의 탐색 산출. 파이프라인에 넣지 않는다"),
+    ("output/figures/notice_maps/",
+     "render_notice_pages.py 로 사람이 한 번 뽑아 보관하는 증거물 (0010)"),
+)
 
 
 def main() -> None:
@@ -60,7 +68,7 @@ def main() -> None:
             if not f.is_file():
                 continue
             rel = f.relative_to(io.ROOT).as_posix()
-            if rel in SKIP:
+            if any(rel.startswith(k) for k, _ in SKIP):
                 continue
             (fresh if f.stat().st_mtime >= cut else stale).append(
                 (rel, time.strftime("%Y-%m-%d %H:%M",
