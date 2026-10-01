@@ -48,7 +48,13 @@ def load_raw(districts: list[str]) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True)
 
 
-def build(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
+def build(df: pd.DataFrame, extra_keep: tuple[str, ...] = ()) -> tuple[pd.DataFrame, dict]:
+    """정제. `extra_keep` 은 출력에 함께 남길 추가 열이다.
+
+    출력은 deal_date 로 정렬하고 색인을 다시 매기므로, 호출한 쪽에서 원래
+    색인으로 열을 되붙일 수 없다. 취소 플래그처럼 여기서 걸러지는 정보를
+    들고 나가야 할 때는(백로그 18) 이 인자로 넘긴다.
+    """
     n0 = len(df)
 
     df["amount_manwon"] = (df["dealAmount"].astype(str)
@@ -105,6 +111,7 @@ def build(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
             "area_m2", "floor_no", "build_year", "age_at_deal",
             "amount_manwon", "amount_eok", "price_per_m2", "log_price_per_m2",
             "dealingGbn", "slerGbn", "buyerGbn", "landLeaseholdGbn", "rgstDate"]
+    keep += [c for c in extra_keep if c not in keep]
     out = (df[[c for c in keep if c in df.columns]]
            .sort_values("deal_date").reset_index(drop=True))
     return out, flags
