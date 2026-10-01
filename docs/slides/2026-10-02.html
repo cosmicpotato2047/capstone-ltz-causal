@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>규제는 거래를 멈췄다 · 서울 토허구역 인과추정</title>
+<title>규제는 거래를 멈췄다 — 얼마나·누구에게·어디로 · 서울 토허구역 인과추정</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -231,6 +231,14 @@ figure img{width:100%; height:auto; display:block; background:#fff;
   font-size:1.18cqw; color:var(--ink-2)}
 .vs .good{color:var(--accent); font-weight:500}
 .vs .weak{color:var(--warn)}
+
+/* 표지의 세 방향 */
+.qthree{display:grid; grid-template-columns:repeat(3,1fr); gap:2.2cqw; margin:2.2cqw 0 .6cqw}
+.q{border-top:2px solid var(--accent); padding-top:.9cqw}
+.qk{font-family:"Nanum Myeongjo","Batang",serif; font-size:2.1cqw; font-weight:800;
+  color:var(--accent); line-height:1.15}
+.qv{font-size:1.25cqw; color:var(--ink-2); line-height:1.45; margin-top:.45cqw}
+.qv strong{color:var(--ink); font-weight:600}
 </style>
 
 <div class="topbar">
@@ -251,9 +259,23 @@ figure img{width:100%; height:auto; display:block; background:#fff;
       <!-- 01 표지 -->
       <article class="slide on cover">
         <div class="eyebrow">중간 발표 · 2~4주차 결론과 다음 계획</div>
-        <h1>규제는 거래를 멈췄다<br>다만 모두에게 같지는 않았다</h1>
+        <h1>규제는 거래를 멈췄다</h1>
         <div class="rulepair"></div>
-        <p class="sub">2~4주차에 확정한 결론을 간추리고,
+        <div class="qthree">
+          <div class="q">
+            <div class="qk">얼마나</div>
+            <div class="qv">직후 3개월 <strong>−71 ~ −80%</strong></div>
+          </div>
+          <div class="q">
+            <div class="qk">누구에게</div>
+            <div class="qv"><strong>허가 면적 기준</strong>이 갈랐다</div>
+          </div>
+          <div class="q">
+            <div class="qk">어디로</div>
+            <div class="qv"><strong>같은 동 안</strong>에만 번졌다</div>
+          </div>
+        </div>
+        <p class="sub">세 방향으로 나눠 묻는다. 2~4주차에 확정한 답을 간추리고,
           지난주 끝낸 분석과 남은 계획을 밝힌다.</p>
         <div class="meta"><span>2026.10.02</span><span>이찬희</span><span>컴퓨터공학</span></div>
         <div class="slidenum">01 / 08</div>
