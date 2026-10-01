@@ -239,6 +239,11 @@ figure img{width:100%; height:auto; display:block; background:#fff;
   color:var(--accent); line-height:1.15}
 .qv{font-size:1.25cqw; color:var(--ink-2); line-height:1.45; margin-top:.45cqw}
 .qv strong{color:var(--ink); font-weight:600}
+
+/* 같은 집단을 기준점만 바꿔 다시 보는 블록 */
+.sameline{margin-top:1cqw; padding-top:.7cqw; border-top:1px dashed var(--rule);
+  font-size:1.08cqw; color:var(--ink-2)}
+.sameline strong{color:var(--ink); font-weight:600}
 </style>
 
 <div class="topbar">
@@ -404,22 +409,26 @@ figure img{width:100%; height:auto; display:block; background:#fff;
                   <td class="c mid">인접 4구 +23.0% <strong>(0.16)</strong></td></tr>
               </tbody>
             </table>
-            <p style="font-size:1.05cqw;margin-top:.5cqw;color:var(--ink-3)">
-              <strong>부호가 반대면 옮겨 간 것, 같으면 아니다.</strong>
-              층마다 규제 밖에 있는 것이 달라 사건도 다르므로 층끼리 크기를 견주지 않는다.</p>
-            <div class="concept" style="margin-top:1cqw">
+            <p style="font-size:1.02cqw;margin-top:.45cqw;color:var(--ink-3)">
+              <strong>부호가 반대면 옮겨 간 것, 같으면 아니다.</strong> 기준점은 층마다
+              규제와 무관한 먼 지역이다. 사건이 다르므로 층끼리 크기를 견주지 않는다.</p>
+
+            <div class="sameline">둘째 줄의 <strong>맞닿은 동 11개</strong> —
+              같은 자료·같은 기간, <strong>기준점만 바꾼다</strong></div>
+            <div class="concept" style="margin-top:.45cqw">
               <div>
-                <div class="colhead">맞닿은 동 — 처치동과 견주면</div>
-                <div class="lead" style="font-size:2cqw;color:var(--warn)">+115.5%</div>
+                <div class="colhead">처치동과 견주면</div>
+                <div class="lead" style="font-size:1.95cqw;color:var(--warn)">+115.5%</div>
               </div>
               <div class="arrowcol">↔</div>
               <div>
-                <div class="colhead">같은 동 — 서울 19개 구와 견주면</div>
-                <div class="lead" style="font-size:2cqw;color:var(--accent)">−9.0%</div>
+                <div class="colhead">서울 19개 구와 견주면</div>
+                <div class="lead" style="font-size:1.95cqw;color:var(--accent)">−9.0%</div>
               </div>
             </div>
-            <p style="font-size:1.12cqw;margin-top:.8cqw">옆 동이 늘어서가 아니라
-              <strong>처치동이 −57.8% 로 줄어서</strong>다. 기준점만 한 칸 옮기면 부호가 뒤집힌다.</p>
+            <p style="font-size:1.08cqw;margin-top:.7cqw">옆 동이 늘어서가 아니라
+              <strong>처치동이 −57.8% 로 줄어서</strong>다. 분모가 반 토막 나면
+              가만히 있어도 두 배가 된다.</p>
           </div>
           <figure class="fitfig">
             <img src="../../output/figures/12_spillover.png" alt="파급효과 — 거리 고리별 효과와 기준점">
