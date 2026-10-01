@@ -84,6 +84,9 @@ def report_steps() -> list[tuple[str, str, str, list[str], str]]:
         out.append((f"D{md.stem[-2:]}", "문서", "scripts/render_report.py", [rel],
                     f"보고서 HTML — {md.stem}"))
     out.append(("C1", "문서", "scripts/check_numbers.py", [], "문서 수치 검증 (0007)"))
+    # 전체 재실행의 마지막. 다시 만들어지지 **않은** 산출물을 센다.
+    # 전체 재실행은 바뀐 파일만 잡으므로 고아 파일은 이 단계에서만 드러난다.
+    out.append(("C2", "문서", "scripts/check_stale.py", [], "고아 산출물 점검"))
     return out
 
 
