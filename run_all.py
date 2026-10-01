@@ -85,6 +85,10 @@ def report_steps() -> list[tuple[str, str, str, list[str], str]]:
         rel = md.relative_to(ROOT).as_posix()
         out.append((f"D{md.stem[-2:]}", "문서", "scripts/render_report.py", [rel],
                     f"보고서 HTML — {md.stem}"))
+    # 개념 안내는 주차 보고서가 아니지만 같은 렌더러를 쓴다. 살아있는 문서라
+    # 숫자가 바뀌면 HTML 도 같이 바뀌어야 하므로 매 실행에 넣는다.
+    out.append(("D00", "문서", "scripts/render_report.py", ["docs/concepts.md"],
+                "개념 안내 HTML"))
     out.append(("C1", "문서", "scripts/check_numbers.py", [], "문서 수치 검증 (0007)"))
     # 전체 재실행의 마지막. 다시 만들어지지 **않은** 산출물을 센다.
     # 전체 재실행은 바뀐 파일만 잡으므로 고아 파일은 이 단계에서만 드러난다.

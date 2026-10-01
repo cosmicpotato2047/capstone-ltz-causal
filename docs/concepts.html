@@ -1,0 +1,600 @@
+<title>개념 안내 — 이 연구를 읽기 위한 최소한 · 서울 토허구역 인과추정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --ground:#f4f6f7; --surface:#fcfcfb; --surface-2:#eceef0;
+  --ink:#12161a; --ink-2:#454b52; --ink-3:#7d848c;
+  --rule:#c9ced4; --rule-soft:#e2e6e9;
+  --accent:#2a78d6; --accent-soft:#dbe8f8;
+  --warn:#e34948; --warn-soft:#f8dedd;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+    --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+    --rule:#343a3f; --rule-soft:#282d31;
+    --accent:#3987e5; --accent-soft:#1d2f45;
+    --warn:#e66767; --warn-soft:#3d2526;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+  --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+  --rule:#343a3f; --rule-soft:#282d31;
+  --accent:#3987e5; --accent-soft:#1d2f45;
+  --warn:#e66767; --warn-soft:#3d2526;
+}
+
+*{box-sizing:border-box}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans KR","Malgun Gothic",system-ui,sans-serif;
+  font-size:16px; line-height:1.78; -webkit-font-smoothing:antialiased}
+
+.topbar{position:sticky; top:0; z-index:40; background:var(--ground);
+  border-bottom:3px double var(--rule)}
+.topbar-in{max-width:1120px; margin:0 auto; padding:12px 28px;
+  display:flex; gap:16px; align-items:baseline; justify-content:space-between}
+.brand{font-family:"Nanum Myeongjo","Batang",serif; font-size:17px;
+  font-weight:800; letter-spacing:-.02em}
+.docno{font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+  letter-spacing:.1em; color:var(--ink-3); text-transform:uppercase;
+  white-space:nowrap}
+
+.shell{max-width:1120px; margin:0 auto; padding:0 28px;
+  display:grid; grid-template-columns:1fr 224px; gap:52px; align-items:start}
+main{min-width:0; padding:40px 0 96px}
+
+nav.toc{position:sticky; top:74px; padding:44px 0 0;
+  font-size:12.5px; line-height:1.5}
+nav.toc .lbl{font-family:"IBM Plex Mono",monospace; font-size:10px;
+  letter-spacing:.12em; color:var(--ink-3); text-transform:uppercase;
+  padding-bottom:10px; border-bottom:1px solid var(--rule-soft);
+  margin-bottom:12px}
+nav.toc a{display:block; padding:5px 0; color:var(--ink-3);
+  text-decoration:none; border-left:2px solid transparent; padding-left:10px;
+  margin-left:-12px; transition:color .15s, border-color .15s}
+nav.toc a:hover{color:var(--ink)}
+nav.toc a.on{color:var(--ink); border-left-color:var(--accent); font-weight:500}
+
+h1,h2,h3{font-family:"Nanum Myeongjo","Batang",serif; text-wrap:balance;
+  letter-spacing:-.01em; line-height:1.35}
+h1{font-size:30px; font-weight:800; margin:0 0 6px}
+h2{font-size:22px; font-weight:700; margin:56px 0 16px;
+  padding-top:22px; border-top:1px solid var(--rule)}
+h3{font-size:17px; font-weight:700; margin:32px 0 10px; color:var(--ink)}
+h1 + p{color:var(--ink-2); font-size:16px; margin:0 0 4px}
+p{margin:0 0 15px}
+a{color:var(--accent); text-underline-offset:3px;
+  text-decoration-thickness:1px}
+strong{font-weight:600}
+hr{border:0; border-top:1px solid var(--rule-soft); margin:36px 0}
+hr + h2{border-top:0; padding-top:0; margin-top:30px}
+ul,ol{margin:0 0 15px; padding-left:22px}
+li{margin:0 0 7px}
+
+table{border-collapse:collapse; width:100%; margin:18px 0 22px;
+  font-size:14px; background:var(--surface);
+  font-variant-numeric:tabular-nums}
+th,td{border:1px solid var(--rule-soft); padding:7px 11px;
+  text-align:left; vertical-align:top}
+th{background:var(--surface-2); font-weight:600; font-size:13px;
+  color:var(--ink-2)}
+.tw{overflow-x:auto; margin:18px 0 22px}
+.tw table{margin:0}
+
+blockquote{margin:18px 0; padding:11px 16px; background:var(--accent-soft);
+  border-left:3px solid var(--accent); font-size:14px; color:var(--ink-2)}
+blockquote p{margin:0}
+blockquote strong{color:var(--ink)}
+
+code{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:13px;
+  background:var(--surface-2); padding:1px 5px; border-radius:3px}
+pre{background:var(--surface); border:1px solid var(--rule-soft);
+  padding:14px 16px; overflow-x:auto; font-size:13px; line-height:1.6}
+pre code{background:none; padding:0}
+
+figure{margin:22px 0 28px}
+figure a{display:block}
+figure img{display:block; width:100%; height:auto; background:#fff;
+  border:1px solid var(--rule-soft)}
+figcaption{font-size:13px; color:var(--ink-3); margin-top:8px; line-height:1.55}
+
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr; gap:0}
+  nav.toc{display:none}
+}
+@media print{
+  .topbar, nav.toc{display:none}
+  .shell{display:block; max-width:none; padding:0}
+  body{background:#fff; font-size:11pt}
+  h2{break-after:avoid} table,pre,blockquote,figure{break-inside:avoid}
+  a{color:#000; text-decoration:none}
+}
+</style>
+<div class="topbar"><div class="topbar-in">
+  <span class="brand">서울 토허구역 인과추정</span>
+  <span class="docno">concepts</span>
+</div></div>
+<div class="shell">
+  <main><h1>개념 안내 — 이 연구를 읽기 위한 최소한</h1>
+<p>데이터 분석을 처음 보는 사람을 위한 글이다. 개념 하나에 <strong>정의 / 왜 필요한가 /
+이 연구에서는 몇이었나</strong> 세 줄만 적는다. 더 깊이 보려면 끝의 링크를 따라간다.</p>
+<p>사전처럼 찾아보려면 <a href="glossary.md">용어집</a>이 따로 있다. 이 글은 <strong>읽는 순서</strong>가 있다.</p>
+<p>수치 출처는 <code>output/results/*.json</code>. 자료 스냅샷 2026-09-03.</p>
+<hr />
+<h2 id="5분-요약-이것만-알면-나머지는-따라온다">5분 요약 — 이것만 알면 나머지는 따라온다</h2>
+<ol>
+<li><strong>알고 싶은 건 원래 볼 수 없다.</strong> "규제가 없었다면 대치동은 어땠을까"는 관측 불가다.</li>
+<li><strong>그래서 비슷한 동네를 빌려 온다.</strong> 그게 통제군이고, 빌려오기가 성립하는 조건이 평행추세다.</li>
+<li><strong>차이의 차이를 본다.</strong> 처치군의 변화에서 통제군의 변화를 뺀다. 이중차분이다.</li>
+<li><strong>거래량은 어떤 방법으로 재도 크게 줄었고, 가격은 방법에 따라 흔들린다.</strong> 그래서 주 결과를 거래량으로 삼았다.</li>
+<li><strong>"효과가 있다"보다 "누구에게 컸나"가 이 연구의 답이다.</strong> 허가 대상이 아닌 소형은 줄지 않았다.</li>
+<li><strong>모든 숫자는 "무엇과 견준 값"인지가 붙어야 뜻이 있다.</strong> 기준을 바꾸면 부호까지 바뀐다.</li>
+</ol>
+<hr />
+<h2 id="1부-인과를-재는-법">1부. 인과를 재는 법</h2>
+<h3 id="반사실-counterfactual">반사실 (counterfactual)</h3>
+<p><strong>정의.</strong> "그 일이 없었다면 어땠을까"라는, 관측할 수 없는 상태.</p>
+<p><strong>왜.</strong> 대치동은 2020년 6월 23일에 토허구역이 됐다. 지정 안 된 대치동은
+세상에 없다. 같은 동네를 같은 시점에 두 상태로 볼 수 없다 — 이것을
+<strong>인과추론의 근본 문제</strong>라 한다.</p>
+<p><strong>이 연구에서.</strong> 모든 효과 수치는 <strong>반사실 대비</strong>다. "거래가 80% 줄었다"가
+아니라 "지정이 없었을 때보다 80% 적다"는 뜻이다. 둘은 다르다.
+→ <a href="decisions/0006-서술원칙-반사실-명시.md">0006</a></p>
+<h3 id="처치군-통제군">처치군 · 통제군</h3>
+<p><strong>정의.</strong> 처치군은 정책을 받은 집단, 통제군은 안 받은 집단.</p>
+<p><strong>왜.</strong> 통제군은 <strong>반사실의 대역</strong>이다. "대치동이 지정 안 됐으면 통제동처럼
+움직였을 것"이라고 가정하고 쓴다.</p>
+<p><strong>이 연구에서.</strong> 처치군은 삼성·청담·대치·잠실 4개 법정동. 통제군은 같은
+강남·송파의 비지정 동이다(바깥 구가 아니라 <strong>같은 구 안</strong>인 것이 핵심).
+→ <a href="decisions/0011-통제군-선정.md">0011</a> · <a href="decisions/0012-처치군-우선순위.md">0012</a></p>
+<h3 id="평행추세-parallel-trends">평행추세 (parallel trends)</h3>
+<p><strong>정의.</strong> 지정이 없었다면 두 집단이 <strong>같은 비율로</strong> 변했을 것이라는 가정.</p>
+<p><strong>왜.</strong> 통제군을 반사실로 쓰려면 이 가정이 필요하다. 가장 흔한 오해 하나를
+먼저 치운다 — <strong>수준이 같을 필요는 없다.</strong> 대치동이 월 80건, 통제동이
+월 20건이어도 괜찮다. 같아야 하는 건 <strong>변화의 모양</strong>이다.</p>
+<pre><code>   거래량
+     │   ╱╲  ╱         ← 지정 전: 두 선이 나란하다
+     │  ╱  ╲╱  ╲____   처치동
+     │ ╱╲  ╱╲
+     │╱  ╲╱  ╲_______  통제동
+     └──────┬──────→
+          지정일
+</code></pre>
+<h3 id="사전추세-점검">사전추세 점검</h3>
+<p><strong>정의.</strong> 처치 <strong>전</strong> 기간에 두 집단의 격차가 변하고 있었는지 보는 것.</p>
+<p><strong>왜.</strong> 평행추세는 사후에 대한 가정인데, 사후의 반사실은 볼 수 없으니
+<strong>직접 검증이 불가능</strong>하다. 대신 둘 다 처치를 안 받은 사전 기간에 나란했다면
+사후에도 나란했을 것이라고 믿는다. <strong>증명이 아니라 신빙성 검사</strong>다.</p>
+<p><strong>이 연구에서.</strong> 가격은 지정 3~5분기 전 계수가 +2.6 → +3.2 → +3.4%로
+<strong>한 방향으로 매끈하게</strong> 움직인다(전부 유의). 거래량은 0 근처에서 흔들리다
+직전 분기만 튄다. <strong>둘 다 위배하지만 모양이 다르다.</strong>
+→ <a href="decisions/0014-사전추세-위배-대응.md">0014</a></p>
+<h3 id="이중차분-did-difference-in-differences">이중차분 (DID, Difference-in-Differences)</h3>
+<p><strong>정의.</strong> <code>(처치군 사후 − 처치군 사전) − (통제군 사후 − 통제군 사전)</code></p>
+<p><strong>왜.</strong> 차분을 두 번 해서 두 가지를 지운다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>차분</th>
+<th>지우는 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>전후</td>
+<td>처치군 <strong>고유의 수준</strong> (대치동은 원래 거래가 많다)</td>
+</tr>
+<tr>
+<td>처치−통제</td>
+<td><strong>공통 시간 충격</strong> (금리·코로나·전국 대책)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>이 연구에서.</strong> 지정 직후 3개월 <strong>−71 ~ −80%</strong>, 사후 24개월 평균 <strong>−33.5%</strong>.
+<strong>두 숫자를 섞어 쓰면 안 된다</strong> — 재는 구간이 다르다.</p>
+<h3 id="사건-시점-분석-event-study">사건 시점 분석 (event study)</h3>
+<p><strong>정의.</strong> 이중차분을 시점별로 쪼개, 지정 전후 각 분기마다 계수를 하나씩 내는 것.</p>
+<p><strong>왜.</strong> "효과가 언제부터, 얼마나 오래"를 볼 수 있고, <strong>사전 구간의 계수가
+0인지</strong>로 평행추세를 눈으로 확인할 수 있다.</p>
+<p><strong>이 연구에서.</strong> 지정 분기(k=0) 계수가 −1.6015. 사전 구간 계수들이
+0에서 벗어나 있는 것이 보인다. → <a href="../scripts/04_event_study.py">04_event_study.py</a></p>
+<h3 id="기준-분기-reference-period">기준 분기 (reference period)</h3>
+<p><strong>정의.</strong> 사건 시점 분석에서 계수를 0으로 못 박는 한 시점. 보통 처치 직전(k=−1).</p>
+<p><strong>왜.</strong> 시점이 17개여도 <strong>격차의 차이 16개만</strong> 추정된다(수준은 고정효과가 이미
+빼 갔다). 하나를 0으로 고정해야 식이 풀린다. 그래서 <strong>모든 계수가 기준 분기에
+대한 상대값</strong>이고, 기준이 이상하면 전부 같이 틀어진다.</p>
+<p><strong>이 연구에서.</strong> 기준을 옮기면 산술적으로 다른 하나를 빼는 것과 같다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>기준</th>
+<th>k=0 효과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>−1 (관행)</td>
+<td>−79.8%</td>
+</tr>
+<tr>
+<td>−2</td>
+<td><strong>−61.2%</strong> ← 12·16 대책으로 눌린 분기</td>
+</tr>
+<tr>
+<td>−3 ~ −6</td>
+<td>−73.3 ~ −78.6%</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>k=−2만 튀고 나머지는 좁게 모인다.</strong> 결론이 기준 선택에 의존하지 않는다는 뜻이다.</p>
+<h3 id="고정효과-fixed-effects">고정효과 (fixed effects)</h3>
+<p><strong>정의.</strong> 개체나 시점마다 고유한 수준을 빼내는 장치. 무엇을 기준으로 비교할지를 정한다.</p>
+<p><strong>왜.</strong> 고정효과의 <strong>수준</strong>이 곧 비교의 단위다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>고정효과</th>
+<th>남는 비교</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>법정동</td>
+<td>대치동의 7월 거래 <strong>평균</strong> vs 1월 거래 <strong>평균</strong></td>
+</tr>
+<tr>
+<td><strong>단지</strong></td>
+<td><strong>은마</strong>의 7월 거래 vs <strong>은마</strong>의 1월 거래</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>이 연구에서.</strong> 가격 효과가 동 고정효과로는 −12.3 ~ −15.8%, 단지 고정효과로는
+<strong>−6.0 ~ −8.0%</strong>. <strong>두 배 차이</strong>다. 창 길이나 통제군 범위는 거의 영향이 없었다.
+<strong>결과를 좌우하는 유일한 설계 선택</strong>이었다. → <a href="decisions/0003-단지-고정효과.md">0003</a></p>
+<h3 id="로그와-퍼센트">로그와 퍼센트</h3>
+<p><strong>정의.</strong> 종속변수에 로그를 씌우면 계수가 비율 변화로 읽힌다. 환산은 <code>exp(β) − 1</code>.</p>
+<p><strong>왜.</strong> 대치동은 월 80건, 작은 동은 월 5건이다. "10건 감소"가 두 곳에서
+전혀 다른 뜻이므로 <strong>비율로 통일</strong>한다. 거래가 0건인 달이 있어 거래량은
+<code>log(1+n)</code>을 쓴다.</p>
+<p><strong>이 연구에서.</strong> k=0 계수 −1.6015 → <code>exp(−1.6015) − 1</code> = <strong>−79.8%</strong>.</p>
+<hr />
+<h2 id="2부-누구에게-컸나">2부. 누구에게 컸나</h2>
+<h3 id="삼중차분-ddd">삼중차분 (DDD)</h3>
+<p><strong>정의.</strong> <code>DID(고가) − DID(저가)</code> 처럼, 이중차분을 두 하위집단에서 각각 낸 뒤 그 차이를 보는 것.</p>
+<p><strong>왜.</strong> 두 가지를 동시에 한다 — <strong>이질성을 재고</strong>, <strong>그 하위집단에만 걸린 다른
+충격을 뺀다</strong>. 15억 대출 금지는 고가에만 걸리는데, 고가 통제동도 같은 규제를
+맞으므로 둘을 빼면 대출이 빠진다.</p>
+<p><strong>이 연구에서.</strong> 저가 +5.4%(p=0.502), 고가 −53.7%, 차이 p=0.001.
+→ <a href="decisions/0015-대출규제-처리.md">0015</a></p>
+<h3 id="교란변수-vs-효과-이질성-요인">교란변수 vs 효과 이질성 요인</h3>
+<p><strong>정의.</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>하는 일</th>
+<th>처방</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>교란변수(confounder)</strong></td>
+<td>처치와 결과에 <strong>동시에</strong> 영향 → 추정치가 <strong>편향</strong></td>
+<td><strong>통제한다</strong></td>
+</tr>
+<tr>
+<td><strong>이질성 요인(moderator)</strong></td>
+<td>효과의 <strong>크기</strong>를 좌우 → 평균이 <strong>뭉갠다</strong></td>
+<td><strong>나눠 본다</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>왜.</strong> <strong>처방이 정반대</strong>다. 교란은 "내 답이 틀렸을 위협"이고, 이질성은
+"내 답의 구조"다. 전자는 지워야 하고 후자는 드러내야 한다.</p>
+<p><strong>이 연구에서.</strong> 대출 규제는 교란이 <strong>아니다</strong>(상쇄 10건은 시간 고정효과가 먹고,
+핵심 4건은 같은 가격대 안 비교로 빠진다). 이질성 요인인 줄 알았는데 15억에
+계단이 없어서, 진짜 원인은 <strong>허가 대상 면적 기준</strong>으로 바뀌었다.
+→ <a href="decisions/0021-노출도-문턱-민감도.md">0021</a> · <a href="decisions/0022-면적-면제-검증.md">0022</a></p>
+<h3 id="나쁜-통제-bad-control">나쁜 통제 (bad control)</h3>
+<p><strong>정의.</strong> 처치의 <strong>결과</strong>인 변수를 통제변수로 넣는 것.</p>
+<p><strong>왜.</strong> 효과의 일부를 통제변수가 빨아들여 추정치가 0 쪽으로 끌린다.
+"키를 통제하고 영양 섭취의 효과를 봤다"와 같은 잘못이다.</p>
+<p><strong>이 연구에서.</strong> 선행연구 한 편이 <strong>거래건수를 통제변수로</strong> 넣었다. 거래량
+감소는 정책의 결과다. 빼면 계수가 −0.1121(p=0.002)로 바뀐다.
+우리가 15억 초과 여부를 통제변수가 아니라 <strong>삼중차분의 축</strong>으로 쓴 이유도 같다.</p>
+<hr />
+<h2 id="3부-숫자를-믿어도-되는가">3부. 숫자를 믿어도 되는가</h2>
+<h3 id="구성-변화-composition-change">구성 변화 (composition change)</h3>
+<p><strong>정의.</strong> 거래량이 줄면 <strong>팔리는 물건의 종류</strong>가 바뀌는 것.</p>
+<p><strong>왜.</strong> 평균 가격이 떨어졌을 때 "집값이 떨어진 것"인지 "싼 집이 더 많이 팔린
+것"인지 구별할 수 없게 된다.</p>
+<p><strong>이 연구에서.</strong> 처치동 사후 표본의 평균 전용면적이 93.9 → <strong>88.7㎡</strong>로 이동.
+2020-09에는 중위가 지수 170.5 대 반복매매지수 159.4로 <strong>11포인트</strong> 벌어진다.</p>
+<h3 id="반복매매지수-헤도닉-지수">반복매매지수 · 헤도닉 지수</h3>
+<p><strong>정의.</strong> 구성 변화를 걷어내는 두 방법.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>쓰는 자료</th>
+<th>약점</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>반복매매</strong></td>
+<td>같은 집이 <strong>두 번 팔린</strong> 쌍만</td>
+<td>두 번 팔린 집만 쓴다(선택편의)</td>
+</tr>
+<tr>
+<td><strong>헤도닉</strong></td>
+<td><strong>모든 거래</strong> + 면적·층 통제</td>
+<td><strong>관측되는 특성만</strong> 통제</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>왜.</strong> 약점이 <strong>정반대</strong>라서 둘이 같은 답을 내면 서로를 떠받친다.</p>
+<p><strong>이 연구에서.</strong> 12개월 가격 효과가 반복매매 <strong>−6.0%</strong>, 헤도닉+단지 <strong>−5.9%</strong>.
+집계 지수(중위가)로는 −10 ~ −12%였으니 <strong>절반쯤이 구성 변화</strong>였다.
+→ <a href="decisions/0018-반복매매지수.md">0018</a> · <a href="decisions/0025-가격효과-범위.md">0025</a></p>
+<h3 id="위약-검정-placebo-test">위약 검정 (placebo test)</h3>
+<p><strong>정의.</strong> 아무 일도 없었어야 할 자리에 같은 추정을 돌려 0이 나오는지 보는 것.</p>
+<p><strong>왜.</strong> 효과를 재는 게 아니라 <strong>측정 도구를 검사</strong>한다. 체온계를 찬물에 담가
+보는 것과 같다. 0이 안 나오면 내 방법이 없는 효과도 만들어 낸다는 뜻이다.</p>
+<p><strong>이 연구에서.</strong> 가짜 사건일(지정 없던 해)과 가짜 처치동(지정 안 된 동)으로
+돌렸다. 진짜 −33.5%, 가짜 최대 −21.5%. <strong>완전히 통과하지는 못했다</strong> — 가짜
+둘이 유의했고, 그 창에 8·2·9·13 대책이 들어 있었다.
+→ <a href="decisions/0016-위약검정.md">0016</a></p>
+<h3 id="합성대조군-scm-synthetic-control-method">합성대조군 (SCM, Synthetic Control Method)</h3>
+<p><strong>정의.</strong> 통제군을 고르는 대신, <strong>사전 궤적이 가장 닮도록</strong> 여러 통제 단위를
+가중평균해 "가짜 대치동"을 만드는 것.</p>
+<p><strong>왜.</strong> "왜 하필 그 동을 통제군으로 골랐냐"는 공격에 대한 답이다. 사람이
+고르지 않고 <strong>자료가 가중치를 찾는다.</strong></p>
+<p><strong>이 연구에서.</strong> 서울 법정동 151개를 기증자로 썼다. 지정 직후 3개월
+<strong>−71.0%, 152개 중 1위(p=0.007)</strong>. 그런데 사후 27개월 평균은 22위(p=0.145).
+<strong>직후는 단단하고 장기는 말할 수 없다.</strong> → <a href="decisions/0017-합성대조군.md">0017</a></p>
+<h3 id="클러스터와-적은-클러스터-문제">클러스터와 적은 클러스터 문제</h3>
+<p><strong>정의.</strong> 같은 동네의 거래는 서로 닮았으므로, 표준오차를 동 단위로 묶어
+계산한다(클러스터 표준오차). 그런데 <strong>묶음의 개수가 적으면</strong> 그 보정 자체가
+못 믿을 값이 된다.</p>
+<p><strong>왜.</strong> 흔히 보는 p값은 클러스터가 충분히 많다는 가정 위에 있다. 우리는
+법정동 27개, 그중 <strong>처치가 4개</strong>다.</p>
+<p><strong>이 연구에서.</strong> 같은 계수에 대해:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>p</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>관행</td>
+<td>0.0006</td>
+</tr>
+<tr>
+<td>와일드 클러스터 부트스트랩</td>
+<td>0.027</td>
+</tr>
+<tr>
+<td>무작위화 추론</td>
+<td>0.106</td>
+</tr>
+</tbody>
+</table></div>
+<p>→ <a href="decisions/0019-적은-클러스터-추론.md">0019</a></p>
+<h3 id="무작위화-추론-randomization-inference">무작위화 추론 (randomization inference)</h3>
+<p><strong>정의.</strong> 27개 동 중 4개를 처치군으로 고르는 <strong>모든 경우</strong>(17,550가지)를
+돌려 보고, 진짜 배정이 몇 등인지로 p를 내는 것.</p>
+<p><strong>왜.</strong> 분포 가정이 전혀 없다. "우연히 이런 4개 동을 골랐을 때 이만큼 큰 값이
+나올 확률"을 직접 센다.</p>
+<p><strong>이 연구에서.</strong> 거래량 효과가 <strong>17,550가지 중 1위</strong>.</p>
+<h3 id="사양-곡선-specification-curve">사양 곡선 (specification curve)</h3>
+<p><strong>정의.</strong> 합리적인 설계 선택을 <strong>전부 조합</strong>해 결과를 한 그림에 놓는 것.</p>
+<p><strong>왜.</strong> "다른 걸 골랐으면 다른 답이 나왔을 것 아니냐"는 질문에 대한 정면 답이다.
+축은 전부 이 연구가 실제로 내린 결정이고, 대안은 선행연구가 쓴 것이다.</p>
+<p><strong>이 연구에서.</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>거래량 192개 사양</th>
+<th>가격 144개 사양</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>음수</td>
+<td><strong>100.0%</strong></td>
+<td>79.9%</td>
+</tr>
+<tr>
+<td>유의하게 음수</td>
+<td><strong>100.0%</strong></td>
+<td><strong>48.6%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>그리고 <strong>어느 선택이 결과를 갈랐는지</strong>가 보인다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>설계 선택</th>
+<th>추정치 폭</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>사건 시점 정렬</strong></td>
+<td><strong>39.6%p</strong></td>
+</tr>
+<tr>
+<td>통제군 정의</td>
+<td><strong>2.3%p</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>선행연구의 불일치는 지역을 어떻게 나눴느냐가 아니라 날짜를 어디에
+맞췄느냐에서 왔다.</strong> → <a href="decisions/0028-사양곡선.md">0028</a></p>
+<h3 id="honest-did-붕괴값-breakdown-value">Honest DiD · 붕괴값 (breakdown value)</h3>
+<p><strong>정의.</strong> "사전추세 위배가 사후에도 이만큼까지 이어졌다면"을 가정하고, 결론이
+무너지는 지점을 찾는 것. 그 지점이 붕괴값이다.</p>
+<p><strong>왜.</strong> 사전추세 위배는 있/없음이 아니라 <strong>정도</strong>의 문제다. 얼마나 봐줘도
+결론이 버티는지를 숫자 하나로 말한다.</p>
+<p><strong>이 연구에서.</strong> 거래량 직후 <strong>1.62</strong>(사전 위배의 1.6배까지 버틴다),
+가격 <strong>0.22</strong>. → <a href="decisions/0026-사전추세-민감도구간.md">0026</a></p>
+<hr />
+<h2 id="4부-이-연구에만-있는-개념">4부. 이 연구에만 있는 개념</h2>
+<h3 id="기준점-benchmark-무엇과-견주는가">기준점 (benchmark) — 무엇과 견주는가</h3>
+<p><strong>정의.</strong> 같은 자료라도 <strong>무엇과 견주느냐</strong>에 따라 결과의 부호까지 바뀐다.</p>
+<p><strong>이 연구에서.</strong> 토허구역과 맞닿은 동의 거래량 변화:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>기준</th>
+<th>결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>처치동과 견주면</td>
+<td><strong>+115.5%</strong></td>
+</tr>
+<tr>
+<td>서울 19개 구와 견주면</td>
+<td><strong>−9.0%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>"인근이 급등했다"는 말은 <strong>처치동을 기준으로 봤을 때만</strong> 참이다.
+→ <a href="decisions/0024-파급효과-기준점.md">0024</a></p>
+<h3 id="파급효과-spillover-sutva-위배">파급효과 (spillover) · SUTVA 위배</h3>
+<p><strong>정의.</strong> 처치가 통제군에도 영향을 주면, 통제군이 더 이상 "정책이 없는 세상"이
+아니게 된다. 그러면 효과가 과소 또는 과대 추정된다.</p>
+<p><strong>이 연구에서.</strong> 파급은 <strong>같은 동 안에만</strong> 있었다. 2025년 부분 해제에서
+규제가 유지된 단지가 −26.5%. 옆 동과 옆 구로는 안 넘어갔다.</p>
+<h3 id="쏠림-bunching">쏠림 (bunching)</h3>
+<p><strong>정의.</strong> 규제 문턱 바로 아래에 거래가 몰리는 현상. 규제가 <strong>실제로 물렸는지</strong>
+보는 방법이다.</p>
+<p><strong>이 연구에서.</strong> 15억 문턱의 아래/위 거래 비:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구간</th>
+<th>비</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>규제 이전</td>
+<td>0.96</td>
+</tr>
+<tr>
+<td><strong>금지 기간</strong></td>
+<td><strong>1.60</strong></td>
+</tr>
+<tr>
+<td>폐지 이후</td>
+<td>1.09</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>규제가 켜질 때 쏠림이 생기고 꺼지자 사라진다.</strong></p>
+<h3 id="처치-역전-treatment-reversal">처치 역전 (treatment reversal)</h3>
+<p><strong>정의.</strong> 규제가 걸렸다가 <strong>풀렸다가 다시 걸리는</strong> 것. 보통의 이중차분은
+"한 번 걸리면 끝"(흡수 처치)을 가정한다.</p>
+<p><strong>왜.</strong> 역전이 있으면 이미 처치된 집단이 다른 집단의 통제군 노릇을 하면서
+<strong>음의 가중치</strong>가 생길 수 있다.</p>
+<p><strong>이 연구에서.</strong> 2025년 2월 부분 해제 → 3월 재지정. 2020년 구간은 음의 가중치가
+<strong>0개</strong>, 2025년 구간은 12.6%지만 합이 <strong>−0.023</strong>으로 작다.
+→ <a href="decisions/0027-처치역전-추정량.md">0027</a></p>
+<hr />
+<h2 id="자주-하는-오해">자주 하는 오해</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>오해</th>
+<th>실제</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>평행추세 = 두 집단의 <strong>수준</strong>이 같아야 한다</td>
+<td>아니다. <strong>변화의 모양</strong>만 같으면 된다</td>
+</tr>
+<tr>
+<td>사전추세를 위배하면 분석이 끝이다</td>
+<td>아니다. <strong>위배가 결론을 위협하는지</strong>가 문제다 (붕괴값)</td>
+</tr>
+<tr>
+<td>p &lt; 0.05 면 참이다</td>
+<td>클러스터가 적으면 그 p 자체를 못 믿는다 (0.0006 → 0.106)</td>
+</tr>
+<tr>
+<td>"유의하지 않다" = "효과가 없다"</td>
+<td>아니다. <strong>확인할 수 없다</strong>는 뜻이다</td>
+</tr>
+<tr>
+<td>거래량이 줄어든 건 당연하다</td>
+<td>당연한 건 "줄었다"뿐이다. 이 연구의 답은 <strong>어떻게 줄었나</strong>다</td>
+</tr>
+<tr>
+<td>미시 자료를 썼으니 그 자체로 기여다</td>
+<td>아니다. <strong>미시가 아니면 못 봤을 것을 봤는지</strong>가 기여다</td>
+</tr>
+<tr>
+<td>숫자 하나면 결과를 말할 수 있다</td>
+<td>모든 숫자에 <strong>무엇과 견준, 어느 구간의 값인지</strong>가 붙어야 한다</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="다음에-읽을-것">다음에 읽을 것</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>목적</th>
+<th>문서</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>이 연구가 무엇을 묻고 무엇을 답했나</td>
+<td><a href="framing.md">연구의 뼈대</a></td>
+</tr>
+<tr>
+<td>용어를 찾아보려면</td>
+<td><a href="glossary.md">용어집</a></td>
+</tr>
+<tr>
+<td>왜 그렇게 정했나 (30편)</td>
+<td><a href="decisions/">결정기록</a></td>
+</tr>
+<tr>
+<td>선행연구와 어디서 갈리나</td>
+<td><a href="prior_work.md">선행연구 정리</a></td>
+</tr>
+<tr>
+<td>지금 어디까지 왔나</td>
+<td><a href="backlog.md">백로그</a></td>
+</tr>
+</tbody>
+</table></div></main>
+  <nav class="toc"><div class="lbl">목차</div><a href="#5분-요약-이것만-알면-나머지는-따라온다">5분 요약 — 이것만 알면 나머지는 따라온다</a><a href="#1부-인과를-재는-법">1부. 인과를 재는 법</a><a href="#2부-누구에게-컸나">2부. 누구에게 컸나</a><a href="#3부-숫자를-믿어도-되는가">3부. 숫자를 믿어도 되는가</a><a href="#4부-이-연구에만-있는-개념">4부. 이 연구에만 있는 개념</a><a href="#자주-하는-오해">자주 하는 오해</a><a href="#다음에-읽을-것">다음에 읽을 것</a></nav>
+</div>
+<script>
+const heads=[...document.querySelectorAll('main h2[id]')];
+const links=[...document.querySelectorAll('nav.toc a')];
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(!e.isIntersecting)return;
+    const i=heads.indexOf(e.target);
+    links.forEach((a,j)=>a.classList.toggle('on',i===j));});
+},{rootMargin:'-70px 0px -75% 0px'});
+heads.forEach(h=>io.observe(h));
+</script>

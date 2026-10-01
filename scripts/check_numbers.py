@@ -55,7 +55,7 @@ WATCHED = {
 
 # --- 문서 분류 --------------------------------------------------------------
 LIVING = ["docs/backlog.md", "README.md", "docs/glossary.md", "docs/proposal.md",
-          "docs/framing.md"]
+          "docs/framing.md", "docs/concepts.md"]
 FROZEN_GLOBS = ["docs/reports/*.md", "docs/slides/*.html"]
 # 결정기록은 넷째 종류다. 판단은 그 시점의 기록이라 동결이지만, 판단의 **근거
 # 수치**는 뒤의 문서들이 계속 끌어다 쓰므로 틀린 채로 두면 안 된다. 0007 이
