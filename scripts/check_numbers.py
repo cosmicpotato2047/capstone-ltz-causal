@@ -57,7 +57,20 @@ WATCHED = {
 LIVING = ["docs/backlog.md", "README.md", "docs/glossary.md", "docs/proposal.md",
           "docs/framing.md"]
 FROZEN_GLOBS = ["docs/reports/*.md", "docs/slides/*.html"]
+# 결정기록은 넷째 종류다. 판단은 그 시점의 기록이라 동결이지만, 판단의 **근거
+# 수치**는 뒤의 문서들이 계속 끌어다 쓰므로 틀린 채로 두면 안 된다. 0007 이
+# 'B 유형(작성 시점에 이미 틀린 값)은 동결 문서라도 정정한다'고 한 그 경우다.
+# 그래서 살아있는 문서와 같은 강도로 검사하되, 고칠 때는 덮어쓰지 않고
+# 정정 표시를 남긴다(0001·0014 가 그렇게 했다).
+DECISION_GLOB = "docs/decisions/*.md"
 SNAPSHOT_RE = re.compile(r"스냅샷|수집 ?시점|20\d\d-\d\d-\d\d 수집")
+
+# 폐기값이 적혀 있어도 그 줄이 **조건을 밝히고 있으면** 통과시킨다.
+# 0007 규칙 2("숫자에는 조건을 붙인다")를 자동으로 검사하는 셈이다.
+# 조건이 붙은 문장은 값이 바뀌어도 여전히 참이므로 고칠 이유가 없다.
+# 0007 자신이 옛값 넷을 '무엇이 틀렸나'의 예시로 인용하는 것이 대표적이다.
+COND_WORDS = ("→", "->", "<-", "<−", "종전", "폐기", "옛값", "당시", "그때",
+              "정정", "보탬", "나쁨", "6개 구", "6개 자치구", "절단 전", "0013")
 
 
 # 정수가 아닌 값(효과 크기 등)은 JSON 에서 끌어올 수 없어 따로 둔다.
@@ -91,26 +104,86 @@ def numbers_in(text: str) -> set[int]:
     return {int(m.replace(",", "")) for m in re.findall(r"\d{1,3}(?:,\d{3})+|\d{4,}", text)}
 
 
+def conditioned(lines: list[str], i: int, span: int = 1) -> bool:
+    """i 번째 줄의 숫자에 조건이 붙어 있는가 (COND_WORDS 참조).
+
+    **앞뒤 한 줄까지 함께 본다.** 한글 문서는 줄을 접어 쓰므로 조건어와
+    숫자가 다른 줄에 떨어지는 일이 흔하다. 줄 하나만 보면 '0013 의 정렬
+    수정 이전 / 숫자(k=0 −58.7%)' 처럼 정당한 서술을 오류로 센다.
+
+    **빈 줄은 세지 않는다.** 옛 값을 적은 바로 아래에 정정 블록을 붙이는 것이
+    이 저장소의 관행인데(0001·0014), 그 사이에 빈 줄이 들어가므로 빈 줄을
+    한 칸으로 세면 정정을 못 본다.
+    """
+    idx = [j for j, ln in enumerate(lines) if ln.strip()]
+    if i not in idx:
+        return False
+    k = idx.index(i)
+    return any(w in lines[j] for j in idx[max(0, k - span):k + span + 1]
+               for w in COND_WORDS)
+
+
+def in_range_expr(line: str, expr: str) -> bool:
+    """그 표현이 구간의 끝인가 — '−59% ~ +51%' 의 −59% 는 폐기값이 아니다.
+
+    0027 의 신뢰구간 하한이 0013 이전 거래량 추정치와 글자가 같아서 걸렸다.
+    """
+    j = line.find(expr)
+    while j >= 0:
+        near = line[max(0, j - 6):j + len(expr) + 6]
+        if "~" in near:
+            return True
+        j = line.find(expr, j + 1)
+    return False
+
+
+def scan_retired_values(paths: list[Path], cur: dict[str, int]) -> list[str]:
+    """폐기된 **수치**가 조건 없이 적힌 줄을 찾는다. 줄 단위로 본다."""
+    bad = []
+    for p in paths:
+        rel = p.relative_to(io.ROOT).as_posix()
+        hits = []
+        lines = p.read_text(encoding="utf-8").splitlines()
+        for i, ln in enumerate(lines, 1):
+            if conditioned(lines, i - 1):
+                continue
+            nums = numbers_in(ln)
+            for name, spec in WATCHED.items():
+                for old, why in spec["retired"].items():
+                    if old in nums:
+                        hits.append(f"{rel}:{i}  {name} {old:,} ({why}) "
+                                    f"-> 현재 {cur[name]:,}")
+        if hits:
+            print(f"  [오류] {rel}")
+            for h in hits:
+                print(f"         {h.split('  ', 1)[1]}")
+            bad += hits
+        else:
+            print(f"  [정상] {rel}")
+    return bad
+
+
 def check_retired_text() -> int:
-    """폐기된 표현이 살아있는 문서에 남아 있는가."""
+    """폐기된 **표현**이 살아있는 문서·결정기록에 남아 있는가."""
     bad = 0
     print()
     print("=" * 74)
-    print("4) 폐기된 표현이 살아있는 문서에 남아 있는가")
+    print("4) 폐기된 표현이 남아 있는가")
     print("=" * 74)
-    for rel in LIVING:
-        p = io.ROOT / rel
+    targets = [io.ROOT / r for r in LIVING] + sorted(io.ROOT.glob(DECISION_GLOB))
+    for p in targets:
         if not p.exists():
             continue
-        for ln in p.read_text(encoding="utf-8").splitlines():
+        rel = p.relative_to(io.ROOT).as_posix()
+        lines = p.read_text(encoding="utf-8").splitlines()
+        for i, ln in enumerate(lines, 1):
             # 옛 값임을 명시한 줄은 통과시킨다. '-59% -> -76%' 처럼 변경
             # 이력을 적는 것은 정당하고, 오히려 남겨야 한다.
-            # 예외어는 좁게 둔다. '이전'은 '지정 이전'에도 걸려 못 쓴다.
-            if any(w in ln for w in ("→", "->", "종전", "폐기", "0013")):
+            if conditioned(lines, i - 1):
                 continue
             for expr, why in RETIRED_TEXT.items():
-                if expr in ln:
-                    print(f"  [오류] {rel} 에 '{expr}' — {why}")
+                if expr in ln and not in_range_expr(ln, expr):
+                    print(f"  [오류] {rel}:{i} 에 '{expr}' — {why}")
                     print(f"         {ln.strip()[:78]}")
                     bad += 1
     if not bad:
@@ -129,25 +202,16 @@ def main() -> None:
         print(f"  {k:<14} {v:>12,}")
 
     print("\n" + "=" * 74)
-    print("1) 살아있는 문서 — 폐기된 값이 남아 있는가")
+    print("1) 살아있는 문서 — 폐기된 값이 조건 없이 남아 있는가")
     print("=" * 74)
-    for rel in LIVING:
-        p = io.ROOT / rel
-        if not p.exists():
-            continue
-        nums = numbers_in(p.read_text(encoding="utf-8"))
-        bad = []
-        for name, spec in WATCHED.items():
-            for old, why in spec["retired"].items():
-                if old in nums:
-                    bad.append(f"{name} {old:,} ({why}) -> 현재 {cur[name]:,}")
-        if bad:
-            print(f"  [오류] {rel}")
-            for b in bad:
-                print(f"         {b}")
-            errors += bad
-        else:
-            print(f"  [정상] {rel}")
+    errors += scan_retired_values(
+        [io.ROOT / r for r in LIVING if (io.ROOT / r).exists()], cur)
+
+    print("\n" + "=" * 74)
+    print("1b) 결정기록 — 판단의 근거 수치가 낡지 않았는가")
+    print("=" * 74)
+    decisions = sorted(io.ROOT.glob(DECISION_GLOB))
+    errors += scan_retired_values(decisions, cur)
 
     print("\n" + "=" * 74)
     print("2) 동결 문서 — 조건(스냅샷) 표기가 있는가")
