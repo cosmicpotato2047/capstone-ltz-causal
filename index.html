@@ -50,6 +50,8 @@ a{color:var(--accent); text-underline-offset:3px}
 .card .d{color:var(--ink-2); font-size:13.5px; line-height:1.6; margin-top:2px}
 .card .x{font-family:"IBM Plex Mono",monospace; font-size:11px;
   color:var(--ink-3); letter-spacing:.04em}
+.card.soon{pointer-events:none; opacity:.55; border-style:dashed}
+.card.soon .t{color:var(--ink-2)}
 ul{padding-left:20px; margin:0} li{margin:0 0 6px; font-size:14.5px}
 footer{margin-top:56px; padding-top:20px; border-top:1px solid var(--rule-soft);
   color:var(--ink-3); font-size:13px}
@@ -74,6 +76,25 @@ footer{margin-top:56px; padding-top:20px; border-top:1px solid var(--rule-soft);
     이정표를 넘길 때마다 채운다.</div>
 </a>
 
+<h2>발표 자료</h2>
+<p class="note">좌우 방향키로 넘긴다. Ctrl+P 로 인쇄하면 한 장이 한 페이지가 된다.</p>
+
+<a class="card" href="docs/slides/2026-10-02.html">
+  <div class="t">중간 발표 <span class="x">2026-10-02 · 12장</span></div>
+  <div class="d">주 결과와 강건성. 지정 직후 거래량 −71 ~ −80%, 무작위 17,550가지 중
+    1위, 192개 사양 전부 음수. 가격은 사전추세를 견디지 못한다.</div>
+</a>
+<a class="card" href="docs/slides/2026-09-04.html">
+  <div class="t">1주차 발표 <span class="x">2026-09-04 · 7장</span></div>
+  <div class="d">주제 확정과 예비 분석. 데이터 파이프라인, 정책 이력 판독,
+    선행연구 재현.</div>
+</a>
+<div class="card soon">
+  <div class="t">최종 발표 <span class="x">2026-10-30 · 예정</span></div>
+  <div class="d">규제를 거느냐가 아니라 어떻게 거느냐 — 허가 면적 기준이
+    효과를 가른 과정과 2025년 예측 적중.</div>
+</div>
+
 <h2>주차 보고서</h2>
 <p class="note">그 주에 무엇을 알게 되었고 설계가 어떻게 바뀌었는지 적는다.</p>
 
@@ -92,14 +113,10 @@ footer{margin-top:56px; padding-top:20px; border-top:1px solid var(--rule-soft);
   <div class="d">정책 원문 판독 완료, 대출 규제 분류와 삼중차분,
     합성대조군, 자체 반복매매 가격지수.</div>
 </a>
-<a class="card" href="https://github.com/cosmicpotato2047/capstone-ltz-causal/blob/main/docs/reports/week-01.md">
+<a class="card" href="docs/reports/week-01.html">
   <div class="t">1주차 결과 보고서 <span class="x">2026-09-03</span></div>
   <div class="d">데이터 파이프라인 구축, 정책 이력 검증, 예비 분석,
     선행연구 재현.</div>
-</a>
-<a class="card" href="docs/slides/2026-09-04.html">
-  <div class="t">1주차 발표 자료 <span class="x">2026-09-04</span></div>
-  <div class="d">슬라이드. 좌우 방향키로 이동한다.</div>
 </a>
 
 <h2>시각화</h2>

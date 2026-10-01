@@ -53,6 +53,37 @@ SKIP = (
 )
 
 
+# index.html 이 가리켜야 하는 읽을거리. 만들어 놓고 링크를 안 걸면 아무도
+# 못 본다 — 2026-10-02 발표 자료가 실제로 그랬다. 파일이 없어지는 것이 아니라
+# **가리키는 데가 없어지는** 종류의 고아다.
+LINKED = ["docs/slides/*.html", "docs/reports/*.html", "docs/*.html"]
+
+
+def check_linked() -> list[str]:
+    """만들었는데 index.html 이 가리키지 않는 문서를 찾는다."""
+    idx = io.ROOT / "index.html"
+    print("\n" + "=" * 78)
+    print("index.html 이 안 가리키는 문서")
+    print("=" * 78)
+    if not idx.exists():
+        print("  index.html 이 없다. 건너뛴다.")
+        return []
+    text = idx.read_text(encoding="utf-8")
+    missing = []
+    for pat in LINKED:
+        for f in sorted(io.ROOT.glob(pat)):
+            rel = f.relative_to(io.ROOT).as_posix()
+            if rel not in text:
+                missing.append(rel)
+    if not missing:
+        print("  없음. 읽을거리가 전부 걸려 있다.")
+        return []
+    for rel in missing:
+        print(f"  [확인] {rel}")
+    print("\n  만들었으면 index.html 에 카드를 추가한다.")
+    return missing
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -82,19 +113,20 @@ def main() -> None:
     print(f"산출물 신선도 — 최근 {a.since / 60:.0f}분 기준")
     print("=" * 78)
     print(f"  다시 만들어진 파일 {len(fresh)}개 · 안 만들어진 파일 {len(stale)}개")
-    if not stale:
+    if stale:
+        print("\n  이번 실행에서 아무도 만들지 않은 파일")
+        print(f"  {'파일':<52}{'마지막 수정':>18}")
+        for rel, when in stale:
+            print(f"  {rel:<52}{when:>18}")
+        print("\n  확인할 것 — 아래 셋 중 하나다.")
+        print("   1. 만드는 스크립트가 run_all.py 에 빠졌다        -> STEPS 에 추가")
+        print("   2. 아무도 안 만드는 고아 파일이다                -> 지운다")
+        print("   3. 손으로 관리하는 파일이다                      -> SKIP 에 적는다")
+    else:
         print("\n  낡은 산출물 없음. 모든 파일이 이번 실행에서 다시 만들어졌다.")
-        return
 
-    print("\n  이번 실행에서 아무도 만들지 않은 파일")
-    print(f"  {'파일':<52}{'마지막 수정':>18}")
-    for rel, when in stale:
-        print(f"  {rel:<52}{when:>18}")
-    print("\n  확인할 것 — 아래 셋 중 하나다.")
-    print("   1. 만드는 스크립트가 run_all.py 에 빠졌다        -> STEPS 에 추가")
-    print("   2. 아무도 안 만드는 고아 파일이다                -> 지운다")
-    print("   3. 손으로 관리하는 파일이다                      -> SKIP 에 적는다")
-    if a.strict:
+    unlinked = check_linked()
+    if a.strict and (stale or unlinked):
         sys.exit(1)
 
 
