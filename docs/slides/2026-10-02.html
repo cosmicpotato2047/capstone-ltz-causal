@@ -118,7 +118,6 @@ figcaption{font-size:.95cqw; color:var(--ink-3); margin-top:.5cqw; line-height:1
 .chart-title{font-size:1.15cqw; font-weight:600; color:var(--ink); margin-bottom:.15cqw}
 .chart-sub{font-size:.95cqw; color:var(--ink-3); margin-bottom:.6cqw; line-height:1.35}
 
-
 .concept{display:grid; grid-template-columns:1fr auto 1fr; gap:1.5cqw; align-items:center}
 .arrowcol{font-family:"IBM Plex Mono",monospace; color:var(--ink-3); font-size:1.5cqw}
 
@@ -283,7 +282,7 @@ figure img{width:100%; height:auto; display:block; background:#fff;
         <p class="sub">세 방향으로 나눠 묻는다. 2~4주차에 확정한 답을 간추리고,
           지난주 끝낸 분석과 남은 계획을 밝힌다.</p>
         <div class="meta"><span>2026.10.02</span><span>이찬희</span><span>컴퓨터공학</span></div>
-        <div class="slidenum">01 / 08</div>
+        <div class="slidenum">01 / 07</div>
       </article>
 
       <!-- 02 2주차 -->
@@ -321,7 +320,7 @@ figure img{width:100%; height:auto; display:block; background:#fff;
           </figure>
         </div>
         <div class="slide-foot">왼쪽 가격 · 오른쪽 거래량. 가격은 사전 구간이 0 위에 줄줄이 떠 있다</div>
-        <div class="slidenum">02 / 08</div>
+        <div class="slidenum">02 / 07</div>
       </article>
 
       <!-- 03 3주차 -->
@@ -353,7 +352,7 @@ figure img{width:100%; height:auto; display:block; background:#fff;
           </figure>
         </div>
         <div class="slide-foot">대출 가설은 2022-06-23 이라는 날짜에 아무것도 예측하지 않는다</div>
-        <div class="slidenum">03 / 08</div>
+        <div class="slidenum">03 / 07</div>
       </article>
 
       <!-- 04 4주차 (1) 예측 -->
@@ -382,7 +381,7 @@ figure img{width:100%; height:auto; display:block; background:#fff;
           </figure>
         </div>
         <div class="slide-foot">공고 주간 거래가 30 → 155건으로 튀었다 — 막차 수요</div>
-        <div class="slidenum">04 / 08</div>
+        <div class="slidenum">04 / 07</div>
       </article>
 
       <!-- 05 4주차 (2) 파급 -->
@@ -435,52 +434,31 @@ figure img{width:100%; height:auto; display:block; background:#fff;
           </figure>
         </div>
         <div class="slide-foot">'인근 급등'은 기준점이 만든 말이다</div>
-        <div class="slidenum">05 / 08</div>
-      </article>
-
-      <!-- 06 지난주 M3 -->
-      <article class="slide">
-        <div class="eyebrow">그 뒤 · 09-30 ~ 10-01 · 분석 종료</div>
-        <h2>같은 자료로 <em>−21%</em> 도 <em>−86%</em> 도 나온다 — 무엇이 갈랐나</h2>
-        <p style="font-size:1.12cqw;margin:0 0 .4cqw">합리적인 선택을 전부 조합해
-          <strong>192가지</strong>를 돌렸다. <strong>점 하나가 조합 하나의 추정치</strong>이고,
-          아래 칸은 그 조합이 어떤 선택을 썼는지다. <strong>줄었다는 방향은 안 갈린다 — 당연하다.
-          갈리는 것은 크기다.</strong></p>
-        <figure class="fitfig" style="margin:.15cqw 0">
-          <img src="../../output/figures/05b_spec_curve.png" alt="사양 곡선">
-        </figure>
-        <div class="kicker" style="margin-top:.5cqw">
-          <div class="k1">크기를 가른 것은 <span class="ok">날짜 세는 법 39.6%p</span> —
-            통제군 정의는 <span class="mid">2.3%p</span> 다.
-            <strong>달력 월로 자르면 −40.5%, 효력일에 맞추면 −80.1%.</strong></div>
-          <div class="k2">선행연구의 불일치는 <strong>지역을 어떻게 나눴느냐가 아니라 날짜를 어디에
-            맞췄느냐</strong>에서 왔다 — 제안서 RQ4 의 답이다.
-            오른쪽 가격은 <span class="no">29개가 0 위</span>로 올라간다.</div>
-        </div>
-        <div class="slide-foot">왼쪽 거래량 192 · 오른쪽 가격 144 — M3 분석 종료 10/01</div>
-        <div class="slidenum">06 / 08</div>
+        <div class="slidenum">05 / 07</div>
       </article>
 
       <!-- 07 지금 상태 -->
       <article class="slide">
         <div class="eyebrow">지금 상태</div>
         <h2>거래량은 <em>숫자로</em>, 가격은 <em>방향으로만</em> 말한다</h2>
-        <p style="font-size:1.2cqw;margin:0 0 .9cqw"><strong>'방향으로만'</strong>이란 —
+        <p style="font-size:1.18cqw;margin:0 0 .8cqw"><strong>'방향으로만'</strong>이란 —
           "가격이 내렸다"까지는 쓰고 <strong>"몇 % 내렸다"는 쓰지 않는다</strong>는 뜻이다.
-          설계를 조금만 바꿔도 −18%에서 +4%까지 움직이기 때문이다.</p>
+          통제군·창·고정효과를 바꿔 가며 144가지로 재 보면 <strong>−18% 에서 +4% 까지</strong>
+          움직인다. 거래량은 192가지 중 <strong>하나도 0 을 넘지 않는다.</strong></p>
         <table class="vs">
           <thead><tr><th>무엇</th><th>말할 수 있나</th><th>근거 또는 막힌 곳</th></tr></thead>
           <tbody>
             <tr><td>지정 직후 거래량 −71 ~ −80%</td><td class="good">예</td>
-              <td style="font-size:1.1cqw">192/192 · 17,550 중 1위 · 사전추세 1.6배까지 버팀</td></tr>
+              <td style="font-size:1.08cqw">가짜 4개 동 17,550가지 중 1위 · 설계 192가지 전부 음수</td></tr>
             <tr><td>효과가 단지마다 달랐다</td><td class="good">예</td>
-              <td style="font-size:1.1cqw">허가 면적 기준 — 2022 강화에서 소형만 −33%</td></tr>
+              <td style="font-size:1.08cqw">허가 면적 기준 — 2022 강화에서 소형만 −33%</td></tr>
             <tr><td>파급은 같은 동 안에만</td><td class="good">예</td>
-              <td style="font-size:1.1cqw">유지 단지 −26.5% · 옆 동·옆 구는 비유의</td></tr>
+              <td style="font-size:1.08cqw">유지 단지 −26.5% · 옆 동·옆 구는 비유의</td></tr>
             <tr><td>가격 −4 ~ −7%</td><td class="mid">방향만</td>
-              <td style="font-size:1.1cqw">사전추세를 열면 0.22 에서 무너짐 · 합성대조군 p 0.511</td></tr>
+              <td style="font-size:1.08cqw">사전 추세를 조금만 허용해도 0 과 구분 안 됨 ·
+                가짜 대치동 151개 중 중간 순위</td></tr>
             <tr><td>효과가 얼마나 오래 가나</td><td class="weak">아니오</td>
-              <td style="font-size:1.1cqw">기준 분기에 따라 −20 ~ +16% 로 흔들린다</td></tr>
+              <td style="font-size:1.08cqw">기준 분기를 바꾸면 −20 ~ +16% 로 흔들린다</td></tr>
           </tbody>
         </table>
         <div class="kicker" style="margin-top:1.4cqw">
@@ -488,7 +466,7 @@ figure img{width:100%; height:auto; display:block; background:#fff;
             다섯 달 뒤 세 가지 방법으로 확인됐다.</div>
         </div>
         <div class="slide-foot">결정기록 30편 · 전 과정 공개 github.com/cosmicpotato2047/capstone-ltz-causal</div>
-        <div class="slidenum">07 / 08</div>
+        <div class="slidenum">06 / 07</div>
       </article>
 
       <!-- 08 다음에 할 것 -->
@@ -516,7 +494,7 @@ figure img{width:100%; height:auto; display:block; background:#fff;
           </div>
         </div>
         <div class="slide-foot">마감 2026-11-20 · D-49</div>
-        <div class="slidenum">08 / 08</div>
+        <div class="slidenum">07 / 07</div>
       </article>
     </div>
 
