@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import itertools
+import math
 from dataclasses import dataclass
 from typing import Callable
 
@@ -126,11 +127,26 @@ def wild_boot(s: Spec, rng, B: int = B) -> tuple[float, float, float, float, np.
     return float(b[s.j]), float(t0), p1, p2, ts
 
 
-def randomization(s: Spec) -> tuple[np.ndarray, float, int]:
-    """처치 동 수만큼을 고르는 모든 조합에 대해 보고할 효과를 낸다."""
+def randomization(s: Spec, max_draws: int | None = None,
+                  seed: int = SEED) -> tuple[np.ndarray, float, int]:
+    """처치 동 수만큼을 고르는 모든 조합에 대해 보고할 효과를 낸다.
+
+    조합이 `max_draws` 보다 많으면 **무작위로 그만큼만 뽑는다.** 강남·송파
+    27개 동에서 4개를 고르면 17,550가지라 전수가 되지만, 서울 전역 177개
+    동에서 5개를 고르면 10¹⁰ 을 넘어 전수가 불가능하다(백로그 21).
+    진짜 배정은 반드시 포함시키므로 순위는 그대로 뜻이 있다.
+    """
     nt = int(s.treated.sum())
-    combos = list(itertools.combinations(range(s.G), nt))
     real = tuple(np.flatnonzero(s.treated))
+    total = math.comb(s.G, nt)
+    if max_draws is None or total <= max_draws:
+        combos = list(itertools.combinations(range(s.G), nt))
+    else:
+        rng = np.random.default_rng(seed)
+        picked = {real}
+        while len(picked) < max_draws:
+            picked.add(tuple(sorted(rng.choice(s.G, nt, replace=False).tolist())))
+        combos = sorted(picked)
     yt = s.M(s.y)
     vals = np.empty(len(combos))
     for i, cmb in enumerate(combos):
