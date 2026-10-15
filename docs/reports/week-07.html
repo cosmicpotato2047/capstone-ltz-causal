@@ -1,0 +1,454 @@
+<title>7주차 결과 보고서 · 서울 토허구역 인과추정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --ground:#f4f6f7; --surface:#fcfcfb; --surface-2:#eceef0;
+  --ink:#12161a; --ink-2:#454b52; --ink-3:#7d848c;
+  --rule:#c9ced4; --rule-soft:#e2e6e9;
+  --accent:#2a78d6; --accent-soft:#dbe8f8;
+  --warn:#e34948; --warn-soft:#f8dedd;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+    --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+    --rule:#343a3f; --rule-soft:#282d31;
+    --accent:#3987e5; --accent-soft:#1d2f45;
+    --warn:#e66767; --warn-soft:#3d2526;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+  --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+  --rule:#343a3f; --rule-soft:#282d31;
+  --accent:#3987e5; --accent-soft:#1d2f45;
+  --warn:#e66767; --warn-soft:#3d2526;
+}
+
+*{box-sizing:border-box}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans KR","Malgun Gothic",system-ui,sans-serif;
+  font-size:16px; line-height:1.78; -webkit-font-smoothing:antialiased}
+
+.topbar{position:sticky; top:0; z-index:40; background:var(--ground);
+  border-bottom:3px double var(--rule)}
+.topbar-in{max-width:1120px; margin:0 auto; padding:12px 28px;
+  display:flex; gap:16px; align-items:baseline; justify-content:space-between}
+.brand{font-family:"Nanum Myeongjo","Batang",serif; font-size:17px;
+  font-weight:800; letter-spacing:-.02em}
+.docno{font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+  letter-spacing:.1em; color:var(--ink-3); text-transform:uppercase;
+  white-space:nowrap}
+
+.shell{max-width:1120px; margin:0 auto; padding:0 28px;
+  display:grid; grid-template-columns:1fr 224px; gap:52px; align-items:start}
+main{min-width:0; padding:40px 0 96px}
+
+nav.toc{position:sticky; top:74px; padding:44px 0 0;
+  font-size:12.5px; line-height:1.5}
+nav.toc .lbl{font-family:"IBM Plex Mono",monospace; font-size:10px;
+  letter-spacing:.12em; color:var(--ink-3); text-transform:uppercase;
+  padding-bottom:10px; border-bottom:1px solid var(--rule-soft);
+  margin-bottom:12px}
+nav.toc a{display:block; padding:5px 0; color:var(--ink-3);
+  text-decoration:none; border-left:2px solid transparent; padding-left:10px;
+  margin-left:-12px; transition:color .15s, border-color .15s}
+nav.toc a:hover{color:var(--ink)}
+nav.toc a.on{color:var(--ink); border-left-color:var(--accent); font-weight:500}
+
+h1,h2,h3{font-family:"Nanum Myeongjo","Batang",serif; text-wrap:balance;
+  letter-spacing:-.01em; line-height:1.35}
+h1{font-size:30px; font-weight:800; margin:0 0 6px}
+h2{font-size:22px; font-weight:700; margin:56px 0 16px;
+  padding-top:22px; border-top:1px solid var(--rule)}
+h3{font-size:17px; font-weight:700; margin:32px 0 10px; color:var(--ink)}
+h1 + p{color:var(--ink-2); font-size:16px; margin:0 0 4px}
+p{margin:0 0 15px}
+a{color:var(--accent); text-underline-offset:3px;
+  text-decoration-thickness:1px}
+strong{font-weight:600}
+hr{border:0; border-top:1px solid var(--rule-soft); margin:36px 0}
+hr + h2{border-top:0; padding-top:0; margin-top:30px}
+ul,ol{margin:0 0 15px; padding-left:22px}
+li{margin:0 0 7px}
+
+table{border-collapse:collapse; width:100%; margin:18px 0 22px;
+  font-size:14px; background:var(--surface);
+  font-variant-numeric:tabular-nums}
+th,td{border:1px solid var(--rule-soft); padding:7px 11px;
+  text-align:left; vertical-align:top}
+th{background:var(--surface-2); font-weight:600; font-size:13px;
+  color:var(--ink-2)}
+.tw{overflow-x:auto; margin:18px 0 22px}
+.tw table{margin:0}
+
+blockquote{margin:18px 0; padding:11px 16px; background:var(--accent-soft);
+  border-left:3px solid var(--accent); font-size:14px; color:var(--ink-2)}
+blockquote p{margin:0}
+blockquote strong{color:var(--ink)}
+
+code{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:13px;
+  background:var(--surface-2); padding:1px 5px; border-radius:3px}
+pre{background:var(--surface); border:1px solid var(--rule-soft);
+  padding:14px 16px; overflow-x:auto; font-size:13px; line-height:1.6}
+pre code{background:none; padding:0}
+
+figure{margin:22px 0 28px}
+figure a{display:block}
+figure img{display:block; width:100%; height:auto; background:#fff;
+  border:1px solid var(--rule-soft)}
+figcaption{font-size:13px; color:var(--ink-3); margin-top:8px; line-height:1.55}
+
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr; gap:0}
+  nav.toc{display:none}
+}
+@media print{
+  .topbar, nav.toc{display:none}
+  .shell{display:block; max-width:none; padding:0}
+  body{background:#fff; font-size:11pt}
+  h2{break-after:avoid} table,pre,blockquote,figure{break-inside:avoid}
+  a{color:#000; text-decoration:none}
+}
+</style>
+<div class="topbar"><div class="topbar-in">
+  <span class="brand">서울 토허구역 인과추정</span>
+  <span class="docno">WEEK 07</span>
+</div></div>
+<div class="shell">
+  <main><h1>7주차 결과 보고서</h1>
+<p><strong>서울 아파트 실거래와 정책 공고를 결합한 미시 패널 구축과 토지거래허가구역 인과효과 추정</strong></p>
+<p>2026-10-15 · 7주차 (D-36) · 저장소 https://github.com/cosmicpotato2047/capstone-ltz-causal</p>
+<p>원자료 스냅샷: 실거래 2026-09-03 수집(분석 8개 자치구 472,782건 · 서울 25개 자치구 1,407,186건), 공고는 2026-08-20 공고분(국토교통부 제2026-1105호)까지. 이 보고서의 숫자는 이 스냅샷 기준이다.</p>
+<hr />
+<h2 id="요약">요약</h2>
+<p><strong>분석은 끝났고 이번 주는 1층(시스템)을 닫는 주였다.</strong> 결과는 넷이다.</p>
+<ol>
+<li><strong>클린 환경 재현에서 <code>requirements.txt</code> 의 구멍 둘을 찾았다.</strong> <code>shapely</code> 와 <code>markdown</code> 이 빠져 있어 새 가상환경에서는 12단계에서 멈춘다. 작업 환경에는 다른 경로로 깔려 있어 몇 주 동안 드러나지 않았다.</li>
+<li><strong>고친 뒤 전 단계가 돌았고 <code>output/results/*.json</code> 25개가 바이트 단위로 같았다.</strong> 재현이 확인됐다(백로그 15).</li>
+<li><strong>결과 대시보드를 만들었다</strong>(백로그 20). 숫자 24개마다 <strong>어느 결정기록에서 나왔는지와 어떻게 다시 돌리는지</strong>를 붙인다. <code>output/results/*.json</code> 에서 생성하므로 손으로 적지 않는다.</li>
+<li><strong>의존 점검기(<code>check_deps.py</code>)를 만들어 파이프라인에 넣었다.</strong> 같은 종류의 구멍이 다시 생기면 그 자리에서 잡힌다.</li>
+</ol>
+<p>그 밖에 <strong>14b 를 닫고</strong>, 2주 낡았던 <code>framing.md</code> 를 갱신하고, <strong>최종 보고서 뼈대</strong>를 잡았다.</p>
+<hr />
+<h2 id="1-클린-환경-재현-백로그-15">1. 클린 환경 재현 (백로그 15)</h2>
+<h3 id="1-1-절차">1.1 절차</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>단계</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>새 폴더에 <code>git clone</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>새 가상환경 + <code>pip install -r requirements.txt</code> (약 12분)</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>data/raw</code> 를 접합(junction)으로 연결 — <strong>재수집하면 안 된다</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>python run_all.py</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>output/results/*.json</code> 을 원본과 해시 대조</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>3번이 중요하다.</strong> 실거래 자료는 취소와 지연신고로 <strong>소급 갱신</strong>되므로 <code>--collect</code> 로 다시 받으면 같은 결과가 나오지 않는다. 재현은 <strong>같은 스냅샷 위에서</strong> 하는 것이다.</p>
+<h3 id="1-2-멈췄다-shapely-가-없다">1.2 멈췄다 — shapely 가 없다</h3>
+<pre><code>[FAIL] [12] scripts/12_spillover.py (7.9초)
+  File &quot;scripts/lib/geo.py&quot;, line 138, in touching
+    from shapely.ops import unary_union
+ModuleNotFoundError: No module named 'shapely'
+</code></pre>
+<p><strong><code>requirements.txt</code> 에 <code>shapely</code> 가 없었다.</strong> <code>lib/geo.py</code> 가 법정동 경계로 맞닿은 동을 찾을 때(백로그 12, <a href="../decisions/0024-파급효과-기준점.md">0024</a>) 쓰는데, 그때 목록에 안 넣었다.</p>
+<p>이어서 <code>markdown</code> 도 빠진 것을 찾았다. <code>render_report.py</code> 가 쓰는데 파이프라인이 12단계에서 멈춰 거기까지 가지 못했을 뿐이다.</p>
+<blockquote>
+<p><strong>받는 사람만 겪고 만드는 사람은 못 보는 고장이다.</strong> 내 환경에는 둘 다 다른 경로로 깔려 있었다. 백로그 15 를 건 이유가 정확히 이것이다.</p>
+</blockquote>
+<h3 id="1-3-고친-뒤-바이트-단위로-같다">1.3 고친 뒤 — 바이트 단위로 같다</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>전 단계</td>
+<td><strong>성공</strong></td>
+</tr>
+<tr>
+<td>소요</td>
+<td>약 <strong>21분</strong></td>
+</tr>
+<tr>
+<td><code>output/results/*.json</code></td>
+<td><strong>25개 전부 바이트 동일</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="1-4-덤으로-걸린-것-둘">1.4 덤으로 걸린 것 둘</h3>
+<p><strong>(가) 윈도 긴 경로 한계.</strong> 처음에 깊은 임시 폴더(137자)에 clone 했더니 <code>statsmodels</code> 의 시험 자료 경로가 <strong>266자</strong>가 되어 설치가 깨졌다. 윈도 기본 한계는 <strong>260자</strong>이고 이 기계는 긴 경로 지원이 꺼져 있다(<code>LongPathsEnabled = 0</code>).</p>
+<p>고약한 점은 <strong>pip 가 오류를 내고도 나머지는 설치했다</strong>는 것이다. <code>statsmodels</code> 만 빠진 채로 끝난다. 짧은 경로에서 다시 하니 8개 전부 깔렸다.</p>
+<p><strong>(나) 저장소가 무겁다.</strong> <code>.git</code> 이 <strong>936MB</strong> 다. 그림을 매번 커밋해 이력이 쌓였다. clone 은 10초면 되지만(로컬) 원격에서는 부담이다. <strong>지금 고치지 않는다</strong> — 이력을 다시 쓰는 일이라 남은 5주에 할 작업이 아니다. 한계로 적는다.</p>
+<h3 id="1-5-readme-에-반영했다">1.5 README 에 반영했다</h3>
+<p>재현 절차에 <strong>「클린 환경에서 재현할 때」</strong> 절을 더해 위 셋을 적었다.</p>
+<hr />
+<h2 id="2-의존-점검기-check_deps-py">2. 의존 점검기 (<code>check_deps.py</code>)</h2>
+<p>같은 구멍이 다시 생기지 않게 만들었다. <code>check_numbers.py</code>(문서 수치)·<code>check_stale.py</code>(고아 산출물)와 같은 계열이다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>하는 일</td>
+<td><code>scripts/**/*.py</code> 를 <strong>AST 로 훑어</strong> 실제 import 와 <code>requirements.txt</code> 를 맞춘다</td>
+</tr>
+<tr>
+<td>왜 AST 인가</td>
+<td><code>lib/geo.py</code> 의 shapely 처럼 <strong>함수 안에서 늦게</strong> import 하는 것도 잡아야 한다</td>
+</tr>
+<tr>
+<td>간접 의존</td>
+<td><code>pyarrow</code> 는 직접 import 하지 않지만 pandas 가 parquet 에 쓴다 — 이유와 함께 따로 적는다</td>
+</tr>
+<tr>
+<td>등록</td>
+<td>전체 재실행의 <strong>C3</strong> 단계</td>
+</tr>
+</tbody>
+</table></div>
+<pre><code>의존 점검 — 스크립트가 쓰는 외부 패키지 9개 · requirements.txt 10줄
+  빠진 것 없음. 쓰는 것이 전부 적혀 있다.
+통과 — requirements.txt 가 실제 import 와 맞는다.
+</code></pre>
+<hr />
+<h2 id="3-결과-대시보드-백로그-20">3. 결과 대시보드 (백로그 20)</h2>
+<p><code>output/dashboard.html</code> · <a href="../../index.html">index</a> 에서 연다.</p>
+<h3 id="3-1-무엇을-푸는가">3.1 무엇을 푸는가</h3>
+<p>결과가 <strong>결정기록 31편 · 주차 보고서 7편 · JSON 25개</strong>에 흩어져 있다. "이 숫자 어디서 나왔나"를 묻는 사람(심사위원, 그리고 석 달 뒤의 나)이 매번 저장소를 뒤져야 한다.</p>
+<p><strong>숫자마다 세 가지를 붙인다</strong> — 어느 결정기록인지, 어느 스크립트가 만들었는지, 어떻게 다시 돌리는지. <strong>숫자의 계보를 보이는 것</strong>이 목적이다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>묶음</th>
+<th>지표</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>얼마나 줄었나</td>
+<td>직후 −79.8% · 무작위 1/17,550 · 합성대조군 −71.0% · 사양 곡선 100%</td>
+</tr>
+<tr>
+<td>언제까지 갔나</td>
+<td>24개월 −33.5% · 붕괴값 0.05</td>
+</tr>
+<tr>
+<td>누구에게 달랐나</td>
+<td>2022 강화 −33.2% · 2021 위약 −8.1% · 2025 재지정 −71.5%</td>
+</tr>
+<tr>
+<td>어디로 번졌나</td>
+<td>유지군 −26.5% · 처치동 기준 +115.5% · 서울 기준 −9.0%</td>
+</tr>
+<tr>
+<td>가격은 잡혔나</td>
+<td>반복매매 −6.0% · 헤도닉+단지 −5.9% · 붕괴값 0.22 · SCM p 0.511</td>
+</tr>
+<tr>
+<td>믿어도 되는가</td>
+<td>B−A +8.7% · 무작위 3,576/5,000 · 가격 음수 80% · 취소 +0.3%p</td>
+</tr>
+<tr>
+<td>자료</td>
+<td>표본 472,782 · 서울 1,407,186 · 단지 3,502 · 반복매매 377,289</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="3-2-손으로-적지-않는다">3.2 손으로 적지 않는다</h3>
+<p><code>output/results/*.json</code> 에서 읽어 쓴다. 적는 것은 <strong>어디서 꺼낼지와 어떻게 읽을지</strong>뿐이다. 분석을 다시 돌리면 이 페이지도 따라 바뀐다 — <a href="../decisions/0007-문서유형별-수치기록.md">0007</a> 이 "현재 값의 출처는 하나"라고 한 원칙을 화면에도 적용했다.</p>
+<p><strong>경로를 라벨로 쓴다.</strong></p>
+<pre><code>거래량[k=0].effect_pct
+지수_사다리[지수=반복매매].변화_pct
+나_2022_기준강화[기준_㎡=40.0].소형효과_pct
+</code></pre>
+<p>번호(<code>[1]</code>)는 스크립트가 줄 순서를 바꾸면 <strong>조용히 다른 값</strong>을 가리킨다. 라벨은 그때 <strong>'없음'으로 드러난다.</strong> 만들면서 실제로 12개가 '없음'으로 떴고(내가 JSON 구조를 잘못 짐작했다) 전부 고쳐 <strong>24개 중 0개</strong>가 됐다.</p>
+<hr />
+<h2 id="4-백로그-14b-를-닫았다">4. 백로그 14b 를 닫았다</h2>
+<p><a href="../decisions/0007-문서유형별-수치기록.md">0007</a> 이 <strong>"M3 시점에 재검토한다"</strong>고 적어 둔 항목이다. M3 는 10/01 에 끝났으므로 약속한 시점이다.</p>
+<p><strong>하지 않기로 닫았다.</strong> 이유 셋을 0007 에 적었다.</p>
+<ol>
+<li><strong>검사 쪽이 그 사이 넓어졌다.</strong> 10/01 에 결정기록까지 검사 대상에 넣었고, 고아 산출물·링크·의존까지 본다. 마커가 막으려던 구멍의 대부분을 이미 막는다.</li>
+<li><strong>지금이 문장을 가장 많이 고치는 시기다.</strong> 최종 보고서와 10/30 발표 자료를 쓰는 4주 동안 마커를 심으면 부담이 가장 크다.</li>
+<li><strong>고치는 쪽이 아니라 잡는 쪽으로 간다.</strong> 남은 4주에 새 장치를 들이는 비용이 이득보다 크다.</li>
+</ol>
+<p><strong>다시 열 조건도 적었다</strong> — 다음 학기 이후로 이어 쓰거나, 같은 숫자를 세 곳 넘게 손으로 옮기게 되면.</p>
+<hr />
+<h2 id="5-그-밖의-정리">5. 그 밖의 정리</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>framing.md</code> 갱신</strong></td>
+<td>2주 만이다. <a href="../decisions/0031-2021-B그룹-외적타당성.md">0031</a> 을 반영하고 <strong>일반화 범위를 '서울 고가 재건축 지역'</strong> 으로 명시했다. "2021년이 두 번째 사례가 <strong>될 수 있다</strong>"는 미래형을 결과로 바꿨다</td>
+</tr>
+<tr>
+<td><strong>결정기록 색인 중복</strong></td>
+<td>0019~0023 이 <strong>두 번</strong> 들어가 있었다. 36 → 31줄</td>
+</tr>
+<tr>
+<td><strong>백로그 17 기록</strong></td>
+<td><code>dealingGbn</code> 은 2021년 말, <code>slerGbn</code>·<code>buyerGbn</code> 은 <strong>2024년부터</strong> 채워진다. 2020년은 12개월 전부 0% — <strong>2020·2021 사건에는 원천적으로 불가</strong>하고 2025 사건에만 쓸 수 있다</td>
+</tr>
+<tr>
+<td><strong>최종 보고서 뼈대</strong></td>
+<td><a href="../final_outline.md">final_outline.md</a>. 11장 47쪽 안, <strong>절마다 출처를 박았다</strong></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="6-이번-주에-확정된-숫자">6. 이번 주에 확정된 숫자</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>무엇</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>클린 재현 — 바이트 동일 JSON</td>
+<td><strong>25 / 25</strong></td>
+</tr>
+<tr>
+<td>클린 재현 소요</td>
+<td>약 <strong>21분</strong> (pip install 별도 12분)</td>
+</tr>
+<tr>
+<td>빠져 있던 의존</td>
+<td><strong>2개</strong> (shapely · markdown)</td>
+</tr>
+<tr>
+<td>대시보드 지표</td>
+<td><strong>24개</strong> · 없는 키 0</td>
+</tr>
+<tr>
+<td>파이프라인</td>
+<td><strong>46단계</strong></td>
+</tr>
+<tr>
+<td>결정기록</td>
+<td>31편 (색인 중복 5줄 제거)</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="7-마일스톤-점검">7. 마일스톤 점검</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>목표</th>
+<th>상태</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1 주 분석 확정</td>
+<td>4주차 (09/24)</td>
+<td>09/18 충족</td>
+</tr>
+<tr>
+<td>M2 하이라이트</td>
+<td>7주차 (10/15)</td>
+<td>09/23 충족</td>
+</tr>
+<tr>
+<td>M3 분석 종료</td>
+<td>10주차 (11/05)</td>
+<td>10/01 충족</td>
+</tr>
+<tr>
+<td><strong>M4 최종본·재현 확인</strong></td>
+<td><strong>12주차 (11/19)</strong></td>
+<td><strong>재현 확인 부분 충족</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>M4 의 정의는 <em>"클린 환경에서 <code>run_all.py</code> 재현이 확인된다"</em>이다. <strong>이번 주에 확인했다.</strong> 남은 것은 최종본이다.</p>
+<hr />
+<h2 id="8-미해결-사항과-다음-작업">8. 미해결 사항과 다음 작업</h2>
+<p><strong>미해결</strong></p>
+<ul>
+<li><strong>저장소 <code>.git</code> 이 936MB 다.</strong> 그림을 매번 커밋해 이력이 쌓였다. 이력을 다시 쓰는 일이라 남은 5주에 하지 않는다.</li>
+<li><strong>원자료는 재현할 수 없다.</strong> 소급 갱신되므로 <code>--collect</code> 로 다시 받으면 다른 자료가 온다. 스냅샷을 옮기는 것이 유일한 길이고 README 에 적었다.</li>
+<li><strong>대시보드가 추가 분석을 자동으로 따라가지 않는다.</strong> 새 지표는 <code>ROWS</code> 에 손으로 한 줄 적어야 한다. 다만 <strong>값은 손으로 적지 않는다.</strong></li>
+<li>지난주까지의 미해결(지속 기간·가격의 크기·해제와 부과의 대칭·거래 주체)은 그대로다.</li>
+</ul>
+<p><strong>다음 작업</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>날짜</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10/23</td>
+<td><strong>백로그 14 최종 보고서 초고</strong> · 10/30 발표 자료</td>
+</tr>
+<tr>
+<td><strong>10/30</strong></td>
+<td><strong>최종 발표 — 규제를 거느냐가 아니라 어떻게 거느냐</strong></td>
+</tr>
+<tr>
+<td>11/19</td>
+<td>M4 최종본</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="부록-재현">부록: 재현</h2>
+<pre><code>python scripts/check_deps.py       # 의존 점검
+python scripts/build_dashboard.py  # 결과 대시보드
+</code></pre>
+<p>전체 파이프라인은 <code>python run_all.py</code> (46단계). 클린 환경 절차는 <a href="../../README.md">README</a> 참조.</p></main>
+  <nav class="toc"><div class="lbl">목차</div><a href="#요약">요약</a><a href="#1-클린-환경-재현-백로그-15">1. 클린 환경 재현 (백로그 15)</a><a href="#2-의존-점검기-check_deps-py">2. 의존 점검기 (check_deps.py)</a><a href="#3-결과-대시보드-백로그-20">3. 결과 대시보드 (백로그 20)</a><a href="#4-백로그-14b-를-닫았다">4. 백로그 14b 를 닫았다</a><a href="#5-그-밖의-정리">5. 그 밖의 정리</a><a href="#6-이번-주에-확정된-숫자">6. 이번 주에 확정된 숫자</a><a href="#7-마일스톤-점검">7. 마일스톤 점검</a><a href="#8-미해결-사항과-다음-작업">8. 미해결 사항과 다음 작업</a><a href="#부록-재현">부록: 재현</a></nav>
+</div>
+<script>
+const heads=[...document.querySelectorAll('main h2[id]')];
+const links=[...document.querySelectorAll('nav.toc a')];
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(!e.isIntersecting)return;
+    const i=heads.indexOf(e.target);
+    links.forEach((a,j)=>a.classList.toggle('on',i===j));});
+},{rootMargin:'-70px 0px -75% 0px'});
+heads.forEach(h=>io.observe(h));
+</script>
