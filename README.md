@@ -53,6 +53,19 @@ aw
 의존 목록이 실제 import 와 맞는지는 `python scripts/check_deps.py` 가 본다
 (전체 재실행의 C3 단계).
 
+### 최종 보고서 빌드
+
+MiKTeX(XeLaTeX)이 필요하다. 사용자 범위로 깔면 관리자 권한이 없어도 된다.
+
+```powershell
+winget install --id MiKTeX.MiKTeX --scope user
+.\paperuild.ps1
+```
+
+처음 돌릴 때 빠진 패키지를 자동으로 받느라 2~3분 걸린다(`initexmf --set-config-value
+"[MPM]AutoInstall=1"`). 그 뒤로는 빠르다. 그림은 복사하지 않고 `output/figures` 를
+그대로 보므로, 분석을 다시 돌리면 보고서의 그림도 따라 바뀐다.
+
 ## 구조
 
 ```
@@ -85,6 +98,7 @@ output/
 paper/
   main_ko.tex         최종 보고서 (LaTeX). 뼈대는 docs/final_outline.md
   references.bib      참고문헌
+  build.ps1           빌드 — xelatex -> bibtex -> xelatex x2
 
 docs/
   concepts.md         개념 안내 — 처음 읽는 사람을 위한 최소한. 읽는 순서가 있다
