@@ -20,3 +20,14 @@ data/processed/
 data/raw/
 docs/papers/
 docs/private/
+
+# LaTeX 빌드 찌꺼기 (paper/main_ko.pdf 는 커밋한다)
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.synctex.gz

@@ -38,7 +38,9 @@ python run_all.py --from 06   # 이 단계부터 끝까지
    스냅샷을 복사**해 와야 한다. 윈도에서는 접합(junction)이 빠르다.
 
    ```
-   mklink /J <새폴더>\dataaw <원본>\dataaw
+   mklink /J <새폴더>\data
+aw <원본>\data
+aw
    ```
 
 2. **경로가 길면 설치가 깨진다.** 윈도 기본 한계가 260자인데 `statsmodels` 의
@@ -80,8 +82,13 @@ output/
   figures/            그림
   results/            추정 결과 JSON — 문서의 수치는 여기서 가져온다
 
+paper/
+  main_ko.tex         최종 보고서 (LaTeX). 뼈대는 docs/final_outline.md
+  references.bib      참고문헌
+
 docs/
   concepts.md         개념 안내 — 처음 읽는 사람을 위한 최소한. 읽는 순서가 있다
+  final_outline.md    최종 보고서 뼈대 — 절마다 출처, 분량 배분, 형식 결정
   framing.md          연구의 뼈대 — 질문·범위·의의, 이정표마다 답을 갱신
   proposal.md         주제 제안서 (제출본)
   prior_work.md       선행연구
