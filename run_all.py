@@ -76,6 +76,7 @@ STEPS: list[tuple[str, str, str, list[str], str]] = [
     ("V3", "시각화", "scripts/plot_price_map.py", [], "25개 자치구 가격 지도"),
     ("V3p", "시각화", "scripts/plot_price_map.py", ["--plain"], "같은 지도 — 여백 없는 발표용"),
     ("V4", "시각화", "scripts/build_apt_directory.py", [], "서울 아파트 단지 목록"),
+    ("V5", "시각화", "scripts/build_dashboard.py", [], "결과 대시보드 (0020)"),
 ]
 
 
@@ -91,6 +92,7 @@ def report_steps() -> list[tuple[str, str, str, list[str], str]]:
     out.append(("D00", "문서", "scripts/render_report.py", ["docs/concepts.md"],
                 "개념 안내 HTML"))
     out.append(("C1", "문서", "scripts/check_numbers.py", [], "문서 수치 검증 (0007)"))
+    out.append(("C3", "문서", "scripts/check_deps.py", [], "의존 점검 — requirements 와 실제 import"))
     # 전체 재실행의 마지막. 다시 만들어지지 **않은** 산출물을 센다.
     # 전체 재실행은 바뀐 파일만 잡으므로 고아 파일은 이 단계에서만 드러난다.
     out.append(("C2", "문서", "scripts/check_stale.py", [], "고아 산출물 점검"))

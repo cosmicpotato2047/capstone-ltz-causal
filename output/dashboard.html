@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>결과 대시보드 · 서울 토허구역 인과추정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:light;--ground:#f4f6f7;--surface:#fcfcfb;--surface-2:#eceef0;
+ --ink:#12161a;--ink-2:#454b52;--ink-3:#7d848c;--rule:#c9ced4;--rule-soft:#e2e6e9;
+ --accent:#2a78d6;--warn:#e34948}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+ --ground:#141719;--surface:#1a1d20;--surface-2:#232729;--ink:#f2f4f5;--ink-2:#b9c0c7;
+ --ink-3:#8b939b;--rule:#343a3f;--rule-soft:#282d31;--accent:#3987e5;--warn:#e66767}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+ font-family:"IBM Plex Sans KR","Malgun Gothic",system-ui,sans-serif;font-size:15px;line-height:1.6}
+.wrap{max-width:1080px;margin:0 auto;padding:48px 24px 90px}
+h1{font-family:"Nanum Myeongjo","Batang",serif;font-size:27px;font-weight:800;margin:0 0 8px}
+.sub{color:var(--ink-2);margin:0 0 4px;font-size:15px}
+.meta{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);margin:0 0 30px}
+.warn{border-left:3px solid var(--warn);background:var(--surface);padding:10px 14px;
+ font-size:14px;margin:0 0 20px}
+table{width:100%;border-collapse:collapse;background:var(--surface);
+ border:1px solid var(--rule-soft)}
+td{padding:11px 14px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+tr.sec td{background:var(--surface-2);font-family:"Nanum Myeongjo","Batang",serif;
+ font-weight:700;font-size:15.5px;padding:10px 14px;border-top:1px solid var(--rule)}
+td.t{width:24%;font-weight:500}
+td.v{width:15%;font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:500;
+ white-space:nowrap}
+td.v.down{color:var(--accent)} td.v.up{color:var(--warn)}
+td.v.na{color:var(--ink-3)} td.v.flat{color:var(--ink)}
+td.h{width:38%;color:var(--ink-2);font-size:13.5px;line-height:1.55}
+td.s{width:23%;font-size:12px;color:var(--ink-3)}
+td.s a{color:var(--ink-3)}
+td.s code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);
+ display:inline-block;margin-top:3px;word-break:break-all}
+footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--rule-soft);
+ color:var(--ink-3);font-size:13px}
+footer code{font-family:"IBM Plex Mono",monospace;font-size:12px}
+a{color:var(--accent)}
+</style>
+<div class="wrap">
+<h1>결과 대시보드</h1>
+<p class="sub">숫자마다 <strong>어느 결정기록에서 나왔는지</strong>와
+<strong>어떻게 다시 돌리는지</strong>를 붙인다.</p>
+<p class="meta">지표 24개 · 스냅샷 2026-09-03 · 커밋 8077557 ·
+ 이 표는 <code>output/results/*.json</code> 에서 생성된다 (손으로 적지 않는다)</p>
+
+<table>
+<tr class="sec"><td colspan="4">얼마나 줄었나</td></tr>
+<tr><td class="t">지정 직후 3개월</td><td class="v down">-79.8%</td><td class="h">2020-06-23 지정. 처치 4개 동 대 강남·송파 통제동, 기준 분기 k=−1</td><td class="s"><a href="../docs/decisions/" title="결정기록 0013">0013</a> · <a href="../docs/decisions/" title="결정기록 0014">0014</a><br><code>python scripts/04_event_study.py</code></td></tr>
+<tr><td class="t">무작위화 순위</td><td class="v down">1 / 17,550</td><td class="h">27개 동 중 4개를 고르는 모든 경우를 돌려 진짜 배정이 몇 등인지 센다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0019">0019</a><br><code>python scripts/06_inference.py</code></td></tr>
+<tr><td class="t">합성대조군 — 직후 3개월</td><td class="v down">-71.0%</td><td class="h">서울 법정동 151개를 가중평균해 &#x27;가짜 대치동&#x27; 을 만든 뒤 비교</td><td class="s"><a href="../docs/decisions/" title="결정기록 0017">0017</a><br><code>python scripts/17_scm.py</code></td></tr>
+<tr><td class="t">사양 곡선 — 음수 비율</td><td class="v flat">100%</td><td class="h">처치군·통제군·창·날짜·빈칸·척도를 전부 조합한 192가지</td><td class="s"><a href="../docs/decisions/" title="결정기록 0028">0028</a><br><code>python scripts/05b_spec_curve.py</code></td></tr>
+<tr class="sec"><td colspan="4">언제까지 갔나</td></tr>
+<tr><td class="t">24개월 평균</td><td class="v down">-33.5%</td><td class="h">사후 24개월을 하나로 묶은 이중차분. 직후 효과와 다른 값이다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0016">0016</a><br><code>python scripts/13_placebo.py</code></td></tr>
+<tr><td class="t">붕괴값 — 24개월</td><td class="v flat">0.05</td><td class="h">사전 추세가 사후에도 이어졌다고 가정할 때 결론이 무너지는 지점</td><td class="s"><a href="../docs/decisions/" title="결정기록 0026">0026</a><br><code>python scripts/11_honest_did.py</code></td></tr>
+<tr class="sec"><td colspan="4">누구에게 달랐나</td></tr>
+<tr><td class="t">2022 면적 기준 강화 — 소형</td><td class="v down">-33.2%</td><td class="h">허가 대상이 대지 18㎡ → 6㎡ 로 좁아진 날. 소형만 새로 규제에 걸린다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0022">0022</a><br><code>python scripts/06g_area_exemption.py</code></td></tr>
+<tr><td class="t">2021 위약 — 소형</td><td class="v down">-8.1%</td><td class="h">같은 절차였지만 면적 기준을 그대로 뒀다. 0 이어야 한다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0022">0022</a><br><code>python scripts/06g_area_exemption.py</code></td></tr>
+<tr><td class="t">2025 재지정 — 소형</td><td class="v down">-71.5%</td><td class="h">기준이 6㎡ 라 소형 면제가 없다. 3주차에 미리 적어 둔 예측이 맞았다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0023">0023</a><br><code>python scripts/09_release_2025.py</code></td></tr>
+<tr class="sec"><td colspan="4">어디로 번졌나</td></tr>
+<tr><td class="t">같은 동 안 — 규제 유지 단지</td><td class="v down">-26.5%</td><td class="h">2025-02 해제 때 규제가 그대로 남은 16개 단지. 먼 통제군 대비</td><td class="s"><a href="../docs/decisions/" title="결정기록 0024">0024</a><br><code>python scripts/12_spillover.py</code></td></tr>
+<tr><td class="t">맞닿은 동 — 처치동 기준</td><td class="v up">+115.5%</td><td class="h">선행연구가 말한 &#x27;인근 급등&#x27;. 옆 동이 늘어서가 아니라 처치동이 줄어서다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0024">0024</a><br><code>python scripts/12_spillover.py</code></td></tr>
+<tr><td class="t">맞닿은 동 — 서울 19개 구 기준</td><td class="v down">-9.0%</td><td class="h">같은 동, 같은 기간. 기준점만 한 칸 옮기면 부호가 뒤집힌다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0024">0024</a><br><code>python scripts/12_spillover.py</code></td></tr>
+<tr class="sec"><td colspan="4">가격은 잡혔나</td></tr>
+<tr><td class="t">반복매매지수 12개월</td><td class="v down">-6.0%</td><td class="h">같은 집이 두 번 팔린 쌍만 쓴다. 구성 변화가 원천적으로 안 들어온다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0018">0018</a> · <a href="../docs/decisions/" title="결정기록 0025">0025</a><br><code>python scripts/08_hedonic.py</code></td></tr>
+<tr><td class="t">헤도닉 + 단지 12개월</td><td class="v down">-5.9%</td><td class="h">모든 거래를 쓰되 면적·층·단지를 통제한다. 약점이 반복매매와 정반대다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0025">0025</a><br><code>python scripts/08_hedonic.py</code></td></tr>
+<tr><td class="t">붕괴값 — 가격</td><td class="v flat">0.22</td><td class="h">거래량 직후는 1.62 다. 가격은 그 7분의 1 에서 무너진다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0026">0026</a><br><code>python scripts/11_honest_did.py</code></td></tr>
+<tr><td class="t">가격 합성대조군 p</td><td class="v flat">0.511</td><td class="h">가짜 대치동 중 진짜가 몇 등인지. 거래량은 1위, 가격은 중간</td><td class="s"><a href="../docs/decisions/" title="결정기록 0025">0025</a><br><code>python scripts/08_hedonic.py</code></td></tr>
+<tr class="sec"><td colspan="4">믿어도 되는가</td></tr>
+<tr><td class="t">B그룹 − A그룹 차이</td><td class="v up">+8.7%</td><td class="h">2021.4 압구정·여의도·목동·성수. 두 패널을 쌓아 차이를 직접 추정</td><td class="s"><a href="../docs/decisions/" title="결정기록 0031">0031</a><br><code>python scripts/21_b_group.py</code></td></tr>
+<tr><td class="t">그 차이의 무작위화 p</td><td class="v down">3,576 / 5,000</td><td class="h">0 과 구분되지 않는다 = B 가 A 와 다르다고 할 수 없다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0031">0031</a><br><code>python scripts/21_b_group.py</code></td></tr>
+<tr><td class="t">사양 곡선 — 가격 음수 비율</td><td class="v flat">80%</td><td class="h">거래량은 192개 전부 0 아래인데 가격은 다섯 중 하나가 0 위로 간다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0028">0028</a><br><code>python scripts/05b_spec_curve.py</code></td></tr>
+<tr><td class="t">취소거래를 넣으면</td><td class="v flat">+0.3%p</td><td class="h">자료를 만들 때 뺀 6,293건을 다시 넣어도 주 결과가 이만큼만 움직인다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0030">0030</a><br><code>python scripts/18_cancellations.py</code></td></tr>
+<tr class="sec"><td colspan="4">자료</td></tr>
+<tr><td class="t">분석 표본 (8개 자치구)</td><td class="v flat">472,782</td><td class="h">2006-01 ~ 2026-05. 취소거래와 신고지연 구간을 뺀 뒤</td><td class="s"><a href="../docs/decisions/" title="결정기록 0004">0004</a><br><code>python scripts/02_build.py</code></td></tr>
+<tr><td class="t">서울 25개 자치구</td><td class="v flat">1,407,186</td><td class="h">합성대조군 기증자 풀과 2021 B그룹 분석에 쓴다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0017">0017</a> · <a href="../docs/decisions/" title="결정기록 0031">0031</a><br><code>python scripts/02_build.py --scope seoul</code></td></tr>
+<tr><td class="t">단지 수</td><td class="v flat">3,502</td><td class="h">aptSeq 기준. 단지 고정효과의 단위다</td><td class="s"><a href="../docs/decisions/" title="결정기록 0003">0003</a><br><code>python scripts/02_build.py</code></td></tr>
+<tr><td class="t">반복매매 쌍</td><td class="v flat">377,289</td><td class="h">(단지, 전용면적, 층) 조합의 재거래. 보유 180일 미만 제외</td><td class="s"><a href="../docs/decisions/" title="결정기록 0018">0018</a><br><code>python scripts/02_build.py</code></td></tr>
+</table>
+<footer>
+전체 파이프라인 <code>python run_all.py</code> (42단계) ·
+이 페이지 <code>python scripts/build_dashboard.py</code><br>
+숫자가 문서와 어긋나면 <code>output/results/*.json</code> 쪽이 맞다 (결정기록 0007).
+</footer>
+</div>
