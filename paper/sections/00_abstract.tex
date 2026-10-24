@@ -1,0 +1,98 @@
+% 초록. 본문을 다 쓴 뒤 마지막에 손본다.
+
+\begin{abstract}
+본 보고서는 서울시 토지거래허가구역(이하 토허제) 지정이 아파트 \emph{거래량과
+가격}에 미친 인과효과를 실거래 미시자료로 추정한다. 국토교통부 아파트 매매
+실거래 \emph{상세} 자료 47만 건(분석 8개 자치구, 2006-01$\sim$2026-05)과 서울시보·
+전자관보의 지정 공고 원문을 결합해 \textbf{거래 한 건마다 계약일·전용면적·층·단지
+식별자와 그 시점의 규제 상태를 붙인 미시 패널}을 구축하고, 2020년 6월 지정,
+2021년 4월 확대 지정, 2025년 2월 부분 해제와 3월 재지정을 사건으로 삼아
+이중차분·사건연구·삼중차분·합성대조군으로 추정했다.
+
+주요 발견은 넷이다.
+(1) \textbf{지정 직후 3개월 거래량이 $-71 \sim -80\%$다.} 법정동 27개 가운데 4개를
+처치로 고르는 모든 경우 17,550가지 중 진짜 배정이 1위이고, 사전 추세 위배를
+실제 관측값의 1.6배까지 열어 두어도 구간이 0을 넘지 않으며, 합리적인 설계 조합
+192가지가 전부 음수다.
+(2) \textbf{선행연구끼리 결론이 엇갈린 이유는 지역 정의가 아니라 사건 시점
+정렬이었다.} 설계 축별로 분해하면 사건 시점 정렬이 39.6\,\%p, 통제군 정의가
+2.3\,\%p를 가른다. 달력 월로 자르면 $-40.5\%$, 효력일에 맞추면 $-80.1\%$다.
+(3) \textbf{효과는 모두에게 같지 않았고, 그 차이는 대출 규제가 아니라 허가 대상의
+면적 기준에서 왔다.} 2020년 지정은 대지 18\,m$^2$ 초과만 허가 대상이어서 소형은
+거래가 줄지 않았고(전용 40\,m$^2$ 미만 $+125.7\%$), 2022년 6월 기준이 6\,m$^2$로
+강화되자 \emph{그때} 소형만 33.2\% 줄었다. 기준을 바꾸지 않은 2021년 재지정에서는
+소형이 움직이지 않았다($-8.1\%$, $p=0.61$). 이 메커니즘에서 세운
+\textbf{사전 예측이 2025년 재지정 자료에서 확인됐다}(소형 $-71.5\%$).
+(4) \textbf{가격을 잡았다는 증거는 약하다.} 평행추세를 가정하면 $-4 \sim -7\%$
+(헤도닉+단지 $-5.9\%$, 반복매매 $-6.0\%$)이나, 그 가정을 조금만 풀면 0과
+구분되지 않고(붕괴값 0.22) 합성대조군으로는 확인되지 않는다($p=0.511$).
+
+\textbf{말할 수 없는 것도 적는다.} 효과가 얼마나 오래 가는지는 기준 분기 선택에
+따라 $-20 \sim +16\%$로 흔들려 이 설계로 답할 수 없다. 부과와 해제의 대칭성도
+가릴 수 없다. 일반화 범위는 두 사건·아홉 개 동이며 모두 서울 고가 재건축
+지역이므로 \emph{서울 고가 재건축 지역에서는 일관된다}까지가 정확하다.
+
+본 보고서의 또 하나의 축은 \textbf{분석의 전제가 되는 시스템}이다. 원자료 수집부터
+그림·표 생성까지 48단계 파이프라인 하나로 돌고, 문서 수치 검증·고아 산출물
+점검·링크 점검·의존 점검이 매 실행마다 걸린다. 새 폴더에 내려받아 새 가상환경에서
+돌려 결과 JSON 25개가 바이트 단위로 같은 것을 확인했다. 코드와 결정기록 31편
+전체를 공개한다: \url{https://github.com/cosmicpotato2047/capstone-ltz-causal}.
+\end{abstract}
+
+\vspace{1em}
+\noindent\textbf{키워드:} 토지거래허가구역, 이중차분, 사건연구, 미시 패널,
+부동산 정책, 재현가능 연구
+
+\vspace{1em}
+\begin{center}\textbf{Abstract (English)}\end{center}
+\small
+This report estimates the causal effect of Seoul's Land Transaction Permit
+Zones (LTZ) on apartment \emph{transaction volume and prices} using
+transaction-level administrative data. We combine 472,782 detailed apartment
+sale records (8 districts, 2006-01 to 2026-05) with the original designation
+notices published in the Seoul and national gazettes, constructing a
+\textbf{micro panel in which every transaction carries its contract date, floor
+area, floor level, complex identifier, and the regulatory status in force on
+that day}. Using the June 2020 designation, the April 2021 expansion, and the
+February 2025 partial release followed by the March 2025 re-designation as
+events, we estimate difference-in-differences, event-study, triple-difference,
+and synthetic-control specifications.
+
+Four findings.
+(1) \textbf{Transaction volume falls by 71--80\% in the three months after
+designation.} Among all 17{,}550 ways of drawing 4 treated neighbourhoods from
+27, the true assignment ranks first; the result survives opening the
+pre-trend violation to 1.6 times its observed magnitude
+\citep{rambachan2023honest}; and all 192 reasonable specification combinations
+are negative.
+(2) \textbf{Prior studies disagree because of event-time alignment, not
+geography.} Decomposing by design axis, event-time alignment accounts for
+39.6\,pp of the spread while the control-group definition accounts for 2.3\,pp.
+Aligning on calendar months gives $-40.5\%$; aligning on the effective date
+gives $-80.1\%$.
+(3) \textbf{The effect was not uniform, and the heterogeneity came from the
+permit-threshold floor area rather than from mortgage regulation.} Under the
+2020 rule only lots above 18\,m$^2$ required a permit, so small units were
+exempt and their transactions did not fall (units under 40\,m$^2$: $+125.7\%$).
+When the threshold tightened to 6\,m$^2$ in June 2022, small units fell by
+33.2\% \emph{at that moment}, while the 2021 re-designation, which left the
+threshold unchanged, produced no movement ($-8.1\%$, $p=0.61$).
+A \textbf{prediction registered from this mechanism was confirmed} in the 2025
+re-designation (small units $-71.5\%$).
+(4) \textbf{Evidence that prices were contained is weak.} Assuming parallel
+trends gives $-4$ to $-7\%$, but relaxing that assumption slightly makes the
+interval include zero (breakdown value 0.22) and the synthetic control does not
+confirm it ($p=0.511$).
+
+We also state what cannot be said: the duration of the effect swings between
+$-20\%$ and $+16\%$ depending on the reference period, and the symmetry between
+imposition and release cannot be resolved. External validity extends to two
+events and nine neighbourhoods, all high-priced redevelopment areas in Seoul.
+
+A second axis of this report is the \textbf{system that makes the analysis
+possible}: a single 48-step pipeline from data collection to figures and tables,
+with automated checks for stale numbers in documents, orphaned artefacts, broken
+links, and dependency drift. A clean-room reproduction in a fresh clone and
+virtual environment produced 25 result files identical byte for byte. Code and
+all 31 decision records are public.
+\normalsize
