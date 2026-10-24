@@ -30,4 +30,6 @@ paper/*.fls
 paper/*.log
 paper/*.out
 paper/*.toc
+paper/*.lof
+paper/*.lot
 paper/*.synctex.gz

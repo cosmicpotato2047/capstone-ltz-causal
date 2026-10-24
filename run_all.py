@@ -33,6 +33,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 
+# 윈도 콘솔(cp949)이나 UTF-8 아닌 셸에서 --list 가 한글 설명을 찍다 죽는다.
+# 각 스크립트는 lib.io.setup_stdout 으로 같은 일을 하는데 여기만 빠져 있었다.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 # (단계, 묶음, 스크립트, 인자, 설명)
 STEPS: list[tuple[str, str, str, list[str], str]] = [
     ("01", "수집", "scripts/01_collect.py", [], "실거래 자료 수집 (수십 분)"),
@@ -93,6 +98,9 @@ def report_steps() -> list[tuple[str, str, str, list[str], str]]:
                 "개념 안내 HTML"))
     out.append(("C1", "문서", "scripts/check_numbers.py", [], "문서 수치 검증 (0007)"))
     out.append(("T1", "문서", "scripts/build_tables.py", [], "최종 보고서 표 생성 (0007)"))
+    # 파이프라인 도식은 단계 수와 산출물 수를 **세어서** 그리므로 표가 생긴
+    # 뒤라야 한다. 시각화 묶음에 두면 T1 보다 먼저 돌아 표가 0개로 찍힌다.
+    out.append(("V6", "시각화", "scripts/plot_pipeline.py", [], "파이프라인 도식 (보고서 3.5)"))
     out.append(("C3", "문서", "scripts/check_deps.py", [], "의존 점검 — requirements 와 실제 import"))
     # 전체 재실행의 마지막. 다시 만들어지지 **않은** 산출물을 센다.
     # 전체 재실행은 바뀐 파일만 잡으므로 고아 파일은 이 단계에서만 드러난다.

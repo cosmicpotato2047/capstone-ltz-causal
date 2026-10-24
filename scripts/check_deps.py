@@ -33,13 +33,28 @@ INDIRECT = {
     "pyarrow": "pandas 가 parquet 을 읽고 쓸 때 쓴다. 직접 import 하지 않는다",
 }
 
-# 저장소 안의 것 — 외부 의존이 아니다
-LOCAL = {"lib"}
+
+def local_modules(root: Path) -> set[str]:
+    """저장소 안의 모듈 — 외부 의존이 아니다.
+
+    손으로 적어 두면 저장소에 모듈이 하나 늘 때마다 오탐이 난다. 실제로
+    `plot_pipeline.py` 가 단계 수를 세려고 `run_all` 을 import 하자마자
+    'requirements.txt 에 없다'고 걸렸다. 그래서 파일을 찾아서 판단한다.
+    """
+    found = set()
+    for d in (root, root / "scripts"):
+        if not d.is_dir():
+            continue
+        found |= {p.stem for p in d.glob("*.py")}
+        found |= {p.name for p in d.iterdir()
+                  if p.is_dir() and (p / "__init__.py").exists()}
+    return found
 
 
 def imported(root: Path) -> dict[str, set[str]]:
     """스크립트마다 최상위 모듈 이름을 모은다 (함수 안의 import 도 포함)."""
     out: dict[str, set[str]] = {}
+    local = local_modules(root.parent)
     for p in sorted(root.rglob("*.py")):
         try:
             tree = ast.parse(p.read_text(encoding="utf-8"))
@@ -53,7 +68,7 @@ def imported(root: Path) -> dict[str, set[str]]:
             elif isinstance(n, ast.ImportFrom) and n.level == 0 and n.module:
                 mods.add(n.module.split(".")[0])
         for m in mods:
-            if m in sys.stdlib_module_names or m in LOCAL or m.startswith("_"):
+            if m in sys.stdlib_module_names or m in local or m.startswith("_"):
                 continue
             out.setdefault(ALIAS.get(m, m), set()).add(
                 p.relative_to(root).as_posix())

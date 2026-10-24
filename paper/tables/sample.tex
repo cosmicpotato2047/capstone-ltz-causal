@@ -1,0 +1,26 @@
+% 자동 생성 — scripts/build_tables.py. 손으로 고치지 않는다.
+% 출처: output/results/02_build.json
+\begin{table}[htbp]
+  \centering
+  \caption{표본 요약. 두 장을 함께 짓는 이유는 \textbf{통제군}에 있다 --- 합성대조군의 기증자 풀과 2021년 B그룹 분석이 서울 전역 패널을 쓴다.}
+  \label{tab:sample}
+  \begin{tabular}{lrr}
+    \toprule
+    \textbf{} & \textbf{분석 8개 자치구} & \textbf{서울 25개 자치구} \\
+    \midrule
+    거래 (건) & 472,782 & 1,407,186 \\
+    단지 (aptSeq) & 3,502 & 9,240 \\
+    법정동 & 108 & 343 \\
+    자치구 & 8 & 25 \\
+    반복매매 쌍 & 377,289 & 1,158,318 \\
+    제외 --- 취소거래 & 6,293 & 17,307 \\
+    제외 --- 신고지연 절단 & 3,156 & 13,677 \\
+    계약일 구간 & 2006-01-02 \textasciitilde{} 2026-05-31 & 2006-01-01 \textasciitilde{} 2026-05-31 \\
+    수집 시점 & 2026-09-03 & 2026-09-03 \\
+    \bottomrule
+  \end{tabular}
+
+  \begin{minipage}{\linewidth}\footnotesize
+  \textit{주.} 같은 스냅샷에서 같은 규칙으로 정제했다. 분석 패널은 8개 자치구(강남·서초·송파·강동·성동·광진·동작·용산), 서울 패널은 25개 자치구 전체다. 반복매매 쌍은 (단지, 전용면적, 층) 조합의 재거래이며 보유 180일 미만을 뺀 수다(0018).
+  \end{minipage}
+\end{table}

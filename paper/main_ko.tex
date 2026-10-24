@@ -33,8 +33,11 @@
 \usepackage{titlesec}
 \usepackage{setspace}
 
-\setmainhangulfont{Malgun Gothic}
-\setsanshangulfont{Malgun Gothic}
+% Malgun Gothic 에는 이탤릭이 없어 \emph 를 한글에 쓰면 'Font shape ... /it
+% undefined' 경고가 나고 모양이 정의되지 않은 채 조판된다. 기울임을 만들어
+% 준다 — 한글 \emph 가 본문에 여럿 있고 전부 의도적인 강조다.
+\setmainhangulfont{Malgun Gothic}[AutoFakeSlant=0.167]
+\setsanshangulfont{Malgun Gothic}[AutoFakeSlant=0.167]
 \setmonohangulfont{Malgun Gothic}
 
 \onehalfspacing
@@ -45,6 +48,8 @@
 \renewcommand{\tablename}{표}
 \renewcommand{\figurename}{그림}
 \renewcommand{\contentsname}{차례}
+\renewcommand{\listfigurename}{그림 차례}
+\renewcommand{\listtablename}{표 차례}
 \renewcommand{\abstractname}{초록}
 \renewcommand{\refname}{참고문헌}
 \renewcommand{\bibname}{참고문헌}
@@ -59,6 +64,11 @@
 }
 
 \graphicspath{{figures/}{../output/figures/}}
+
+% 단계 수 매크로(\pipeSteps 등). scripts/plot_pipeline.py 가 run_all.py 의
+% 단계 표에서 세어 만든다 — 주차 보고서가 늘면 단계도 늘므로 손으로 적으면
+% 바로 유령 숫자가 된다(3.7절).
+\input{generated/counts}
 
 % ─── Title ───────────────────────────────────────────────────────────────────
 \title{
@@ -87,6 +97,10 @@
 
 \newpage
 \tableofcontents
+% 표 39개·그림 18장이면 본문 차례만으로는 찾아가기 어렵다. \newpage 를 두면
+% 차례가 한 줄 넘칠 때 거의 빈 쪽이 하나 생기므로 바로 잇는다.
+\listoffigures
+\listoftables
 \newpage
 
 \input{sections/01_intro}

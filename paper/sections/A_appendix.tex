@@ -54,6 +54,33 @@
 2026-09-11에, 0004의 수치와 한계는 2026-10-01과 10-15에, 0015의 이질성 결론은
 0021과 0022에서 바뀌었다. 바뀐 과정 자체가 이 연구의 기록이다.
 
+\section{자료 출처와 이용 조건}
+
+이 연구의 자료는 전부 공개 자료이며, 저장소를 공개하기 때문에 \textbf{무엇을
+넣었고 무엇을 뺐는지}를 밝혀 둔다.
+
+\begin{itemize}[leftmargin=2em, itemsep=3pt]
+  \item \textbf{아파트 매매 실거래 상세 자료} --- 국토교통부, 공공데이터포털
+        (\texttt{data.go.kr}) 오픈 API \texttt{RTMSDataSvcAptTradeDev}.
+        활용신청 승인 뒤 이용했다. \textbf{인증키는 저장소에 넣지 않는다} ---
+        \texttt{.env}(git 제외)에서 읽고 저장소에는 \texttt{.env.example}만 둔다.
+        내려받은 원자료 902\,MB도 저장소 밖이다.
+  \item \textbf{토지거래허가구역 지정·해제 공고} --- 서울특별시 \emph{서울시보}와
+        전자관보에 실린 공고 원문. 누구나 열람할 수 있는 공보이며, 이 연구가 쓴
+        공고 번호는 본문과 \texttt{data/policy/ltz\_events.csv}에 적었다.
+        서울시보 원본(2.9\,GB)은 용량 때문에 저장소 밖에 두고 \textbf{해당
+        공고만 발췌한 PDF}를 저장소에 넣었다.
+  \item \textbf{행정구역 경계} --- 법정동 폴리곤. 맞닿은 동 판정(7장)에만 쓴다.
+  \item \textbf{선행연구 논문} --- \textbf{저장소에 넣지 않았다.} 학술지 논문은
+        저작권이 있으므로 개인적으로 내려받아 읽었을 뿐이며, 재현 코드
+        (\texttt{scripts/replicate/})와 \textbf{논문이 보고한 수치만} 저장소에
+        있다. 재현에는 원문 PDF가 필요하지 않다.
+\end{itemize}
+
+\textbf{개인정보는 다루지 않는다.} 실거래 자료는 단지·면적·층·계약일·금액만
+담고 거래 당사자를 식별하는 정보가 없다. 가장 작은 분석 단위가
+\textbf{(단지, 전용면적, 층)}이며 이는 특정 호실이 아니다(3.4절).
+
 \section{재현 절차}
 
 \subsection{전체 실행}
@@ -63,7 +90,7 @@ pip install -r requirements.txt
 cp .env.example .env          # 공공데이터포털 Decoding 키 입력
 python run_all.py --collect   # 수집부터 전부 (수십 분)
 python run_all.py             # 수집 생략, 정제부터 문서까지 전부 (약 21분)
-python run_all.py --list      # 48단계 목록
+python run_all.py --list      # 전체 단계 목록
 \end{verbatim}
 
 \subsection{클린 환경에서 재현할 때}
@@ -91,10 +118,13 @@ winget install --id MiKTeX.MiKTeX --scope user
 .\paper\build.ps1
 \end{verbatim}
 
-이 보고서의 표는 \texttt{scripts/build\_tables.py}가
-\texttt{output/results/*.json}에서 생성하고, 그림은 복사하지 않고
-\texttt{output/figures}를 그대로 참조한다. \textbf{분석을 다시 돌리면 보고서의
-표와 그림도 따라 바뀐다.}
+\textbf{그림은 하나도 복사하지 않는다} --- \texttt{output/figures}를 그대로
+참조하므로 분석을 다시 돌리면 보고서의 그림이 따라 바뀐다. 표는 전부가 아니라
+\textbf{수치가 결과 JSON에 있는 \pipeTables 개}를
+\texttt{scripts/build\_tables.py}가 생성한다
+(\texttt{paper/tables/*.tex}). 나머지 표는 설계 비교·제도 요약처럼 분석 산출물이
+아닌 것을 담으므로 본문에 직접 적었다. \textbf{손으로 적은 표에 분석 수치를
+넣지 않는 것}이 경계선이다.
 
 \section{선행연구 재현 상세}
 

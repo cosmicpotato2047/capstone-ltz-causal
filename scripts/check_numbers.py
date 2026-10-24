@@ -63,14 +63,42 @@ FROZEN_GLOBS = ["docs/reports/*.md", "docs/slides/*.html"]
 # 그래서 살아있는 문서와 같은 강도로 검사하되, 고칠 때는 덮어쓰지 않고
 # 정정 표시를 남긴다(0001·0014 가 그렇게 했다).
 DECISION_GLOB = "docs/decisions/*.md"
+# 최종 보고서는 다섯째 종류다. 0007 이 '최종은 하나의 조건으로 통일한다'고 한
+# 문서이므로 살아있는 문서와 같은 강도로 검사한다. **검사 대상에 넣기 전까지
+# 보고서 자신은 검사 밖이었다** — 결정기록이 다섯 달 동안 사각지대였던 것과
+# 같은 종류의 구멍이고, 하필 그 사건을 본문에 써 놓은 문서가 빠져 있었다.
+FINAL_GLOBS = ["paper/main_ko.tex", "paper/sections/*.tex"]
 SNAPSHOT_RE = re.compile(r"스냅샷|수집 ?시점|20\d\d-\d\d-\d\d 수집")
+
+# LaTeX 는 숫자를 $-58.7\%$ 처럼 적는다. 그대로 두면 '-58.7%' 를 찾는 검사가
+# 보고서에서 아무것도 못 찾고 통과한다 — 검사 대상에 넣고도 안 보는 셈이다.
+TEX_SUBS = [
+    (re.compile(r"\\%"), "%"),
+    (re.compile(r"\\,"), ""),
+    (re.compile(r"\\to\b"), "→"),
+    (re.compile(r"\\(?:textbf|emph|texttt|mathbf|textit)"), ""),
+    (re.compile(r"[${}]"), ""),
+]
+
+
+def read_lines(p: Path) -> list[str]:
+    """줄 목록. .tex 는 수식 표기를 걷어내고 본다."""
+    lines = p.read_text(encoding="utf-8").splitlines()
+    if p.suffix == ".tex":
+        for rx, rep in TEX_SUBS:
+            lines = [rx.sub(rep, ln) for ln in lines]
+    return lines
 
 # 폐기값이 적혀 있어도 그 줄이 **조건을 밝히고 있으면** 통과시킨다.
 # 0007 규칙 2("숫자에는 조건을 붙인다")를 자동으로 검사하는 셈이다.
 # 조건이 붙은 문장은 값이 바뀌어도 여전히 참이므로 고칠 이유가 없다.
 # 0007 자신이 옛값 넷을 '무엇이 틀렸나'의 예시로 인용하는 것이 대표적이다.
 COND_WORDS = ("→", "->", "<-", "<−", "종전", "폐기", "옛값", "당시", "그때",
-              "정정", "보탬", "나쁨", "6개 구", "6개 자치구", "절단 전", "0013")
+              "정정", "보탬", "나쁨", "6개 구", "6개 자치구", "절단 전", "0013",
+              # 'A 에서 B 로 바뀌었다' 는 변경 이력이므로 정당하다. LaTeX 에서는
+              # 화살표를 \to 로 적어 '→' 로 정규화되지만, 한국어 산문으로 풀어
+              # 쓴 같은 뜻은 이 말로 잡는다.
+              "바뀌")
 
 
 # 정수가 아닌 값(효과 크기 등)은 JSON 에서 끌어올 수 없어 따로 둔다.
@@ -81,6 +109,15 @@ RETIRED_TEXT = {
     "-58.7%": "같음",
     "−58.7%": "같음",
 }
+
+
+def final_docs() -> list[Path]:
+    """최종 보고서 본문 파일들. 생성되는 표(paper/tables/)는 뺀다 — 그쪽은
+    결과 JSON 에서 만들어지므로 낡을 수가 없고, 낡으면 C2 가 잡는다."""
+    out: list[Path] = []
+    for g in FINAL_GLOBS:
+        out += sorted(io.ROOT.glob(g))
+    return out
 
 
 def load_current() -> dict[str, int]:
@@ -143,7 +180,7 @@ def scan_retired_values(paths: list[Path], cur: dict[str, int]) -> list[str]:
     for p in paths:
         rel = p.relative_to(io.ROOT).as_posix()
         hits = []
-        lines = p.read_text(encoding="utf-8").splitlines()
+        lines = read_lines(p)
         for i, ln in enumerate(lines, 1):
             if conditioned(lines, i - 1):
                 continue
@@ -170,12 +207,13 @@ def check_retired_text() -> int:
     print("=" * 74)
     print("4) 폐기된 표현이 남아 있는가")
     print("=" * 74)
-    targets = [io.ROOT / r for r in LIVING] + sorted(io.ROOT.glob(DECISION_GLOB))
+    targets = ([io.ROOT / r for r in LIVING] + sorted(io.ROOT.glob(DECISION_GLOB))
+               + final_docs())
     for p in targets:
         if not p.exists():
             continue
         rel = p.relative_to(io.ROOT).as_posix()
-        lines = p.read_text(encoding="utf-8").splitlines()
+        lines = read_lines(p)
         for i, ln in enumerate(lines, 1):
             # 옛 값임을 명시한 줄은 통과시킨다. '-59% -> -76%' 처럼 변경
             # 이력을 적는 것은 정당하고, 오히려 남겨야 한다.
@@ -214,6 +252,12 @@ def main() -> None:
     errors += scan_retired_values(decisions, cur)
 
     print("\n" + "=" * 74)
+    print("1c) 최종 보고서 — 하나의 조건으로 통일되어 있는가")
+    print("=" * 74)
+    finals = final_docs()
+    errors += scan_retired_values(finals, cur)
+
+    print("\n" + "=" * 74)
     print("2) 동결 문서 — 조건(스냅샷) 표기가 있는가")
     print("=" * 74)
     frozen = [p for g in FROZEN_GLOBS for p in sorted(io.ROOT.glob(g))]
@@ -229,11 +273,12 @@ def main() -> None:
     print("\n" + "=" * 74)
     print("3) 감시 수치가 어느 문서에 있는가")
     print("=" * 74)
-    all_docs = [io.ROOT / r for r in LIVING if (io.ROOT / r).exists()] + frozen
+    all_docs = ([io.ROOT / r for r in LIVING if (io.ROOT / r).exists()]
+                + frozen + finals)
     for name, spec in WATCHED.items():
         print(f"\n  {name}  (현재 {cur[name]:,})")
         for p in all_docs:
-            nums = numbers_in(p.read_text(encoding="utf-8"))
+            nums = numbers_in("\n".join(read_lines(p)))
             rel = p.relative_to(io.ROOT).as_posix()
             if cur[name] in nums:
                 print(f"    현재값  {rel}")

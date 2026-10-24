@@ -63,6 +63,18 @@ def tex(s: str) -> str:
 # cols  : (JSON 열 이름, 표 머리, 서식)
 # align : 열 정렬 (기본은 첫 열 l, 나머지 r)
 TABLES = [
+    dict(name="sample", file="02_build", path=None, rowsfn="sample_rows",
+         label="tab:sample", where=None,
+         caption="표본 요약. 두 장을 함께 짓는 이유는 \\textbf{통제군}에 있다 --- "
+                 "합성대조군의 기증자 풀과 2021년 B그룹 분석이 서울 전역 패널을 쓴다.",
+         note="같은 스냅샷에서 같은 규칙으로 정제했다. 분석 패널은 8개 자치구"
+              "(강남·서초·송파·강동·성동·광진·동작·용산), 서울 패널은 25개 자치구 "
+              "전체다. 반복매매 쌍은 (단지, 전용면적, 층) 조합의 재거래이며 "
+              "보유 180일 미만을 뺀 수다(0018).",
+         cols=[("항목", "", "s"), ("분석", "분석 8개 자치구", "s"),
+               ("서울", "서울 25개 자치구", "s")],
+         align="lrr"),
+
     dict(name="rq4_axes", file="05b_spec_curve", path="축별_영향.거래량",
          label="tab:rq4-axes", where=None,
          caption="설계 선택이 추정치를 가르는 폭 (거래량, 지정 직후 3개월). "
@@ -224,6 +236,43 @@ def inference_rows(d: dict) -> list[dict]:
             "ri": (f"{r['순위_작은쪽부터']:,} / {r['경우의수']:,}"
                    if "순위_작은쪽부터" in r else None),
         })
+    return out
+
+
+def sample_rows(d: dict) -> list[dict]:
+    """표본 요약 — 분석 8개 자치구와 서울 25개 자치구를 나란히.
+
+    두 파일을 합쳐야 해서 짝을 여기서 읽는다. 숫자는 하나도 적지 않는다.
+    """
+    s = json.loads((io.RESULTS / "02_build_seoul.json").read_text(encoding="utf-8"))
+
+    def pair(key, path=()):
+        a, b = d, s
+        for k in (*path, key):
+            a, b = a.get(k, {}), b.get(k, {})
+        return a, b
+
+    def row(label, key, path=()):
+        a, b = pair(key, path)
+        return {"항목": label,
+                "분석": f"{a:,}" if isinstance(a, int) else MISS,
+                "서울": f"{b:,}" if isinstance(b, int) else MISS}
+
+    out = [
+        row("거래 (건)", "표본"),
+        row("단지 (aptSeq)", "단지"),
+        row("법정동", "법정동"),
+        row("자치구", "자치구"),
+        row("반복매매 쌍", "반복매매쌍"),
+        row("제외 --- 취소거래", "해제(취소)된 거래", ("제외",)),
+        row("제외 --- 신고지연 절단", "신고지연 절단 (> 2026-05-31)", ("제외",)),
+    ]
+    # '~' 는 FMT['s'] 의 tex() 가 \textasciitilde{} 로 바꿔 준다.
+    out.append({"항목": "계약일 구간",
+                "분석": f"{d.get('시작', MISS)} ~ {d.get('종료', MISS)}",
+                "서울": f"{s.get('시작', MISS)} ~ {s.get('종료', MISS)}"})
+    out.append({"항목": "수집 시점", "분석": d.get("수집시점", MISS),
+                "서울": s.get("수집시점", MISS)})
     return out
 
 

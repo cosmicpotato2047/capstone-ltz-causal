@@ -50,7 +50,8 @@ EVENTS = [("2020-06", "2020.6\n최초 지정"), ("2021-04", "2021.4\n재건축�
 
 
 def draw(pan: pd.DataFrame, dongs: pd.DataFrame, title: str, out: Path,
-         lo: str, hi: str, n_read: int) -> None:
+         lo: str, hi: str, n_read: int, label_size: float = 7.0,
+         extra_note: str = "", width: float = 15.0, row_h: float = 0.16) -> None:
     months = pd.period_range(lo, hi, freq="M")
     mi = {m: i for i, m in enumerate(months)}
     M = np.zeros((len(dongs), len(months)), int)
@@ -64,8 +65,8 @@ def draw(pan: pd.DataFrame, dongs: pd.DataFrame, title: str, out: Path,
             if r.상태 == "지정" and "국제교류복합지구" in str(r.계열):
                 main[idx[k], mi[m]] = True
 
-    h = max(4.0, 0.16 * len(dongs) + 2.2)
-    fig, ax = plt.subplots(figsize=(15, h))
+    h = max(4.0, row_h * len(dongs) + 2.2)
+    fig, ax = plt.subplots(figsize=(width, h))
     ax.imshow(M, aspect="auto", interpolation="nearest",
               cmap=ListedColormap(COLORS), vmin=0, vmax=2)
     ov = np.zeros((*M.shape, 4))
@@ -74,7 +75,7 @@ def draw(pan: pd.DataFrame, dongs: pd.DataFrame, title: str, out: Path,
 
     ax.set_yticks(range(len(dongs)))
     ax.set_yticklabels([f"{r.자치구[:-1]} {r.법정동}" for r in dongs.itertuples()],
-                       fontsize=7)
+                       fontsize=label_size)
     tick = [i for i, m in enumerate(months) if m.month == 1]
     ax.set_xticks(tick)
     ax.set_xticklabels([str(months[i].year) for i in tick], fontsize=9)
@@ -84,15 +85,19 @@ def draw(pan: pd.DataFrame, dongs: pd.DataFrame, title: str, out: Path,
         p = pd.Period(ym, freq="M")
         if p in mi:
             ax.axvline(mi[p], color="#333", lw=0.9, ls="--", alpha=0.7)
-            # 2025년 사건들이 몰려 있어 이름표를 두 줄로 엇갈려 놓는다
-            ax.annotate(label, xy=(mi[p], 0), xytext=(mi[p], -3.5 - 3.0 * (j % 2)),
-                        textcoords="data", fontsize=7, ha="center", va="bottom",
+            # 2025년 사건들이 몰려 있어 이름표를 두 줄로 엇갈려 놓는다.
+            # 간격은 **포인트**로 준다 — 행 수로 주면 행이 적은 그림에서
+            # 이름표가 제목 위로 올라가 겹친다.
+            ax.annotate(label, xy=(mi[p], -0.5), xycoords="data",
+                        xytext=(0, 6 + 20 * (j % 2)), textcoords="offset points",
+                        fontsize=7, ha="center", va="bottom",
                         color="#333", annotation_clip=False)
 
-    ax.set_title(title, fontsize=13, pad=58, loc="left")
+    ax.set_title(title, fontsize=13, pad=62, loc="left")
     ax.text(0, len(dongs) + 2.5,
             f"공고 원문에서 구역 목록을 읽어낸 {n_read}건 기준. "
-            "읽지 못한 공고의 지정은 '미지정'으로 보이므로 빈 칸이 곧 미지정은 아니다.",
+            "읽지 못한 공고의 지정은 '미지정'으로 보이므로 빈 칸이 곧 미지정은 아니다."
+            + (f"\n{extra_note}" if extra_note else ""),
             fontsize=7.5, color="#666", va="top")
 
     ax.legend(handles=[Patch(color=COLOR_MAIN, label="지정 (국제교류복합지구)"),
@@ -132,6 +137,26 @@ def main() -> None:
     ours = d[d.자치구.isin(policy.SGG_NAME.values())]
     draw(pan, ours, "토지거래허가구역 지정 이력 — 분석 대상 8개 자치구",
          io.FIGURES / "ltz_heatmap_analysis.png", a.lo, a.hi, n_read)
+
+    # 보고서용. 8개 구 전체(115행)를 한 쪽에 넣으면 동 이름이 안 읽히므로
+    # **추정이 실제로 쓰는 동**만 남긴다 — 처치군(A·B그룹)과 강남·송파 통제동.
+    # 좁게 그리는 것이 중요하다. 가로 15인치짜리를 본문 폭(16cm)에 맞추면
+    # 2.4배로 줄어들어 글자가 뭉개진다.
+    # 처치군은 **서울 전역에서** 뽑는다. B그룹의 여의도동·목동은 영등포구·
+    # 양천구라 분석 8개 자치구 밖이다 — ours 에서 고르면 두 동이 빠진다.
+    keep = policy.TREATED_2020 | policy.TREATED_2021
+    pick = d[d.법정동.isin(keep) | d.자치구.isin(["강남구", "송파구"])].copy()
+    pick["처치"] = pick.법정동.isin(keep)
+    pick = pick.sort_values(["처치", "자치구", "첫달"],
+                            ascending=[False, True, True])
+    draw(pan, pick, "토지거래허가구역 지정 이력 — 추정에 쓰는 법정동",
+         io.FIGURES / "ltz_heatmap_report.png", a.lo, a.hi, n_read,
+         label_size=8.5, width=9.0, row_h=0.21,
+         extra_note=f"위 {int(pick.처치.sum())}줄이 처치군(2020.6 A그룹 "
+                    f"{len(policy.TREATED_2020)} · 2021.4 B그룹 "
+                    f"{len(policy.TREATED_2021)}), 아래 "
+                    f"{len(pick) - int(pick.처치.sum())}줄이 강남·송파 통제 "
+                    f"후보다. 서울 법정동 {len(d)}개 중 {len(pick)}개를 그렸다.")
 
 
 if __name__ == "__main__":
