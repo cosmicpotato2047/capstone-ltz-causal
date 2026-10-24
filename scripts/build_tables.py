@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -63,6 +64,16 @@ def tex(s: str) -> str:
 # cols  : (JSON 열 이름, 표 머리, 서식)
 # align : 열 정렬 (기본은 첫 열 l, 나머지 r)
 TABLES = [
+    dict(name="decisions", file=None, path=None, rowsfn="decision_rows",
+         source="docs/decisions/*.md", label="tab:decisions", where=None,
+         caption="결정기록. 설계를 정할 때마다 왜 그렇게 정했는지를 한 편씩 "
+                 "남겼고 근거와 함께 \\textbf{버린 대안}도 적었다.",
+         note="날짜는 \\textbf{작성일}이다 --- 뒤에 보강·정정된 기록이 있다. "
+              "\\textbf{이 표는 \\texttt{docs/decisions/}의 파일들에서 생성된다.} "
+              "손으로 적었을 때는 색인의 날짜 셋이 정작 그 기록과 달랐다.",
+         cols=[("번호", "번호", "s"), ("날짜", "날짜", "s"), ("제목", "제목", "s")],
+         align="llp{9.5cm}"),
+
     dict(name="sample", file="02_build", path=None, rowsfn="sample_rows",
          label="tab:sample", where=None,
          caption="표본 요약. 두 장을 함께 짓는 이유는 \\textbf{통제군}에 있다 --- "
@@ -239,6 +250,29 @@ def inference_rows(d: dict) -> list[dict]:
     return out
 
 
+def decision_rows(_: dict) -> list[dict]:
+    """결정기록 색인 — 파일에서 읽는다.
+
+    손으로 적어 두었더니 **날짜 셋이 파일과 달랐다**(0006·0010·0012).
+    색인이 가리키는 문서와 어긋나는 색인은 없느니만 못하다. 번호와 제목은
+    `# 0031. 제목` 에서, 날짜는 그 아래 첫 날짜에서 읽는다. 그 날짜는
+    **작성일**이며 뒤에 보강·정정된 기록이 있다(표 주에 적는다).
+    """
+    rx_head = re.compile(r"^#\s*(\d{4})\.\s*(.+?)\s*$")
+    rx_date = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
+    out = []
+    for p in sorted((io.ROOT / "docs" / "decisions").glob("[0-9]*.md")):
+        lines = p.read_text(encoding="utf-8").splitlines()
+        h = rx_head.match(lines[0]) if lines else None
+        if not h:
+            print(f"    [건너뜀] {p.name} — 첫 줄이 '# NNNN. 제목' 이 아니다")
+            continue
+        d = next((rx_date.search(x) for x in lines[1:6] if rx_date.search(x)), None)
+        out.append({"번호": h.group(1), "제목": h.group(2),
+                    "날짜": f"{d.group(2)}-{d.group(3)}" if d else MISS})
+    return out
+
+
 def sample_rows(d: dict) -> list[dict]:
     """표본 요약 — 분석 8개 자치구와 서울 25개 자치구를 나란히.
 
@@ -308,9 +342,10 @@ def render(t: dict, data: dict) -> tuple[str, list[str]]:
             if t.get("note") else "")
     tex_s = (
         "% 자동 생성 — scripts/build_tables.py. 손으로 고치지 않는다.\n"
-        f"% 출처: output/results/{t['file']}.json"
-        + (f" : {t['path']}" if t.get("path") else "") + "\n"
-        "\\begin{table}[htbp]\n  \\centering\n"
+        + (f"% 출처: {t['source']}\n" if t.get("source") else
+           f"% 출처: output/results/{t['file']}.json"
+           + (f" : {t['path']}" if t.get("path") else "") + "\n")
+        + "\\begin{table}[htbp]\n  \\centering\n"
         f"  \\caption{{{t['caption']}}}\n"
         f"  \\label{{{t['label']}}}\n"
         f"  \\begin{{tabular}}{{{align}}}\n"
@@ -341,8 +376,11 @@ def main() -> None:
     allmiss, written = [], 0
     for t in TABLES:
         if t["file"] not in cache:
-            p = io.RESULTS / f"{t['file']}.json"
-            cache[t["file"]] = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+            # file=None 은 결과 JSON 을 안 쓰는 표다 (결정기록 색인처럼
+            # 저장소의 다른 파일에서 만든다). source 에 출처를 적는다.
+            p = io.RESULTS / f"{t['file']}.json" if t["file"] else None
+            cache[t["file"]] = (json.loads(p.read_text(encoding="utf-8"))
+                                if p and p.exists() else {})
         s, miss = render(t, cache[t["file"]])
         (OUT / f"{t['name']}.tex").write_text(s, encoding="utf-8")
         written += 1

@@ -55,6 +55,7 @@ MACROS = {
     "pipeData": "자료", "pipePolicy": "정책", "pipeAnalysis": "분석",
     "pipeReplicate": "재현", "pipeViz": "시각화", "pipeDocs": "문서",
     "pipeResults": "결과json", "pipeFigures": "그림", "pipeTables": "표",
+    "pipeDecisions": "결정기록",
 }
 
 # 색. 입력은 회색, 우리가 지은 것은 파랑, 유일한 출처는 진하게, 점검은 주황.
@@ -77,6 +78,7 @@ def counts() -> dict[str, int]:
     # 하나 많다 — 매 실행마다 숫자가 흔들린다. 합집합으로 두면 둘 다 같다.
     g["그림"] = len({*(ROOT / "output" / "figures").glob("*.png"), FP})
     g["표"] = len(list((ROOT / "paper" / "tables").glob("*.tex")))
+    g["결정기록"] = len(list((ROOT / "docs" / "decisions").glob("[0-9]*.md")))
     return g
 
 

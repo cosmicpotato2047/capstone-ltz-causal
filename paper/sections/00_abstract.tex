@@ -13,7 +13,9 @@
 (1) \textbf{지정 직후 3개월 거래량이 $-71 \sim -80\%$다.} 법정동 27개 가운데 4개를
 처치로 고르는 모든 경우 17,550가지 중 진짜 배정이 1위이고, 사전 추세 위배를
 실제 관측값의 1.6배까지 열어 두어도 구간이 0을 넘지 않으며, 합리적인 설계 조합
-192가지가 전부 음수다.
+192가지가 전부 음수다. \textbf{열 달 뒤 완전히 다른 네 자치구에서 일어난
+2021년 4월 지정에서도 같은 크기였고}, 두 사건의 차이는 0과 구분되지 않는다
+($+8.7\%$, $p=0.715$).
 (2) \textbf{선행연구끼리 결론이 엇갈린 이유는 지역 정의가 아니라 사건 시점
 정렬이었다.} 설계 축별로 분해하면 사건 시점 정렬이 39.6\,\%p, 통제군 정의가
 2.3\,\%p를 가른다. 달력 월로 자르면 $-40.5\%$, 효력일에 맞추면 $-80.1\%$다.
@@ -33,9 +35,9 @@
 지역이므로 \emph{서울 고가 재건축 지역에서는 일관된다}까지가 정확하다.
 
 본 보고서의 또 하나의 축은 \textbf{분석의 전제가 되는 시스템}이다. 원자료 수집부터
-그림·표 생성까지 \pipeSteps 단계 파이프라인 하나로 돌고, 문서 수치 검증·고아 산출물
-점검·링크 점검·의존 점검이 매 실행마다 걸린다. 새 폴더에 내려받아 새 가상환경에서
-돌려 결과 JSON 25개가 바이트 단위로 같은 것을 확인했다. 코드와 결정기록 31편
+그림·표 생성까지 \pipeSteps 단계 파이프라인 하나로 돌고, 문서 수치 검증·고아
+산출물 점검·의존 점검·표 생성 넷이 매 실행마다 걸린다. 새 폴더에 내려받아 새 가상환경에서
+돌려 결과 JSON 25개가 바이트 단위로 같은 것을 확인했다. 코드와 결정기록 \pipeDecisions 편
 전체를 공개한다: \url{https://github.com/cosmicpotato2047/capstone-ltz-causal}.
 \end{abstract}
 
@@ -64,7 +66,10 @@ designation.} Among all 17{,}550 ways of drawing 4 treated neighbourhoods from
 27, the true assignment ranks first; the result survives opening the
 pre-trend violation to 1.6 times its observed magnitude
 \citep{rambachan2023honest}; and all 192 reasonable specification combinations
-are negative.
+are negative. \textbf{The April 2021 designation, ten months later and in four
+entirely different districts, produced an effect of the same size}, and the
+difference between the two events is indistinguishable from zero
+($+8.7\%$, $p=0.715$).
 (2) \textbf{Prior studies disagree because of event-time alignment, not
 geography.} Decomposing by design axis, event-time alignment accounts for
 39.6\,pp of the spread while the control-group definition accounts for 2.3\,pp.
@@ -90,9 +95,9 @@ imposition and release cannot be resolved. External validity extends to two
 events and nine neighbourhoods, all high-priced redevelopment areas in Seoul.
 
 A second axis of this report is the \textbf{system that makes the analysis
-possible}: a single 48-step pipeline from data collection to figures and tables,
-with automated checks for stale numbers in documents, orphaned artefacts, broken
-links, and dependency drift. A clean-room reproduction in a fresh clone and
+possible}: a single \pipeSteps-step pipeline from data collection to figures and
+tables, with automated checks for stale numbers in documents, orphaned
+artefacts, dependency drift, and table generation. A clean-room reproduction in a fresh clone and
 virtual environment produced 25 result files identical byte for byte. Code and
-all 31 decision records are public.
+all \pipeDecisions{} decision records are public.
 \normalsize
