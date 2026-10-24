@@ -41,6 +41,16 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{6pt}
 
+% article 클래스의 영어 이름을 한글로. kotex 만으로는 안 바뀐다.
+\renewcommand{\tablename}{표}
+\renewcommand{\figurename}{그림}
+\renewcommand{\contentsname}{차례}
+\renewcommand{\abstractname}{초록}
+\renewcommand{\refname}{참고문헌}
+\renewcommand{\bibname}{참고문헌}
+\renewcommand{\appendixname}{부록}
+\captionsetup{labelsep=period}
+
 \hypersetup{
     colorlinks=true,
     linkcolor=blue!60!black,
@@ -134,6 +144,8 @@
 %   양지영: 도너 풀에 2021.4 지정된 동 셋(압구정·성수1가·2가)
 
 \subsection{왜 결론이 갈렸는가 --- 설계 선택의 분해}
+
+\input{tables/rq4_axes}
 % ★ RQ4. 강건성(9장)이 아니라 여기 둔다 — 선행연구를 다룬 직후에 답해야
 %   독자의 질문 흐름과 맞고, 4장(식별 전략)으로 넘어가는 다리가 된다.
 %   날짜 세는 법 39.6%p · 척도 11.4 · 처치군 6.7 · 통제군 2.3 · 창 1.1 · 빈칸 0.9
@@ -162,6 +174,15 @@
 % 취소거래를 다시 넣어도 0.3%p — 0030
 
 \subsection{자체 가격지수}
+
+\input{tables/index_ladder}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{07_repeat_sales.png}
+  \caption{반복매매 가격지수}
+  \label{fig:07-repeat-sales}
+\end{figure}
 % 반복매매 0018 · 헤도닉 0025. 약점이 정반대인 두 방법이 -5.9 / -6.0% 에서 만난다
 
 \subsection{재현 장치}
@@ -183,7 +204,16 @@
 \subsection{처치군과 통제군}        % 0011 · 0012
 \subsection{사건 시점 정렬}          % 0013 — 효력일, 빈칸 0 채움
 \subsection{단지 고정효과}           % 0003
-\subsection{평행추세와 사전 추세 위배} % 0014
+\subsection{평행추세와 사전 추세 위배}
+
+\input{tables/pretrend_ref}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{06d_pretrend.png}
+  \caption{사전 추세 진단}
+  \label{fig:06d-pretrend}
+\end{figure} % 0014
 \subsection{분석 구간}               % 0002 — 2025-10-19 에서 끊는 이유
 \subsection{사전 등록한 예측}
 % ★ 0022 에서 "2025 재지정은 기준이 6㎡ 라 소형도 줄어야 한다" 고 미리 적었다.
@@ -193,8 +223,24 @@
 \section{주 결과 --- 얼마나 줄었나}
 
 \subsection{지정 직후 거래량}        % -71 ~ -80%
-\subsection{사건연구 궤적}           % 그림: event_study_2020
-\subsection{적은 클러스터 추론}      % 관행 8e-9 -> WCR 0.014 -> 무작위화 1/17,550
+\subsection{사건연구 궤적}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{event_study_2020.png}
+  \caption{2020-06-23 지정 사건연구. 왼쪽 가격, 오른쪽 거래량}
+  \label{fig:event-study-2020}
+\end{figure}           % 그림: event_study_2020
+\subsection{적은 클러스터 추론}
+
+\input{tables/inference}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{06_inference.png}
+  \caption{와일드 클러스터 부트스트랩과 무작위화 분포}
+  \label{fig:06-inference}
+\end{figure}      % 관행 8e-9 -> WCR 0.014 -> 무작위화 1/17,550
 \subsection{24개월은 경계에 있다}    % -33.5% (WCR 0.047)
 
 % ═══════════════════════════════════════════════════════════════════════════
@@ -204,41 +250,147 @@
 \subsection{1주차 질문 --- 대출을 고려해야 하지 않나}
 \subsection{대출 규제 25건을 상쇄 10 / 핵심 4 로 가르다}
 \subsection{삼중차분 --- 고가에 집중된다}      % 당시 결론
-\subsection{그런데 15억에 계단이 없다}          % 0021
+\subsection{그런데 15억에 계단이 없다}
+
+\input{tables/threshold}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{06f_threshold.png}
+  \caption{고가·저가 경계를 9$\sim$20억으로 옮길 때}
+  \label{fig:06f-threshold}
+\end{figure}          % 0021
 \subsection{'저가'는 사실상 '소형'이었다}       % 0021 — 중위 전용 36.4㎡
-\subsection{2022년 기준 강화가 두 가설을 갈랐다} % 0022 — 18 -> 6㎡
-\subsection{위약 --- 2021년 재지정}             % 0022 — 소형 -8.1%
-\subsection{사전 등록한 예측이 맞았다}          % ★ 0023 — 소형 -71.5%
+\subsection{2022년 기준 강화가 두 가설을 갈랐다}
+
+\input{tables/area_2022}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{06g_area_exemption.png}
+  \caption{면적 면제 검증 --- 2022 강화와 2021 위약}
+  \label{fig:06g-area-exemption}
+\end{figure} % 0022 — 18 -> 6㎡
+\subsection{위약 --- 2021년 재지정}
+
+\input{tables/area_2021}             % 0022 — 소형 -8.1%
+\subsection{사전 등록한 예측이 맞았다}
+
+\input{tables/size_ddd}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{09_release_2025.png}
+  \caption{2025년 처치 역전 --- 막차와 절벽, 면적 기준이 바뀌자 소형도 줄었다}
+  \label{fig:09-release-2025}
+\end{figure}          % ★ 0023 — 소형 -71.5%
 \subsection{대출의 몫 --- 작거나 가릴 수 없다}  % 0029
 
 % ═══════════════════════════════════════════════════════════════════════════
 \section{어디로 번졌나}
 
 \subsection{규제 밖이 세 층으로 있다}
-\subsection{같은 동 안에서만 옮겨 갔다}   % 유지군 -26.5%
-\subsection{기준점을 바꾸면 부호가 뒤집힌다} % +115.5% <-> -9.0%
+\subsection{같은 동 안에서만 옮겨 갔다}
+
+\input{tables/spill_rings}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{12_spillover.png}
+  \caption{파급효과 --- 거리 고리별 효과와 기준점}
+  \label{fig:12-spillover}
+\end{figure}   % 유지군 -26.5%
+\subsection{기준점을 바꾸면 부호가 뒤집힌다}
+
+\input{tables/spill_bench} % +115.5% <-> -9.0%
 \subsection{선행연구의 '인근 급등'을 다시 읽는다}
 
 % ═══════════════════════════════════════════════════════════════════════════
 \section{가격은 잡혔나}
 
 \subsection{구성 변화 문제}
-\subsection{지수 다섯의 사다리}        % -10.1% -> -5.9 / -6.0%
+\subsection{지수 다섯의 사다리}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{08_hedonic.png}
+  \caption{가격지수 다섯과 통제군 격자}
+  \label{fig:08-hedonic}
+\end{figure}        % -10.1% -> -5.9 / -6.0%
 \subsection{통제군 격자}
-\subsection{사전 추세를 열면 무너진다}  % 붕괴값 0.22
+\subsection{사전 추세를 열면 무너진다}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{11_honest_did.png}
+  \caption{사전추세 민감도 구간과 붕괴값}
+  \label{fig:11-honest-did}
+\end{figure}  % 붕괴값 0.22
 \subsection{합성대조군으로는 확인되지 않는다} % p 0.511
 \subsection{그래서 방향만 쓴다}
 
 % ═══════════════════════════════════════════════════════════════════════════
 \section{강건성}
 
-\subsection{위약 검정}                 % 0016
-\subsection{합성대조군}                % 0017
-\subsection{통제군 오염 제외}          % 0020
-\subsection{처치 역전 --- 가중치와 DID$_M$} % 0027
-\subsection{사양 곡선}                 % 0028 — 그림. 축별 분해는 2.4 에 있다
-\subsection{외적 타당성 --- 2021년 B그룹} % 0031
-\subsection{자료 쪽 --- 취소거래}      % 0030
+\subsection{위약 검정}
+
+\input{tables/placebo_date}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{13_placebo.png}
+  \caption{가짜 사건일과 가짜 처치동}
+  \label{fig:13-placebo}
+\end{figure}                 % 0016
+\subsection{합성대조군}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{17_scm.png}
+  \caption{합성대조군과 배치 위약}
+  \label{fig:17-scm}
+\end{figure}                % 0017
+\subsection{통제군 오염 제외}
+
+\input{tables/contamination}          % 0020
+\subsection{처치 역전 --- 가중치와 DID$_M$}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{10_dcdh.png}
+  \caption{TWFE 가중치 분포와 DID$_M$}
+  \label{fig:10-dcdh}
+\end{figure} % 0027
+\subsection{사양 곡선}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{05b_spec_curve.png}
+  \caption{사양 곡선 --- 거래량 192, 가격 144}
+  \label{fig:05b-spec-curve}
+\end{figure}                 % 0028 — 그림. 축별 분해는 2.4 에 있다
+\subsection{외적 타당성 --- 2021년 B그룹}
+
+\input{tables/bgroup}
+
+\input{tables/ladder_b}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{21_b_group.png}
+  \caption{두 사건을 같은 자로}
+  \label{fig:21-b-group}
+\end{figure} % 0031
+\subsection{자료 쪽 --- 취소거래}
+
+\input{tables/cancel}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{18_cancellations.png}
+  \caption{취소거래의 시점별 분포}
+  \label{fig:18-cancellations}
+\end{figure}      % 0030
 
 % ═══════════════════════════════════════════════════════════════════════════
 \section{논의}

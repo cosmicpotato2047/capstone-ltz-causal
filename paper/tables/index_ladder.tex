@@ -1,0 +1,22 @@
+% 자동 생성 — scripts/build_tables.py. 손으로 고치지 않는다.
+% 출처: output/results/08_hedonic.json : 지수_사다리
+\begin{table}[htbp]
+  \centering
+  \caption{구성 통제의 사다리. 아래로 갈수록 더 많은 것을 고정한다.}
+  \label{tab:index-ladder}
+  \begin{tabular}{lrrr}
+    \toprule
+    \textbf{가격지수} & \textbf{지정 전 비} & \textbf{지정 후 비} & \textbf{변화 (\%)} \\
+    \midrule
+    중위가(총액) & 0.945 & 0.849 & -10.1 \\
+    중위가(㎡당) & 1.012 & 0.885 & -12.5 \\
+    헤도닉 & 0.979 & 0.870 & -11.1 \\
+    헤도닉+단지 & 0.985 & 0.927 & -5.9 \\
+    반복매매 & 1.001 & 0.941 & -6.0 \\
+    \bottomrule
+  \end{tabular}
+
+  \begin{minipage}{\linewidth}\footnotesize
+  \textit{주.} 약점이 정반대인 두 방법(헤도닉과 반복매매)이 $-5.9\%$ 와 $-6.0\%$ 에서 만난다. 집계 지수의 $-10 \sim -12\%$ 는 절반쯤이 구성 변화였다.
+  \end{minipage}
+\end{table}

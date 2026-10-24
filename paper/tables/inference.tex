@@ -1,0 +1,20 @@
+% 자동 생성 — scripts/build_tables.py. 손으로 고치지 않는다.
+% 출처: output/results/06_inference.json
+\begin{table}[htbp]
+  \centering
+  \caption{적은 클러스터 추론. 관행 $p$ 를 버리고 둘을 함께 적는다.}
+  \label{tab:inference}
+  \begin{tabular}{lrrrr}
+    \toprule
+    \textbf{사양} & \textbf{효과 (\%)} & \textbf{관행 $p$} & \textbf{WCR $p$} & \textbf{무작위화 순위} \\
+    \midrule
+    사건연구 k=0 & -79.8 & $<0.001$ & 0.014 & 1 / 17,550 \\
+    24개월 이중차분 & -33.5 & 0.016 & 0.050 & 97 / 17,550 \\
+    삼중차분 (차이) & -56.1 & 0.002 & 0.027 & 321 / 17,220 \\
+    \bottomrule
+  \end{tabular}
+
+  \begin{minipage}{\linewidth}\footnotesize
+  \textit{주.} 법정동 27개 중 처치가 4개다. WCR 은 Webb 6점 9,999벌, 무작위화는 4개를 고르는 17,550가지 전수.
+  \end{minipage}
+\end{table}

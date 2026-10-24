@@ -1,0 +1,22 @@
+% 자동 생성 — scripts/build_tables.py. 손으로 고치지 않는다.
+% 출처: output/results/06f_threshold.json : 결과
+\begin{table}[htbp]
+  \centering
+  \caption{고가·저가 경계를 옮기면. 15억에 계단이 없다.}
+  \label{tab:threshold}
+  \begin{tabular}{lrrrrr}
+    \toprule
+    \textbf{경계 (억)} & \textbf{저가 (\%)} & \textbf{고가 (\%)} & \textbf{차이 (로그)} & \textbf{WCR $p$} & \textbf{무작위화 $p$} \\
+    \midrule
+    9 & 52.7 & -44.9 & -1.019 & 0.011 & $<0.001$ \\
+    12 & 29.7 & -54.0 & -1.036 & 0.017 & $<0.001$ \\
+    15 & 5.4 & -53.7 & -0.823 & 0.032 & 0.037 \\
+    18 & -24.7 & -53.6 & -0.484 & 0.026 & 0.189 \\
+    20 & -28.4 & -43.7 & -0.240 & 0.426 & 0.450 \\
+    \bottomrule
+  \end{tabular}
+
+  \begin{minipage}{\linewidth}\footnotesize
+  \textit{주.} 경계를 어디에 두든 고가 효과는 $-44 \sim -54\%$ 로 평평하고, 저가 효과는 경계를 따라 매끈하게 움직인다.
+  \end{minipage}
+\end{table}

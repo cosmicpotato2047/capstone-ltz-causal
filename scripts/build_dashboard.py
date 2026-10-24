@@ -21,13 +21,14 @@ from __future__ import annotations
 
 import html
 import json
-import re
 import subprocess
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib import io  # noqa: E402
+from lib import io, jpath  # noqa: E402
+
+dig = jpath.dig
 
 io.setup_stdout()
 
@@ -124,45 +125,6 @@ ROWS = [
          "0018", "02_build.py"),
     ]),
 ]
-
-
-TOKEN = re.compile(r"([^.\[\]]+)|\[([^\]]*)\]")
-
-
-def dig(obj, path: str):
-    """경로를 따라간다. 없으면 None.
-
-        거래량[k=0].effect_pct          리스트에서 k 가 0 인 **첫** 칸
-        나_2022_기준강화[기준_㎡=40.0]    값에 점이 있어도 된다
-        결과[1].붕괴_Mbar_구간           1번 칸
-
-    **라벨로 찾는 쪽을 쓴다.** 번호는 스크립트가 줄 순서를 바꾸면 조용히 다른
-    값을 가리키지만, 라벨은 그때 '없음' 으로 드러난다.
-
-    점으로 쪼개면 `[기준_㎡=40.0]` 의 소수점까지 갈라진다. 그래서 대괄호를
-    하나의 토큰으로 읽는다.
-    """
-    cur = obj
-    for name, sel in TOKEN.findall(path):
-        if name:
-            if not isinstance(cur, dict) or name not in cur:
-                return None
-            cur = cur[name]
-            continue
-        if not isinstance(cur, list):
-            return None
-        if "=" in sel:
-            key, _, want = sel.partition("=")
-            cur = next((r for r in cur if isinstance(r, dict)
-                        and str(r.get(key)) == want), None)
-            if cur is None:
-                return None
-        else:
-            i = int(sel)
-            if not (-len(cur) <= i < len(cur)):
-                return None
-            cur = cur[i]
-    return cur
 
 
 def fmt(v, kind: str) -> tuple[str, str]:
