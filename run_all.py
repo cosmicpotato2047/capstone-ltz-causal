@@ -101,6 +101,9 @@ def report_steps() -> list[tuple[str, str, str, list[str], str]]:
     # 파이프라인 도식은 단계 수와 산출물 수를 **세어서** 그리므로 표가 생긴
     # 뒤라야 한다. 시각화 묶음에 두면 T1 보다 먼저 돌아 표가 0개로 찍힌다.
     out.append(("V6", "시각화", "scripts/plot_pipeline.py", [], "파이프라인 도식 (보고서 3.5)"))
+    # 판넬도 도식과 표를 쓰므로 그 뒤다. 학과 양식(data/forms/, git 제외)이
+    # 없으면 스스로 건너뛰므로 클린 환경에서도 멈추지 않는다.
+    out.append(("V7", "시각화", "scripts/build_panel.py", [], "졸업작품 요약보고서 판넬"))
     out.append(("C3", "문서", "scripts/check_deps.py", [], "의존 점검 — requirements 와 실제 import"))
     # 전체 재실행의 마지막. 다시 만들어지지 **않은** 산출물을 센다.
     # 전체 재실행은 바뀐 파일만 잡으므로 고아 파일은 이 단계에서만 드러난다.

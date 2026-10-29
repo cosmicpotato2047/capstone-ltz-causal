@@ -33,3 +33,10 @@ paper/*.toc
 paper/*.lof
 paper/*.lot
 paper/*.synctex.gz
+
+# 학과가 배포한 서식. 재배포하지 않는다 (scripts/build_panel.py 가 읽는다)
+data/forms/
+
+# 판넬 미리보기 이미지. pptx/pdf 만 남긴다 (.git 이 이미 무겁다)
+output/panel/미리보기.png
+output/panel/crop.png

@@ -26,7 +26,8 @@ from lib import io  # noqa: E402
 io.setup_stdout()
 
 # import 이름과 배포 이름이 다른 것
-ALIAS = {"fitz": "PyMuPDF"}
+ALIAS = {"fitz": "PyMuPDF", "pptx": "python-pptx", "PIL": "pillow"}
+# import 이름과 배포 이름이 다른 것들. 손으로 적을 수밖에 없다.
 
 # 직접 import 하지 않지만 있어야 하는 것 (왜 필요한지 한 줄로 남긴다)
 INDIRECT = {

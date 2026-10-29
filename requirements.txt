@@ -15,3 +15,9 @@ scipy==1.16.2
 PyMuPDF==1.26.6
 shapely==2.1.2
 markdown==3.10.2
+
+# 요약보고서 판넬 (scripts/build_panel.py). 학과 양식 pptx 를 열어
+# 내용만 채운다. pillow 는 그림의 가로세로 비를 읽는 데 쓴다.
+python-pptx==1.0.2
+qrcode==8.2
+pillow==11.3.0
