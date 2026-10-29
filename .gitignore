@@ -40,3 +40,7 @@ data/forms/
 # 판넬 미리보기 이미지. pptx/pdf 만 남긴다 (.git 이 이미 무겁다)
 output/panel/미리보기.png
 output/panel/crop.png
+
+# 보고서 docx 미리보기. docx 만 남긴다
+output/report/미리보기.pdf
+output/report/p*.png
