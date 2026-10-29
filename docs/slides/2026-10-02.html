@@ -197,6 +197,17 @@ a.lnk .mono{font-size:11px; color:var(--ink-3); margin-left:6px}
 /* 인쇄 / PDF 저장 — 슬라이드 한 장이 한 페이지 */
 @page{size:landscape; margin:8mm}
 @media print{
+  /* 다크 모드에서 인쇄하면 --ink 가 거의 흰색인 채로 남아 흰 종이에 흰
+     글자가 된다. 종이에서는 밝은 팔레트로 고정한다. */
+  :root, :root[data-theme="dark"]{
+    color-scheme: light;
+    --ground:#fff; --surface:#fff; --surface-2:#f0f2f4;
+    --ink:#12161a; --ink-2:#454b52; --ink-3:#7d848c;
+    --rule:#c9ced4; --rule-soft:#e2e6e9;
+    --accent:#2a78d6; --accent-soft:#dbe8f8;
+    --warn:#e34948; --warn-soft:#f8dedd;
+    --grid:#dfe3e7; --axis:#b9c0c7; --shadow:none;
+  }
   .topbar,.deckbar{display:none!important}
   main{padding:0; max-width:none}
   #v-report,#v-proposal,#v-plan{display:none!important}
