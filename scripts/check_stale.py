@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import sys
 import time
+from html.parser import HTMLParser
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -84,6 +85,54 @@ def check_linked() -> list[str]:
     return missing
 
 
+class _Anchors(HTMLParser):
+    """`<a>` 안에 `<a>` 가 있는 자리를 모은다."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.depth = 0
+        self.bad: list[tuple[int, int]] = []
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        if tag == "a":
+            if self.depth:
+                self.bad.append(self.getpos())
+            self.depth += 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "a" and self.depth:
+            self.depth -= 1
+
+
+def check_nested_links() -> list[str]:
+    """`<a>` 안의 `<a>` 를 찾는다.
+
+    HTML 이 금지하는 구조인데 **조용히 깨진다.** 브라우저 파서가 안쪽 `<a>`
+    를 만나면 바깥 `<a>` 를 거기서 닫아 버리므로, 카드 전체가 링크였던 것이
+    제목 줄만 링크로 남고 나머지는 링크 밖으로 튕겨 나간다. 문법 오류가 뜨는
+    것도 아니고 눈으로도 티가 안 나서, 2026-10-29 에 공개 사이트까지 나갔다
+    — 최종 발표 카드를 눌러도 아무 일이 없었다.
+    """
+    print("\n" + "=" * 78)
+    print("링크 안의 링크")
+    print("=" * 78)
+    bad = []
+    for f in sorted(io.ROOT.glob("**/*.html")):
+        if ".git" in f.parts:
+            continue
+        p = _Anchors()
+        p.feed(f.read_text(encoding="utf-8", errors="replace"))
+        for line, col in p.bad:
+            rel = f.relative_to(io.ROOT).as_posix()
+            print(f"  [오류] {rel}:{line} — <a> 안에 <a>")
+            bad.append(f"{rel}:{line}")
+    if not bad:
+        print("  없음.")
+        return []
+    print("\n  안쪽 링크를 카드 밖으로 빼낸다. 겹쳐 두면 바깥 링크가 잘린다.")
+    return bad
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -126,7 +175,10 @@ def main() -> None:
         print("\n  낡은 산출물 없음. 모든 파일이 이번 실행에서 다시 만들어졌다.")
 
     unlinked = check_linked()
-    if a.strict and (stale or unlinked):
+    nested = check_nested_links()
+    # 링크 안의 링크는 신선도와 달리 **항상** 오류다. 고치지 않으면
+    # 페이지가 깨진 채로 나간다.
+    if nested or (a.strict and (stale or unlinked)):
         sys.exit(1)
 
 
