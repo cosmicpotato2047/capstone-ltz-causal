@@ -6,7 +6,7 @@
 전체 소스코드는 제출 폴더와 공개 저장소에 있다\citep{repo}. 여기에는 본문의
 주장을 직접 떠받치는 세 조각만 싣는다. 주석은 저장소의 것을 그대로 옮겼다.
 
-\subsection{사건 시점 정렬 --- 추정치를 가장 크게 가른 코드}
+\subsection{사건 시점 정렬}
 
 2.4절에서 선행연구의 결론을 가른 것이 거래 날짜를 세는 법이라고 했다. 그 세는
 법이 이 함수다. 달력 월이 아니라 \textbf{효력일에 맞춘 월}을 쓴다.
@@ -40,7 +40,7 @@ def event_month(dates: pd.Series, event: str) -> pd.Series:
 애초에 불가능하다. 1층이 2층의 전제라는 말의 가장 짧은 증거다.
 (\texttt{scripts/lib/policy.py})
 
-\subsection{무작위화 추론 --- 적은 클러스터에서 쓰는 추론}
+\subsection{무작위화 추론}
 
 처치 단위가 4개뿐이라 관행적 $p$ 값을 쓸 수 없다(5.3절). 대신 \textbf{처치
 배정을 바꿔 가며 같은 추정을 전부 돌려} 진짜 배정이 몇 등인지 센다.
@@ -90,7 +90,7 @@ def randomization(s: Spec, max_draws: int | None = None,
 순위가 부풀려진다. 빼고, 몇 개를 뺐는지 함께 보고한다.
 (\texttt{scripts/lib/inference.py})
 
-\subsection{안 바뀐 것을 세는 점검 --- 유령 숫자를 잡은 코드}
+\subsection{산출물 신선도 점검}
 
 3.7절의 유령 숫자 사건에서 만든 장치다. 전체 재실행은 \textbf{다시 만들어지는}
 파일만 보므로, 아무도 만들지 않는 파일은 영원히 낡은 채로 남는다. 그래서
