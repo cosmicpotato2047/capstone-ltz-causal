@@ -88,31 +88,17 @@
 \graphicspath{{figures/}{../output/figures/}}
 \input{generated/counts}
 
-% ─── 표지 ────────────────────────────────────────────────────────────────────
+% ─── 본문 시작 ───────────────────────────────────────────────────────────────
+% **표지와 요약서는 이 파일이 만들지 않는다.** 앞 세 쪽(표지·작품 요약서)은
+% 따로 만들어 앞에 붙이므로, 이 문서는 **목차부터 시작하고 쪽번호를 4 로
+% 연다.** 요약서에 쓸 제목·영문제목·내용은 paper/요약서.md 에 있다.
+%
+% 그래서 초록(sections/00_abstract)도 싣지 않는다 — 요약서가 그 자리를
+% 대신한다. main_ko.tex(연구용)는 초록을 그대로 쓴다.
 \begin{document}
-\thispagestyle{empty}
-
-\begin{center}
-\vspace*{2cm}
-{\large 2026학년도 2학기 캡스톤디자인(2)}\\[2.2em]
-{\fontsize{30}{36}\selectfont\textbf{결과보고서}}\\[2.6em]
-{\LARGE\textbf{서울 토지거래허가구역 인과효과 추정}}\\[1.0em]
-{\large 실거래 47만 건과 정책 공고 원문을 결합한 미시 패널 구축}\\[6em]
-
-\begin{tabular}{@{}r@{\hspace{2em}}l@{}}
-  \large 학\hspace{2em}과 & \large 컴퓨터공학과 \\[0.7em]
-  \large 학\hspace{2em}번 & \large (학번) \\[0.7em]
-  \large 성\hspace{2em}명 & \large 이찬희 \\[0.7em]
-  \large 지도교수 & \large 김성곤 \\[0.7em]
-  \large 제 출 일 & \large 2026. 11. 20. \\
-\end{tabular}
-\end{center}
-
-\newpage
-\input{sections/00_abstract}
+\setcounter{page}{4}
 
 % 규정: **표·그림의 별도 목차는 만들지 않는다.** main_ko.tex 와 다른 점이다.
-\newpage
 \tableofcontents
 \newpage
 
