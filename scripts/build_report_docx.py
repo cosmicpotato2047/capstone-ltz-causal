@@ -282,8 +282,8 @@ def main() -> None:
     ap.add_argument("--only", help="이 파일 하나만 (디버그용)")
     a = ap.parse_args()
 
-    sys.path.insert(0, str(SRC))
-    import refs as R                                     # noqa: E402
+    sys.path.insert(0, str(io.ROOT / "paper"))
+    import refs_kr as R                                     # noqa: E402
 
     doc = Doc(R.REFS)
     titlepage(doc, R.META)

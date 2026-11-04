@@ -1,0 +1,61 @@
+% 제출본 전용 — 부록으로 붙는다. 양식의 '3. 개발 및 운영 환경'.
+
+\section{개발 및 운영 환경}
+
+\subsection{환경}
+
+\begin{table}[htbp]
+  \centering
+  \caption{개발 및 운영 환경}
+  \label{tab:v2-env}
+  \begin{tabular}{lp{10.0cm}}
+    \toprule
+    \textbf{구분} & \textbf{내용} \\
+    \midrule
+    형태 & \textbf{단독 PC.} 서버·클라우드·데이터베이스를 쓰지 않는다.
+      결과는 파일(\texttt{parquet} · \texttt{json} · \texttt{csv})로 남는다 \\
+    운영체제 & Windows 11 Pro (22621). 경로 처리 외에 OS 의존은 없다 \\
+    언어 & Python 3.13.7 \\
+    주요 패키지 & pandas · numpy · statsmodels · scipy · matplotlib ·
+      shapely (법정동 경계) · PyMuPDF (공고 PDF 판독) · python-pptx (판넬) \\
+    외부 자료 & 국토교통부 실거래 상세 자료 오픈 API\citep{molit_api} ·
+      서울시보 · 전자관보 공고 원문 \\
+    문서 & \LaTeX\ (XeLaTeX + kotex) · Markdown $\to$ HTML \\
+    공개 & GitHub 저장소\citep{repo} · GitHub Pages\citep{site} \\
+    \bottomrule
+  \end{tabular}
+
+  \begin{minipage}{\linewidth}\footnotesize
+  \textit{주.} 별도의 기자재나 재료를 쓰지 않았으므로 기자재 목록과 재료비
+  항목은 해당 사항이 없다. 추가 비용은 0원이다(10.5절).
+  \end{minipage}
+\end{table}
+
+\textbf{데이터베이스를 쓰지 않은 것은 설계 판단이다.} 자료가 47만 행으로
+단일 PC 메모리에 올라가고, 분석이 질의가 아니라 \textbf{전체 재계산}이기
+때문이다. 파일로 두면 결과가 바이트 단위로 비교되므로 재현 확인이 간단해진다
+--- 실제로 클린 환경 재현에서 결과 파일 25개를 해시로 대조했다(3.6절).
+
+\subsection{의존 목록을 손으로 적지 않는다}
+
+\texttt{requirements.txt}는 \texttt{scripts/check\_deps.py}가 지킨다. 저장소의
+모든 Python 파일을 AST 로 훑어 최상위 import 를 모으고, 목록과 어긋나면 알린다.
+함수 안의 늦은 import 까지 본다.
+
+이 장치를 만든 이유가 있다. 2026-10-15 클린 환경 재현에서 \texttt{shapely}와
+\texttt{markdown}이 목록에서 빠져 있던 것이 드러났다. 작업 환경에는 다른 경로로
+깔려 있어 몇 주 동안 보이지 않았고, \textbf{새 가상환경에서만 12단계에서
+멈췄다.} 받는 사람만 겪고 만드는 사람은 못 보는 고장이다.
+
+\subsection{환경 때문에 겪은 것}
+
+\textbf{윈도의 경로 길이 한계(260자).} 깊은 폴더에서 \texttt{pip install}을 하면
+\texttt{statsmodels}의 시험 자료 경로가 한계를 넘어 \textbf{그 패키지만 빠진 채
+설치가 끝난다.} 137자짜리 폴더에서 실제로 겪었다(파일 경로 266자). 짧은 경로에
+두거나 긴 경로 지원을 켠다.
+
+\textbf{콘솔 인코딩.} 한글을 찍는 스크립트는 \texttt{lib.io.setup\_stdout()}으로
+표준출력을 UTF-8 로 돌린다. 그러지 않으면 cp949 콘솔에서 죽는다.
+
+\textbf{저장소 용량.} 그림을 매번 커밋해 \texttt{.git}이 936\,MB 다. 이력을 다시
+쓰는 일이라 이번 학기에는 고치지 않았다(10.4절).

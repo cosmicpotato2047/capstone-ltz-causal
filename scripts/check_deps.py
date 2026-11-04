@@ -26,7 +26,8 @@ from lib import io  # noqa: E402
 io.setup_stdout()
 
 # import 이름과 배포 이름이 다른 것
-ALIAS = {"fitz": "PyMuPDF", "pptx": "python-pptx", "PIL": "pillow"}
+ALIAS = {"fitz": "PyMuPDF", "pptx": "python-pptx", "PIL": "pillow",
+         "docx": "python-docx"}
 # import 이름과 배포 이름이 다른 것들. 손으로 적을 수밖에 없다.
 
 # 직접 import 하지 않지만 있어야 하는 것 (왜 필요한지 한 줄로 남긴다)
@@ -43,7 +44,8 @@ def local_modules(root: Path) -> set[str]:
     'requirements.txt 에 없다'고 걸렸다. 그래서 파일을 찾아서 판단한다.
     """
     found = set()
-    for d in (root, root / "scripts"):
+    # paper/ 에도 모듈이 있다 — refs_kr.py 를 제출본 빌더 둘이 읽는다.
+    for d in (root, root / "scripts", root / "paper"):
         if not d.is_dir():
             continue
         found |= {p.stem for p in d.glob("*.py")}

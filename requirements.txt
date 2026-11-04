@@ -21,3 +21,7 @@ markdown==3.10.2
 python-pptx==1.0.2
 qrcode==8.2
 pillow==11.3.0
+
+# 학과 제출용 Word 판(scripts/build_report_docx.py). 제출본은 LaTeX
+# (main_ko_v2.tex)으로 내지만, 빌더는 유인물 등에 쓸 수 있게 남겨 둔다.
+python-docx==1.2.0

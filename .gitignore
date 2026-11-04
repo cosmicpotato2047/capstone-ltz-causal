@@ -44,3 +44,5 @@ output/panel/crop.png
 # 보고서 docx 미리보기. docx 만 남긴다
 output/report/미리보기.pdf
 output/report/p*.png
+
+output/report/v2-*.png

@@ -98,6 +98,7 @@ def report_steps() -> list[tuple[str, str, str, list[str], str]]:
                 "개념 안내 HTML"))
     out.append(("C1", "문서", "scripts/check_numbers.py", [], "문서 수치 검증 (0007)"))
     out.append(("T1", "문서", "scripts/build_tables.py", [], "최종 보고서 표 생성 (0007)"))
+    out.append(("T2", "문서", "scripts/build_refs_tex.py", [], "제출본 참고문헌 — 학과 형식"))
     # 파이프라인 도식은 단계 수와 산출물 수를 **세어서** 그리므로 표가 생긴
     # 뒤라야 한다. 시각화 묶음에 두면 T1 보다 먼저 돌아 표가 0개로 찍힌다.
     out.append(("V6", "시각화", "scripts/plot_pipeline.py", [], "파이프라인 도식 (보고서 3.5)"))

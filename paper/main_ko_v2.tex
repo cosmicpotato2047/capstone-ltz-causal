@@ -1,0 +1,147 @@
+%!TEX program = xelatex
+% 학과 제출본 (2026-11-20). 빌드: .\paper\build_v2.ps1
+%
+% **main_ko.tex 는 건드리지 않는다.** 그쪽은 연구용 원고이고 이 파일은
+% 학과 규정에 맞춘 제출본이다. 본문은 **같은 sections/ 를 읽는다** — 복사하면
+% 두 벌이 갈라져 고칠 때마다 양쪽을 건드려야 하기 때문이다. 다른 것은
+% 서식(이 파일의 머리말)과, 제출본에만 필요한 v2_*.tex 몇 장뿐이다.
+%
+% 학과 규정 (안내서)
+%   A4 · 본문 11pt · 줄간격 180% · 글자체 자유
+%   참고문헌 표시는 [1] [2] 번호식
+%   그림·표는 장별 번호 — [그림-1.1], [표-1.1]
+%   **표·그림의 별도 목차는 만들지 않는다**
+%   목차에 쪽번호 · PDF 제출
+%
+% 목차 구조는 지도교수 확인을 받아 자유롭게 정했다(2026-11-04). 양식 예시의
+% 8장 구조 대신 연구 서사를 살리되, 양식이 요구하는 캡스톤 고유 항목
+% (설계 구성요소 연관성 · 조원 · 추진 경과 · 개발 환경 · 소스코드)은
+% v2_*.tex 로 제자리에 넣는다. 대응표는 1.4절에 있다.
+
+\documentclass[11pt, a4paper]{article}
+
+% ─── Packages ────────────────────────────────────────────────────────────────
+\usepackage{fontspec}
+\usepackage{kotex}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath, amssymb, bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+% 규정: 본문 인용을 [1] [2] 로. main_ko.tex 는 저자-연도(apalike)를 쓴다.
+\usepackage[numbers, square, comma, sort&compress]{natbib}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{url}
+
+\setmainhangulfont{Malgun Gothic}[AutoFakeSlant=0.167]
+\setsanshangulfont{Malgun Gothic}[AutoFakeSlant=0.167]
+\setmonohangulfont{Malgun Gothic}
+
+% 규정의 '줄간격 180%' 는 한글(HWP) 기준 — **글자 크기의 180%** 다.
+% 11pt x 1.8 = 19.8pt. article 11pt 의 기본 baselineskip 이 13.6pt 이므로
+% 19.8 / 13.6 = 1.456 을 쓴다. \setstretch{1.8} 로 넣으면 24.5pt 가 되어
+% 규정보다 24% 더 벌어진다.
+\setstretch{1.456}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\renewcommand{\tablename}{표}
+\renewcommand{\figurename}{그림}
+\renewcommand{\contentsname}{목\hspace{1em}차}
+\renewcommand{\abstractname}{초록}
+\renewcommand{\refname}{참고 자료, URL, 문헌}
+\renewcommand{\bibname}{참고 자료, URL, 문헌}
+\renewcommand{\appendixname}{부록}
+
+% 규정: 그림·표 번호는 **장별**이고 [그림-1.1] [표-1.1] 꼴이다.
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+\DeclareCaptionLabelFormat{kfig}{[그림-#2]}
+\DeclareCaptionLabelFormat{ktab}{[표-#2]}
+\captionsetup[figure]{labelformat=kfig, labelsep=space}
+\captionsetup[table]{labelformat=ktab, labelsep=space}
+% 부록에서는 A.1 꼴이 된다 (\appendix 가 \thesection 을 바꾼다).
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    citecolor=blue!60!black,
+    urlcolor=blue!70!black
+}
+
+% 번호식에서는 \citet 이 저자 이름을 낼 수 없다 — 수동 thebibliography 라
+% 저자 정보가 없다. 본문은 main_ko.tex 와 **같은 파일을 읽으므로** 본문을
+% 고치는 대신 여기서 \citet 을 \citep 과 같게 둔다. '[13]의 3단계 가중',
+% '[4]는 평행추세를 …' 처럼 읽히며 번호식 관행에 맞는다.
+\let\citet\citep
+
+\graphicspath{{figures/}{../output/figures/}}
+\input{generated/counts}
+
+% ─── 표지 ────────────────────────────────────────────────────────────────────
+\begin{document}
+\thispagestyle{empty}
+
+\begin{center}
+\vspace*{2cm}
+{\large 2026학년도 2학기 캡스톤디자인(2)}\\[2.2em]
+{\fontsize{30}{36}\selectfont\textbf{결과보고서}}\\[2.6em]
+{\LARGE\textbf{서울 토지거래허가구역 인과효과 추정}}\\[1.0em]
+{\large 실거래 47만 건과 정책 공고 원문을 결합한 미시 패널 구축}\\[6em]
+
+\begin{tabular}{@{}r@{\hspace{2em}}l@{}}
+  \large 학\hspace{2em}과 & \large 컴퓨터공학과 \\[0.7em]
+  \large 학\hspace{2em}번 & \large (학번) \\[0.7em]
+  \large 성\hspace{2em}명 & \large 이찬희 \\[0.7em]
+  \large 지도교수 & \large 김성곤 \\[0.7em]
+  \large 제 출 일 & \large 2026. 11. 20. \\
+\end{tabular}
+\end{center}
+
+\newpage
+\input{sections/00_abstract}
+
+% 규정: **표·그림의 별도 목차는 만들지 않는다.** main_ko.tex 와 다른 점이다.
+\newpage
+\tableofcontents
+\newpage
+
+% ─── 본문 ────────────────────────────────────────────────────────────────────
+\input{sections/01_intro}
+\input{sections/v2_조원일정}          % 1.4 조원 편성 · 1.5 추진 경과와 대응표
+\input{sections/02_background}
+\input{sections/03_system}
+\input{sections/v2_설계구성요소}      % 3.8 설계 구성요소 연관성
+\input{sections/04_design}
+\input{sections/05_main}
+\input{sections/06_heterogeneity}
+\input{sections/07_spillover}
+\input{sections/08_price}
+\input{sections/09_robustness}
+\input{sections/v2_시험평가}          % 9.8 시험 및 평가 요약
+\input{sections/10_discussion}
+\input{sections/v2_제약조건}          % 10.5 현실적 제약 조건
+\input{sections/11_conclusion}
+
+% 규정의 형식으로 미리 적어 둔 서지를 scripts/build_refs_tex.py 가 찍는다.
+% BibTeX 을 쓰지 않으므로 이 문서는 xelatex 두 번이면 된다.
+\newpage
+\section{참고 자료, URL, 문헌}
+\input{generated/refs_v2}
+
+\appendix
+\input{sections/A_appendix}
+\input{sections/v2_개발환경}          % 부록 — 개발 및 운영 환경
+\input{sections/v2_소스코드}          % 부록 — 주요 소스코드
+
+\end{document}
