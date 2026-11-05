@@ -46,3 +46,6 @@ output/report/미리보기.pdf
 output/report/p*.png
 
 output/report/v2-*.png
+
+# 제출본 PDF. 학번·연락처·서명이 들어간다 (scripts/build_submission.py)
+output/submit/
