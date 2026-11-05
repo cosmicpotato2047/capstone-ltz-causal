@@ -105,6 +105,12 @@ REFS = {
         "to Transaction Taxes: Evidence from Notches and Stimulus in the "
         "U.K.”, Review of Economic Studies, Vol. 85, No. 1, pp. 157~193.",
 
+    # ── 선행 작업 (필자 본인). 이 캡스톤의 출발점 ────────────────────────
+    "prior2025":
+        "이찬희. (2025). “Seoul_Apt_Market — 서울 25개 자치구 아파트 "
+        "가격지수와 사이클 분석”, GitHub 저장소. "
+        "https://github.com/cosmicpotato2047/Seoul_Apt_Market",
+
     # ── 자료 출처와 공개 주소 (열어서 확인한 것만 적는다) ────────────────
     "repo":
         "이찬희. (2026). “서울 토지거래허가구역 인과효과 추정 — 코드·"

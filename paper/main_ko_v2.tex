@@ -121,8 +121,14 @@
 
 % 규정의 형식으로 미리 적어 둔 서지를 scripts/build_refs_tex.py 가 찍는다.
 % BibTeX 을 쓰지 않으므로 이 문서는 xelatex 두 번이면 된다.
+% thebibliography 가 제 머리글(\refname)을 스스로 내므로 \section 을 따로 달면
+% 제목이 두 번 찍힌다. 절 번호만 올리고 그 번호를 머리글에 넣어, 본문 제목과
+% 목차 항목을 직접 만든다.
 \newpage
-\section{참고 자료, URL, 문헌}
+\refstepcounter{section}
+\renewcommand{\refname}{\thesection\hspace{1em}참고 자료, URL, 문헌}
+\addcontentsline{toc}{section}%
+  {\protect\numberline{\thesection}참고 자료, URL, 문헌}
 \input{generated/refs_v2}
 
 \appendix
