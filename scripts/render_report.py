@@ -129,6 +129,8 @@ figcaption{font-size:13px; color:var(--ink-3); margin-top:8px; line-height:1.55}
   .shell{grid-template-columns:1fr; gap:0}
   nav.toc{display:none}
 }
+/* 쪽 크기를 밝히지 않으면 브라우저가 Letter 로 인쇄한다. 제출물은 A4 다. */
+@page{size: A4; margin: 18mm 16mm}
 @media print{
   .topbar, nav.toc{display:none}
   .shell{display:block; max-width:none; padding:0}

@@ -1,0 +1,578 @@
+<title>주제 제안서 · 서울 토허구역 인과추정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --ground:#f4f6f7; --surface:#fcfcfb; --surface-2:#eceef0;
+  --ink:#12161a; --ink-2:#454b52; --ink-3:#7d848c;
+  --rule:#c9ced4; --rule-soft:#e2e6e9;
+  --accent:#2a78d6; --accent-soft:#dbe8f8;
+  --warn:#e34948; --warn-soft:#f8dedd;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+    --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+    --rule:#343a3f; --rule-soft:#282d31;
+    --accent:#3987e5; --accent-soft:#1d2f45;
+    --warn:#e66767; --warn-soft:#3d2526;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#141719; --surface:#1a1d20; --surface-2:#232729;
+  --ink:#f2f4f5; --ink-2:#b9c0c7; --ink-3:#8b939b;
+  --rule:#343a3f; --rule-soft:#282d31;
+  --accent:#3987e5; --accent-soft:#1d2f45;
+  --warn:#e66767; --warn-soft:#3d2526;
+}
+
+*{box-sizing:border-box}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans KR","Malgun Gothic",system-ui,sans-serif;
+  font-size:16px; line-height:1.78; -webkit-font-smoothing:antialiased}
+
+.topbar{position:sticky; top:0; z-index:40; background:var(--ground);
+  border-bottom:3px double var(--rule)}
+.topbar-in{max-width:1120px; margin:0 auto; padding:12px 28px;
+  display:flex; gap:16px; align-items:baseline; justify-content:space-between}
+.brand{font-family:"Nanum Myeongjo","Batang",serif; font-size:17px;
+  font-weight:800; letter-spacing:-.02em}
+.docno{font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+  letter-spacing:.1em; color:var(--ink-3); text-transform:uppercase;
+  white-space:nowrap}
+
+.shell{max-width:1120px; margin:0 auto; padding:0 28px;
+  display:grid; grid-template-columns:1fr 224px; gap:52px; align-items:start}
+main{min-width:0; padding:40px 0 96px}
+
+nav.toc{position:sticky; top:74px; padding:44px 0 0;
+  font-size:12.5px; line-height:1.5}
+nav.toc .lbl{font-family:"IBM Plex Mono",monospace; font-size:10px;
+  letter-spacing:.12em; color:var(--ink-3); text-transform:uppercase;
+  padding-bottom:10px; border-bottom:1px solid var(--rule-soft);
+  margin-bottom:12px}
+nav.toc a{display:block; padding:5px 0; color:var(--ink-3);
+  text-decoration:none; border-left:2px solid transparent; padding-left:10px;
+  margin-left:-12px; transition:color .15s, border-color .15s}
+nav.toc a:hover{color:var(--ink)}
+nav.toc a.on{color:var(--ink); border-left-color:var(--accent); font-weight:500}
+
+h1,h2,h3{font-family:"Nanum Myeongjo","Batang",serif; text-wrap:balance;
+  letter-spacing:-.01em; line-height:1.35}
+h1{font-size:30px; font-weight:800; margin:0 0 6px}
+h2{font-size:22px; font-weight:700; margin:56px 0 16px;
+  padding-top:22px; border-top:1px solid var(--rule)}
+h3{font-size:17px; font-weight:700; margin:32px 0 10px; color:var(--ink)}
+h1 + p{color:var(--ink-2); font-size:16px; margin:0 0 4px}
+p{margin:0 0 15px}
+a{color:var(--accent); text-underline-offset:3px;
+  text-decoration-thickness:1px}
+strong{font-weight:600}
+hr{border:0; border-top:1px solid var(--rule-soft); margin:36px 0}
+hr + h2{border-top:0; padding-top:0; margin-top:30px}
+ul,ol{margin:0 0 15px; padding-left:22px}
+li{margin:0 0 7px}
+
+table{border-collapse:collapse; width:100%; margin:18px 0 22px;
+  font-size:14px; background:var(--surface);
+  font-variant-numeric:tabular-nums}
+th,td{border:1px solid var(--rule-soft); padding:7px 11px;
+  text-align:left; vertical-align:top}
+th{background:var(--surface-2); font-weight:600; font-size:13px;
+  color:var(--ink-2)}
+.tw{overflow-x:auto; margin:18px 0 22px}
+.tw table{margin:0}
+
+blockquote{margin:18px 0; padding:11px 16px; background:var(--accent-soft);
+  border-left:3px solid var(--accent); font-size:14px; color:var(--ink-2)}
+blockquote p{margin:0}
+blockquote strong{color:var(--ink)}
+
+code{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:13px;
+  background:var(--surface-2); padding:1px 5px; border-radius:3px}
+pre{background:var(--surface); border:1px solid var(--rule-soft);
+  padding:14px 16px; overflow-x:auto; font-size:13px; line-height:1.6}
+pre code{background:none; padding:0}
+
+figure{margin:22px 0 28px}
+figure a{display:block}
+figure img{display:block; width:100%; height:auto; background:#fff;
+  border:1px solid var(--rule-soft)}
+figcaption{font-size:13px; color:var(--ink-3); margin-top:8px; line-height:1.55}
+
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr; gap:0}
+  nav.toc{display:none}
+}
+/* 쪽 크기를 밝히지 않으면 브라우저가 Letter 로 인쇄한다. 제출물은 A4 다. */
+@page{size: A4; margin: 18mm 16mm}
+@media print{
+  .topbar, nav.toc{display:none}
+  .shell{display:block; max-width:none; padding:0}
+  body{background:#fff; font-size:11pt}
+  h2{break-after:avoid} table,pre,blockquote,figure{break-inside:avoid}
+  a{color:#000; text-decoration:none}
+}
+</style>
+<div class="topbar"><div class="topbar-in">
+  <span class="brand">서울 토허구역 인과추정</span>
+  <span class="docno">proposal</span>
+</div></div>
+<div class="shell">
+  <main><h1>주제 제안서</h1>
+<p><strong>서울 토지거래허가구역의 인과효과 추정: 실거래 미시자료를 이용한 준실험적 접근</strong></p>
+<p>컴퓨터공학 졸업작품 · 2026학년도 2학기 · 작성 2026-09-03</p>
+<blockquote>
+<p>최종 제목 (2026-09-12 확정, 학기말 제출용): <strong>서울 아파트 실거래와 정책 공고를 결합한 미시 패널 구축과 토지거래허가구역 인과효과 추정</strong></p>
+</blockquote>
+<hr />
+<h2 id="1-연구-주제">1. 연구 주제</h2>
+<p>서울시 토지거래허가구역(이하 토허제) 지정과 해제가 아파트 <strong>거래량과 가격</strong>에 미친 인과효과를 국토교통부 실거래 미시자료로 추정한다.</p>
+<p>연구는 두 층으로 구성한다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>층</th>
+<th>내용</th>
+<th>성격</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1층</td>
+<td>2006~2026년 서울 아파트 실거래 자료 수집·정제 파이프라인과 자체 가격지수 구축</td>
+<td>시스템</td>
+</tr>
+<tr>
+<td>2층</td>
+<td>그 위에서 토허제 지정·해제 사건의 인과효과 추정</td>
+<td>분석</td>
+</tr>
+</tbody>
+</table></div>
+<p>1층은 2층의 전제이자 그 자체로 독립적 산출물이다. 국내 선행연구가 공통적으로 동(洞) 단위 집계자료에 의존하는데, 개별 거래를 단지 식별자에 연결한 미시 패널을 구축해야만 가능한 분석이 존재한다는 것이 본 연구의 출발점이다.</p>
+<hr />
+<h2 id="2-연구-배경-및-동기">2. 연구 배경 및 동기</h2>
+<h3 id="2-1-왜-부동산-정책인가">2.1 왜 부동산 정책인가</h3>
+<p>한국의 주택가격은 지난 20년간 반복적으로 정책 개입의 대상이 되었다. 그러나 "그 정책이 효과가 있었는가"라는 질문에 대한 실증적 합의는 형성되지 않았다. 정책 시행 전후로 가격이 올랐는지 내렸는지는 누구나 볼 수 있지만, 그것이 <strong>정책 때문인지 시장 전반의 흐름 때문인지</strong>를 분리하는 것은 별개의 문제다.</p>
+<h3 id="2-2-왜-대부분의-정책은-인과추정이-불가능한가">2.2 왜 대부분의 정책은 인과추정이 불가능한가</h3>
+<p>인과추정에는 처치를 받지 않은 비교집단이 필요하다. 그런데 한국 부동산 정책의 상당수는 이 조건을 원리적으로 충족하지 못한다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>유형</th>
+<th>예</th>
+<th>인과 식별</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>전국 동시 시행</td>
+<td>임대차 3법, 종합부동산세, DSR, 취득세 중과</td>
+<td><strong>불가</strong> — 비교집단 부재</td>
+</tr>
+<tr>
+<td>지역 지정형</td>
+<td>조정대상지역, 투기과열지구, <strong>토지거래허가구역</strong></td>
+<td><strong>가능</strong> — 지정 시점·지역에 변이</td>
+</tr>
+<tr>
+<td>지점 개입형</td>
+<td>3기 신도시, 광역교통망</td>
+<td>가능 — 거리 기반 처치강도</td>
+</tr>
+<tr>
+<td>임계값형</td>
+<td>15억 초과 대출금지, 종부세 기준선</td>
+<td>가능 — 불연속</td>
+</tr>
+</tbody>
+</table></div>
+<p>토허제는 두 번째 유형에 속하면서, 다음 조건을 추가로 만족한다.</p>
+<ul>
+<li><strong>동(洞) 단위 지정</strong>: 자치구보다 작은 단위로 지정되어, 경계를 사이에 둔 두 단지가 생활권·학군·접근성은 사실상 동일하면서 규제만 다른 상황이 발생한다.</li>
+<li><strong>지정·해제·재지정의 반복</strong>: 처치가 한 방향으로 고정되지 않고 역전된다.</li>
+<li><strong>미시자료 가용</strong>: 2006년 이후 개별 거래가 공개되어 있다.</li>
+</ul>
+<h3 id="2-3-왜-컴퓨터공학-졸업작품인가">2.3 왜 컴퓨터공학 졸업작품인가</h3>
+<p>위 조건을 활용하려면 <strong>집계 지수로는 불가능한 데이터 처리</strong>가 선행되어야 한다.</p>
+<ol>
+<li>20년치 개별 거래를 API로 수집하고 재현 가능한 형태로 보존</li>
+<li>단지 식별자 기준으로 거래를 연결하여 패널 구성</li>
+<li>거래된 물건의 구성 변화를 통제한 자체 가격지수 산출</li>
+<li>정책 이력을 동·단지 단위로 코드화하여 처치 배정</li>
+</ol>
+<p>즉 데이터 엔지니어링이 분석의 부속물이 아니라 <strong>식별 전략의 전제</strong>다. 이는 데이터 직무에서 요구하는 역량 — 원자료 수집, 파이프라인 설계, 재현성 확보, 통계적 추론 — 과 정확히 겹친다.</p>
+<hr />
+<h2 id="3-연구-질문">3. 연구 질문</h2>
+<h3 id="rq1-토허제의-효과는-거래량과-가격에-어떻게-다르게-나타나는가">RQ1. 토허제의 효과는 거래량과 가격에 어떻게 다르게 나타나는가</h3>
+<p>토허제는 가격 상한을 정하는 제도가 아니라 거래에 <strong>허가 절차라는 마찰</strong>을 부과하는 제도다. 따라서 두 결과변수가 같은 방식으로 반응할 이유가 없다. 세 축으로 나누어 추정한다.</p>
+<ul>
+<li><strong>규모</strong> — 어느 쪽 반응이 큰가. 제도의 작동 메커니즘이 가격 억제인지 거래 마찰인지를 가른다.</li>
+<li><strong>시점</strong> — 어느 쪽이 먼저 반응하는가. 거래는 절차가 걸리는 즉시 막히지만, 매도자가 호가를 낮출 유인은 시차를 두고 발생한다.</li>
+<li><strong>지속</strong> — 어느 쪽이 오래 가는가. 시장이 절차에 적응하면 거래는 회복될 수 있으나, 그 사이 벌어진 가격 격차는 남을 수 있다.</li>
+</ul>
+<p>세 축의 답이 갈린다면, 정책 목표(가격 안정)와 실제 작동 방식(거래 동결) 사이의 어긋남을 정량적으로 보일 수 있다. 효과의 크기뿐 아니라 <strong>효과가 언제 시작해서 언제 사라지는지</strong>가 정책 평가의 핵심이기 때문이다.</p>
+<h3 id="rq2-규제의-효과는-규제-대상에만-미치는가-아니면-인근으로-파급되는가">RQ2. 규제의 효과는 규제 대상에만 미치는가, 아니면 인근으로 파급되는가</h3>
+<p>2025년 2월 해제 조치는 4개 동의 아파트 305곳 중 291곳을 해제하고, 재건축 추진 단지 14곳은 지정을 유지했다. <strong>같은 동 안에 해제된 단지와 유지된 단지가 공존</strong>하는 상황이 발생했다. 이는 파급효과를 인접 지역이 아니라 동일 지역 내에서 측정할 수 있는 조건이다.</p>
+<h3 id="rq3-사전-추세를-고려해도-가격-효과는-존재하는가">RQ3. 사전 추세를 고려해도 가격 효과는 존재하는가</h3>
+<p>이중차분법은 처치군과 통제군이 처치 이전에 평행한 추세를 보였다는 가정에 의존한다. 규제지역 지정은 가격이 급등한 곳을 대상으로 하므로 이 가정이 위배될 소지가 크다. 본 연구는 평행추세 가정을 검정하고, 위배가 확인될 경우 그 크기를 정량화하여 결론의 강건성을 구간으로 제시한다.</p>
+<h3 id="rq4-선행연구의-상반된-결론은-실질적-차이인가-설계-선택의-산물인가">RQ4. 선행연구의 상반된 결론은 실질적 차이인가, 설계 선택의 산물인가</h3>
+<p>동일 사건(2020년 6월 지정)을 분석한 국내 연구들이 표면적으로 다른 결론에 도달해 있다. 그러나 분석 단위, 통제변수 구성, 결측 처리, 관측 기간, 그리고 보고된 통계량이 이중차분 계수인지 여부가 모두 다르다. 각 설계 선택이 결과를 어떻게 바꾸는지 하나씩 분리하여 검토하고, 상반된 결론이 실질적 차이에서 오는지 설계 선택에서 오는지를 판정한다.</p>
+<hr />
+<h2 id="4-선행연구-및-차별점">4. 선행연구 및 차별점</h2>
+<h3 id="4-1-국내-연구">4.1 국내 연구</h3>
+<p>2020년 6월 지정을 대상으로 한 세 편이 모두 2025년에 발표되었다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>연구</th>
+<th>방법</th>
+<th>분석 단위</th>
+<th>처치군 / 통제군</th>
+<th>결론</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>전상현·김성용·박종선 (2025)<br><em>융합사회와 공공정책</em> 19(1), 169–189</td>
+<td>이중차분</td>
+<td>동-월 집계</td>
+<td>4개 동 / 강남·송파 나머지 23개 동</td>
+<td>거래건수 60%+ 감소, 가격 효과 비유의</td>
+</tr>
+<tr>
+<td>이한웅·이춘원 (2025)<br><em>대한부동산학회지</em> 43(2), 161–180</td>
+<td>시계열+이중차분</td>
+<td>동-월 집계</td>
+<td>잠실동 / 송파구 나머지 동</td>
+<td>거래량 급감, 비지정 지역이 더 크게 상승(풍선효과)<br>전세는 2년 후 상승</td>
+</tr>
+<tr>
+<td>양지영·정준호 (2025)<br><em>한국콘텐츠학회논문지</em> 25(5), 447–</td>
+<td>합성대조군법</td>
+<td>동-월 집계</td>
+<td>4개 동 / 15개 동(5개 구에 걸침)</td>
+<td>처치지역 상승 <strong>억제</strong>,<br>인근 지역 급등</td>
+</tr>
+</tbody>
+</table></div>
+<p>초록만 읽으면 결론이 갈리는 것처럼 보인다. 그러나 세 연구는 처치군·통제군 범위, 분석 단위, 통제변수 구성, 결측 처리, 관측 기간이 모두 다르고, <strong>보고된 통계량이 이중차분 계수인지도 서로 다르다.</strong> 어느 차이가 결론을 갈랐는지, 나아가 결론이 실제로 갈린 것인지는 사전에 알 수 없다. 본 연구는 이를 추정 대상으로 삼는다(RQ4).</p>
+<p>세 연구의 공통점은 다음과 같다.</p>
+<ul>
+<li>모두 <strong>동 단위 집계자료</strong>를 사용한다. 개별 거래를 단지에 연결한 연구는 없다.</li>
+<li>모두 처치를 <strong>2020년 6월 단일 사건</strong>으로 취급한다. 2021년 4월의 2차 지정, 2025년의 해제·재지정은 반영되지 않았다.</li>
+<li><strong>거래량을 결과변수로 추정한 연구가 없다.</strong> 세 연구 모두 거래량이 크게 감소했음을 관찰했으나, 추정 대상으로 삼지 않았다.</li>
+</ul>
+<h3 id="4-2-해외-연구">4.2 해외 연구</h3>
+<p>중국의 주택구입제한(Home Purchase Restriction) 문헌이 제도적으로 가장 가깝다. 베이징 사례에서 회귀불연속으로 거래량 50~75% 감소가 보고되었고, 규제 도시 인근의 지가 상승(파급효과), 규제 해제 시 거래량은 증가하나 가격은 반응하지 않는다는 결과가 축적되어 있다.</p>
+<p>거래비용 문헌도 직접 관련된다. Best &amp; Kleven (2018, <em>Review of Economic Studies</em>)은 영국 인지세 한시 인하가 거래를 20% 증가시켰음을 보였다. 토허제는 조세가 아닌 절차 비용이지만 거래에 마찰을 부과한다는 점에서 동일한 메커니즘을 공유한다.</p>
+<h3 id="4-3-방법론-문헌">4.3 방법론 문헌</h3>
+<ul>
+<li>Rambachan &amp; Roth (2023, <em>Review of Economic Studies</em> 90(5), 2555–2591) — 평행추세 위배 시의 민감도 분석</li>
+<li>Goodman-Bacon (2021) — 이질적 처치시점 하 양방향 고정효과의 편향</li>
+<li>Callaway &amp; Sant'Anna (2021), Sun &amp; Abraham (2021) — 이질적 처치시점 추정량. 단 처치가 한 번 시작되면 유지된다는 흡수(absorbing) 가정에 의존한다</li>
+<li><strong>de Chaisemartin &amp; D'Haultfœuille (2020, <em>American Economic Review</em>)</strong> — 처치가 켜졌다 꺼지는 <strong>비흡수(non-absorbing) 처치</strong>를 다루는 추정량. 본 연구의 2025년 해제·재지정 구간에 해당한다</li>
+<li>Arkhangelsky et al. (2021, <em>American Economic Review</em>) — 합성 이중차분</li>
+<li>Case &amp; Shiller (1987, 1989) — 반복매매 가격지수</li>
+</ul>
+<h3 id="4-4-차별점">4.4 차별점</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>축</th>
+<th>선행연구</th>
+<th>본 연구</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>분석 단위</td>
+<td>동-월 집계</td>
+<td><strong>개별 거래 + 단지 고정효과</strong></td>
+</tr>
+<tr>
+<td>물건특성 통제</td>
+<td>없거나 제한적</td>
+<td><strong>면적·층·연식 + 단지 식별자</strong></td>
+</tr>
+<tr>
+<td>처치 구조</td>
+<td>2020.6 단일 사건</td>
+<td><strong>2020 / 2021 / 2025 다중 시점, 처치 역전 포함</strong></td>
+</tr>
+<tr>
+<td>주 결과변수</td>
+<td>가격</td>
+<td><strong>거래량</strong> (가격은 대조 지점)</td>
+</tr>
+<tr>
+<td>사전추세</td>
+<td>검정 부재 또는 언급 수준</td>
+<td><strong>사건 시점 분석 + 민감도 구간 제시</strong></td>
+</tr>
+<tr>
+<td>파급효과</td>
+<td>인접 지역</td>
+<td><strong>동일 동 내 규제유지 단지</strong></td>
+</tr>
+<tr>
+<td>재현성</td>
+<td>코드 비공개</td>
+<td><strong>원자료 수집부터 결과까지 전 과정 공개</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>가장 뚜렷한 두 지점은 <strong>처치 역전</strong>과 <strong>동일 동 내 파급효과</strong>다. 다만 각각에 대해 무엇이 새롭고 무엇이 새롭지 않은지를 구분할 필요가 있다.</p>
+<p><strong>처치 역전 자체는 새롭지 않다.</strong> 처치가 켜졌다 꺼지는 설정은 방법론적으로 확립되어 있고(de Chaisemartin &amp; D'Haultfœuille 2020), 적용 사례도 존재한다. 중국 주택구입제한 문헌에도 개별 도시의 제한 취소와 재긴축을 다룬 연구가 있다.</p>
+<p>본 연구가 다루는 사례의 특징은 다음 두 가지다.</p>
+<ul>
+<li><strong>역전 간격이 39일로 극히 짧다.</strong> 중국 사례는 도시 단위로 수개월에서 수년에 걸쳐 전환된다. 짧은 간격은 거시 환경과 계절성이 사실상 고정된 상태에서 규제 상태만 바뀌었음을 뜻한다.</li>
+<li><strong>해제가 전면적이 아니라 부분적이었다.</strong> 4개 동의 아파트 305곳 중 291곳만 해제되고 14곳은 지정이 유지되었다. 도시 전체를 켜고 끄는 방식에서는 도시 내부에 비교군이 생기지 않지만, 이 사례에서는 <strong>같은 동 안에 규제 상태가 다른 단지가 공존</strong>한다.</li>
+</ul>
+<p>두 번째가 <strong>동일 동 내 파급효과</strong> 측정의 조건이다. 통상적인 파급효과 연구는 규제 지역과 인접한 비규제 지역을 비교하므로 두 지역이 원래 달랐을 가능성이 남는다. 같은 동 안에서 비교하면 학군·교통·생활권이 물리적으로 동일하다.</p>
+<p>국내 문헌에 한정하면, 확인된 세 편은 모두 2020년 6월 지정만을 다루며 2025년 사건을 분석한 연구는 확인되지 않았다.</p>
+<hr />
+<h2 id="5-시스템-설계-및-실험-설계">5. 시스템 설계 및 실험 설계</h2>
+<h3 id="5-1-데이터">5.1 데이터</h3>
+<p><strong>주 자료.</strong> 국토교통부 「아파트 매매 실거래 상세 자료」(공공데이터포털 오픈API). 2006년 1월 이후 개별 거래를 제공하며, 다음 필드가 본 연구에 직접 사용된다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>필드</th>
+<th>용도</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aptSeq</code></td>
+<td>단지 고유 식별자 — 패널 구성 및 단지 고정효과</td>
+</tr>
+<tr>
+<td><code>umdCd</code></td>
+<td>법정동 코드 — 처치 배정</td>
+</tr>
+<tr>
+<td><code>excluUseAr</code>, <code>floor</code>, <code>buildYear</code></td>
+<td>물건 특성 통제</td>
+</tr>
+<tr>
+<td><code>dealAmount</code>, 계약일</td>
+<td>결과변수</td>
+</tr>
+<tr>
+<td><code>cdealType</code></td>
+<td>거래 해제(취소) 여부 — 표본에서 제외</td>
+</tr>
+<tr>
+<td><code>dealingGbn</code>, <code>slerGbn</code>, <code>buyerGbn</code></td>
+<td>직거래 여부, 매도·매수 주체(개인/법인)</td>
+</tr>
+<tr>
+<td><code>roadNmCd</code>, <code>bonbun</code>, <code>bubun</code></td>
+<td>지오코딩을 통한 경계 거리 산출</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>cdealType</code>은 특히 중요하다. 신고 후 취소된 거래에는 시세 조작 목적의 허위 신고가 포함될 수 있으며, 규제 시점 전후로 집중될 가능성이 있어 반드시 제외한다.</p>
+<p><strong>정책 자료.</strong> 서울특별시 공고 원문을 기준으로 토허구역 지정·해제 이력을 코드화한다. 발표일, 공고일, 효력발생일을 분리하여 기록한다. 발표 시점의 정보 충격과 시행 시점의 법적 처치는 서로 다른 사건이기 때문이다.</p>
+<p><strong>분석 대상 자치구.</strong> 처치 후보로 강남·서초·송파·용산, 통제 후보로 성동·광진·강동·동작을 수집한다.</p>
+<h3 id="5-2-시스템-구조">5.2 시스템 구조</h3>
+<pre><code>수집   collect.py        (자치구, 계약년월) 단위 조회 후 JSON 캐시. 중단 시 재개 가능
+정제   build_dataset.py  취소거래 제외, 단가 산출, 파생변수 생성 → parquet
+지수   index.py          반복매매 및 헤도닉 가격지수 산출
+분석   event_study.py    사건 시점 분석, 이중차분, 삼중차분
+검증   replicate_*.py    선행연구 사양 재현
+</code></pre>
+<p>설계 원칙은 <strong>재현 가능성</strong>이다. 원자료를 월 단위로 캐시하여 API 응답 변화와 무관하게 동일 결과를 재생성할 수 있게 하고, 수집 시점을 명시한다. 실거래 자료는 취소와 지연신고로 소급 갱신되므로, 수집 시점이 다르면 결과도 달라진다.</p>
+<h3 id="5-3-처치-정의">5.3 처치 정의</h3>
+<p>토허제 하에서 아파트의 처치 상태는 시점에 따라 달라진다. 서울 아파트를 처치 이력에 따라 다음과 같이 분류한다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>그룹</th>
+<th>이력</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>2020.6 지정 → 2025.2 해제 → 2025.3 재지정 (삼성·청담·대치·잠실)</td>
+</tr>
+<tr>
+<td>B</td>
+<td>2021.4 지정 후 유지 (압구정·여의도·목동·성수)</td>
+</tr>
+<tr>
+<td>C</td>
+<td>2025.3 최초 지정 (강남3구·용산의 나머지 동)</td>
+</tr>
+<tr>
+<td>D</td>
+<td>2025.10 지정 (그 외 서울 전역)</td>
+</tr>
+</tbody>
+</table></div>
+<p>2025년 10월 20일 이후 서울 전 자치구가 지정되어 시내에 미처치 집단이 존재하지 않으며, 같은 시점에 규제지역(조정대상지역·투기과열지구)도 서울 전역으로 확대되어 두 정책이 교란된다. 따라서 <strong>분석 구간을 2025년 10월 19일 이전으로 한정</strong>하고, 이후 기간은 식별 불가로 명시한다.</p>
+<h3 id="5-4-식별-전략">5.4 식별 전략</h3>
+<p><strong>주 분석 — 2020년 6월 지정.</strong> 처치동은 강남구 14개 동 중 3개, 송파구 13개 동 중 1개다. 같은 자치구 안에 통제동이 남아 있어 지역 고유 요인을 상당 부분 통제할 수 있다. 사전 14년, 사후 약 4.6년의 관측 기간을 확보한다.</p>
+<ul>
+<li>기본: 단지·계약월 양방향 고정효과 하의 사건 시점 분석</li>
+<li>확장: 동 경계로부터의 거리를 이용한 공간 회귀불연속</li>
+</ul>
+<p><strong>하이라이트 — 2025년 2월 해제 및 3월 재지정.</strong> 해제된 291개 단지와 지정이 유지된 14개 재건축 단지가 같은 동에 공존한다. 다만 유지 단지는 무작위로 선정된 것이 아니라 재건축 추진 가능성을 기준으로 선별되었으므로, 단순 비교는 재건축 프리미엄의 차이를 측정하게 된다. 이를 분리하기 위해 <strong>삼중차분</strong>을 적용한다.</p>
+<ol>
+<li>시간 — 2025.2.13 전후</li>
+<li>지역 — 4개 동 대 그 외</li>
+<li>단지 유형 — 재건축 대 비재건축</li>
+</ol>
+<p>세 번째 축의 비교 대상은 4개 동 <strong>바깥</strong>의 재건축 단지로 삼는다. 동 내부에서 잡으면 파급효과에 오염되기 때문이다.</p>
+<p><strong>처치 역전 구간의 추정량.</strong> 2025년 2월 해제와 3월 재지정을 거치면서 A그룹의 처치 상태는 1 → 0 → 1 로 전환된다. Callaway &amp; Sant'Anna (2021)를 비롯한 표준 이질적 처치시점 추정량은 처치가 한 번 시작되면 유지된다는 흡수 가정에 의존하므로 이 구간에 그대로 적용할 수 없다. de Chaisemartin &amp; D'Haultfœuille (2020)의 비흡수 처치 추정량을 사용한다.</p>
+<p><strong>평행추세 위배 대응.</strong> 사전 추세를 사건 시점 분석으로 검정하고, 위배가 확인되면 Rambachan &amp; Roth (2023)의 민감도 분석을 적용하여 "사전 추세가 사후에도 일정 수준까지 이어졌다고 가정할 때 처치효과가 어느 구간에 놓이는가"를 제시한다.</p>
+<h3 id="5-5-결과변수">5.5 결과변수</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>변수</th>
+<th>정의</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>거래량</td>
+<td>동-월 또는 단지-월 거래 건수의 로그</td>
+<td>주 결과변수</td>
+</tr>
+<tr>
+<td>가격</td>
+<td>㎡당 거래가의 로그</td>
+<td>부 결과변수, 선행연구 대조</td>
+</tr>
+<tr>
+<td>구성</td>
+<td>거래 물건의 평균 면적·연식</td>
+<td>표본 선택 진단</td>
+</tr>
+<tr>
+<td>거래 주체</td>
+<td>법인 매수 비중, 직거래 비중</td>
+<td>규제 회피 경로 탐색</td>
+</tr>
+</tbody>
+</table></div>
+<p>거래량을 주 결과변수로 두는 이유는 두 가지다. 첫째, 토허제의 작동 메커니즘이 거래 마찰 부과이므로 이론적으로 1차 반응이 나타나는 지점이다. 둘째, 거래량이 크게 감소하면 거래되는 물건의 구성이 변하여 평균 가격이 왜곡되므로, 가격 해석에 앞서 거래량 반응을 규명해야 한다.</p>
+<h3 id="5-6-검증-계획">5.6 검증 계획</h3>
+<ul>
+<li><strong>위약 검정</strong>: 실제 지정이 없었던 시점을 가짜 사건일로 두고 효과가 나타나는지 확인</li>
+<li><strong>표본 민감도</strong>: 분석 창(±12/24/36개월), 통제군 범위, 고정효과 수준 변경</li>
+<li><strong>처치 정의 민감도</strong>: 지정 유지 단지 명단의 좁은 정의와 넓은 정의를 모두 적용</li>
+<li><strong>선행연구 재현</strong>: 선행연구 사양을 그대로 구현한 뒤 설계 선택을 하나씩 바꾸며 어느 선택이 결과를 바꾸는지 확인한다. 분석 단위, 고정효과 수준, 결측 처리, 관측 기간, 통제변수 구성을 조합한 사양 곡선(specification curve)으로 제시한다</li>
+</ul>
+<hr />
+<h2 id="6-추진-계획">6. 추진 계획</h2>
+<p>전체 12주(2026-09-03 ~ 11-20). 매주 목요일 결과 보고.</p>
+<p>작업은 <strong>우선순위 백로그</strong>(<a href="backlog.md">backlog.md</a>)로 관리하고 위에서부터 처리한다. 12주 분량을 주차별로 미리 배분하지 않는 이유는, 그 배분이 거의 확실히 빗나가기 때문이다. 실제로 1주차의 가장 큰 성과(선행연구 재현)는 착수 시점의 계획에 없던 항목이었다.</p>
+<p>대신 마감 역산을 위해 마일스톤 네 개와 각각의 <strong>최소 성공 조건</strong>을 고정한다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>시점</th>
+<th>마일스톤</th>
+<th>최소 성공 조건</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M1</strong></td>
+<td>4주차 (09/24)</td>
+<td>주 분석 확정</td>
+<td>2020.6 지정의 거래량 효과를 강건성 검정과 함께 제시할 수 있다</td>
+</tr>
+<tr>
+<td><strong>M2</strong></td>
+<td>7주차 (10/15)</td>
+<td>하이라이트 확정</td>
+<td>2025.2 해제·3 재지정의 삼중차분 결과와 파급효과 분해를 제시할 수 있다</td>
+</tr>
+<tr>
+<td><strong>M3</strong></td>
+<td>10주차 (11/05)</td>
+<td>분석 종료·결과 동결</td>
+<td>이후 새 분석을 추가하지 않고 서술과 시각화에만 집중한다</td>
+</tr>
+<tr>
+<td><strong>M4</strong></td>
+<td>12주차 (11/19)</td>
+<td>최종본</td>
+<td>클린 환경에서 <code>run_all.py</code> 재현이 확인된다</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="6-1-완주-보장-구조">6.1 완주 보장 구조</h3>
+<p><strong>M1까지의 결과만으로도 졸업작품이 성립하도록</strong> 범위를 설계했다. 2020년 6월 지정의 거래량 효과, 자체 가격지수, 선행연구 재현은 M1 안에 들어가며, 이 세 가지만으로 시스템과 분석이 각각 성립한다.</p>
+<p>M2 이후는 기여의 폭을 넓히는 부분이다. 백로그에서 필수와 선택을 구분해 두었으며, 선택 항목(공간 회귀불연속, 거래 주체 분석, 전세시장 확장, 대시보드)은 일정이 밀릴 경우 순서대로 제외한다.</p>
+<h3 id="6-2-위험-요소와-대응">6.2 위험 요소와 대응</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>위험</th>
+<th>영향</th>
+<th>대응</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>평행추세 가정 위배</td>
+<td>가격 효과 해석 불가</td>
+<td>주 결과변수를 거래량으로 두고, 가격은 민감도 구간으로 제시</td>
+</tr>
+<tr>
+<td>2020년 지정의 공간 범위가 동 일부일 가능성</td>
+<td>처치 오분류</td>
+<td>처치 정의가 희석되면 추정치는 0쪽으로 편향되므로 하한으로 해석. 토지조서 확보 시 정밀화</td>
+</tr>
+<tr>
+<td>지정 유지 14개 단지 명단의 모호성</td>
+<td>삼중차분 처치 정의</td>
+<td>좁은·넓은 정의를 모두 적용하여 강건성 확인</td>
+</tr>
+<tr>
+<td>단지 좌표 확보 실패</td>
+<td>공간 회귀불연속 불가</td>
+<td>동 단위 이중차분을 주 사양으로 유지. 공간 분석은 확장 과제</td>
+</tr>
+<tr>
+<td>대지권 면적 자료 부재</td>
+<td>허가 대상 면적 기준 반영 불가</td>
+<td>기준(주거지역 6㎡ 초과)이 하한선까지 낮아 사실상 전수 포함. 한계로 명시</td>
+</tr>
+<tr>
+<td>일정 지연</td>
+<td>미완성 제출</td>
+<td>백로그의 선택 항목을 순서대로 제외. M1(4주차)까지 핵심 결과 확보를 우선</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="7-결론">7. 결론</h2>
+<p>본 연구는 서울시 토지거래허가구역 지정·해제의 인과효과를 실거래 미시자료로 추정한다. 한국 부동산 정책 다수가 전국 동시 시행이어서 인과 식별이 불가능한 가운데, 토허제는 동 단위 지정과 처치 역전이라는 조건을 갖춘 드문 사례다.</p>
+<p>기여는 세 가지다. 첫째, 국내 연구가 공통적으로 사용해 온 동 단위 집계자료 대신 개별 거래를 단지 식별자에 연결한 미시 패널을 구축하여, 거래 물건의 구성 변화를 통제한 추정을 수행한다. 둘째, 문헌에서 관찰만 되고 추정되지 않은 거래량 효과를 주 결과변수로 삼아 그 크기와 지속 기간을 규명한다. 셋째, 2025년 2월 해제와 3월 재지정이라는 처치 역전 사건을 분석하여, 규제의 부과 효과와 해제 효과가 대칭적인지를 검토한다.</p>
+<p>부수적으로, 원자료 수집부터 최종 결과까지 전 과정을 공개하여 선행연구 간 상반된 결론이 어떤 설계 선택에서 비롯되는지 재현 가능한 형태로 제시한다.</p></main>
+  <nav class="toc"><div class="lbl">목차</div><a href="#1-연구-주제">1. 연구 주제</a><a href="#2-연구-배경-및-동기">2. 연구 배경 및 동기</a><a href="#3-연구-질문">3. 연구 질문</a><a href="#4-선행연구-및-차별점">4. 선행연구 및 차별점</a><a href="#5-시스템-설계-및-실험-설계">5. 시스템 설계 및 실험 설계</a><a href="#6-추진-계획">6. 추진 계획</a><a href="#7-결론">7. 결론</a></nav>
+</div>
+<script>
+const heads=[...document.querySelectorAll('main h2[id]')];
+const links=[...document.querySelectorAll('nav.toc a')];
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(!e.isIntersecting)return;
+    const i=heads.indexOf(e.target);
+    links.forEach((a,j)=>a.classList.toggle('on',i===j));});
+},{rootMargin:'-70px 0px -75% 0px'});
+heads.forEach(h=>io.observe(h));
+</script>

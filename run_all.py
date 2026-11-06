@@ -99,10 +99,6 @@ def report_steps() -> list[tuple[str, str, str, list[str], str]]:
     out.append(("C1", "문서", "scripts/check_numbers.py", [], "문서 수치 검증 (0007)"))
     out.append(("T1", "문서", "scripts/build_tables.py", [], "최종 보고서 표 생성 (0007)"))
     out.append(("T2", "문서", "scripts/build_refs_tex.py", [], "제출본 참고문헌 — 학과 형식"))
-    # 제출본 합치기. 앞 3쪽(요약서·표지·윤리서약서)과 제출정보는 개인정보라
-    # data/forms/(git 제외) 에 있다. 없으면 스스로 건너뛴다.
-    out.append(("D11", "문서", "scripts/build_submission.py", [],
-                "제출본 PDF 합치기 — 앞 3쪽 + 본문"))
     # 파이프라인 도식은 단계 수와 산출물 수를 **세어서** 그리므로 표가 생긴
     # 뒤라야 한다. 시각화 묶음에 두면 T1 보다 먼저 돌아 표가 0개로 찍힌다.
     out.append(("V6", "시각화", "scripts/plot_pipeline.py", [], "파이프라인 도식 (보고서 3.5)"))

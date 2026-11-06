@@ -196,7 +196,9 @@ a.lnk .mono{font-size:11px; color:var(--ink-3); margin-left:6px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
 
 /* 인쇄 / PDF 저장 — 슬라이드 한 장이 한 페이지 */
-@page{size:landscape; margin:8mm}
+/* 슬라이드가 16:9 이므로 쪽도 16:9 로 둔다. landscape 만 주면 Letter
+   가로(1.29:1)가 되어 아래에 흰 띠가 남는다. 338x190mm = 1.779. */
+@page{size: 338mm 190mm; margin: 0}
 @media print{
   /* 다크 모드에서 인쇄하면 --ink 가 거의 흰색인 채로 남아 흰 종이에 흰
      글자가 된다. 종이에서는 밝은 팔레트로 고정한다. */
